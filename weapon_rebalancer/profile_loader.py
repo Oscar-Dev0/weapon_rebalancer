@@ -93,6 +93,17 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
             if isinstance(values, dict):
                 settings.explicit_overrides[str(weapon).upper()] = dict(values)
 
+
+    harmless = data.get('harmless_weapons', [])
+    if not isinstance(harmless, list):
+        raise ProfileError('harmless_weapons debe ser una lista JSON.')
+    settings.harmless_weapons.update(str(w).upper() for w in harmless)
+
+    allow_damage = data.get('allow_damage_weapons', [])
+    if not isinstance(allow_damage, list):
+        raise ProfileError('allow_damage_weapons debe ser una lista JSON.')
+    settings.harmless_weapons.difference_update(str(w).upper() for w in allow_damage)
+
     ignored = data.get('ignore_weapons', [])
     if isinstance(ignored, list):
         settings.ignore_weapons.update(str(w).upper() for w in ignored)

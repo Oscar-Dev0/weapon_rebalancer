@@ -191,6 +191,13 @@ HEADSHOT = HeadshotConfig(
     },
 )
 
+# Armas recreativas/inofensivas que SI se procesan, pero se fuerzan a daño cero.
+# Se aplican al final para que ningún perfil letal pueda sobrescribirlas.
+HARMLESS_WEAPONS: set[str] = {
+    'WEAPON_SNOWBALL',
+    'WEAPON_BALL',
+}
+
 # Armas que no quieres tocar nunca.
 IGNORE_WEAPONS: set[str] = {
     'WEAPON_RPG',
@@ -268,6 +275,7 @@ class Settings:
     safe_bounds: dict[str, tuple[float, float]]
     headshot: HeadshotConfig
     ignore_weapons: set[str]
+    harmless_weapons: set[str]
     only_weapons: set[str]
     weapon_types: set[str]
     explicit_overrides: dict[str, dict[str, Any]]
@@ -301,6 +309,7 @@ class Settings:
             safe_bounds=dict(SAFE_BOUNDS),
             headshot=HEADSHOT,
             ignore_weapons={w.upper() for w in IGNORE_WEAPONS},
+            harmless_weapons={w.upper() for w in HARMLESS_WEAPONS},
             only_weapons={w.upper() for w in ONLY_WEAPONS},
             weapon_types=set(),
             explicit_overrides={k.upper(): v for k, v in EXPLICIT_OVERRIDES.items()},

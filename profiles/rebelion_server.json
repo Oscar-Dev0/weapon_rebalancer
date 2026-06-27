@@ -36,15 +36,15 @@
       "hit_limbs": 0.55,
       "network_hit_limbs": 0.55,
       "lightly_armoured": 2.0,
-      "vehicle_damage_modifier": 0.20,
+      "vehicle_damage_modifier": 0.2,
       "time_between_shots": 0.18,
       "accuracy_spread": 0.85,
-      "run_and_gun_accuracy_modifier": 1.10,
+      "run_and_gun_accuracy_modifier": 1.1,
       "accurate_mode_accuracy_modifier": 0.55,
       "recoil_accuracy_max": 0.28,
       "recoil_error_time": 0.05,
       "recoil_recovery_rate": 1.65,
-      "recoil_shake_amplitude": 0.10
+      "recoil_shake_amplitude": 0.1
     },
     "GROUP_RIFLE": {
       "damage": 40.0,
@@ -62,10 +62,10 @@
       "hit_limbs": 0.55,
       "network_hit_limbs": 0.55,
       "lightly_armoured": 2.0,
-      "vehicle_damage_modifier": 0.30,
+      "vehicle_damage_modifier": 0.3,
       "time_between_shots": 0.125,
       "accuracy_spread": 0.95,
-      "run_and_gun_accuracy_modifier": 1.20,
+      "run_and_gun_accuracy_modifier": 1.2,
       "accurate_mode_accuracy_modifier": 0.62,
       "recoil_accuracy_max": 0.32,
       "recoil_error_time": 0.05,
@@ -85,22 +85,64 @@
       "max_headshot_player": 30.0,
       "min_headshot_ai": 0.0,
       "max_headshot_ai": 30.0,
-      "hit_limbs": 0.60,
-      "network_hit_limbs": 0.60,
+      "hit_limbs": 0.6,
+      "network_hit_limbs": 0.6,
       "lightly_armoured": 2.0,
       "vehicle_damage_modifier": 0.18,
-      "time_between_shots": 0.80,
+      "time_between_shots": 0.8,
       "accuracy_spread": 1.45,
       "run_and_gun_accuracy_modifier": 1.75,
-      "accurate_mode_accuracy_modifier": 1.10,
+      "accurate_mode_accuracy_modifier": 1.1,
       "recoil_accuracy_max": 0.75,
       "recoil_error_time": 0.12,
       "recoil_recovery_rate": 0.75,
       "recoil_shake_amplitude": 0.42
     },
-    "GROUP_SMG": {"damage": 34.0, "weapon_range": 125.0, "falloff_min": 90.0, "falloff_max": 125.0, "falloff_modifier": 0.55, "hit_limbs": 0.55, "network_hit_limbs": 0.55, "lightly_armoured": 2.0, "vehicle_damage_modifier": 0.22, "time_between_shots": 0.105},
-    "GROUP_MG": {"damage": 36.0, "weapon_range": 200.0, "falloff_min": 155.0, "falloff_max": 200.0, "falloff_modifier": 0.62, "hit_limbs": 0.55, "network_hit_limbs": 0.55, "lightly_armoured": 2.0, "vehicle_damage_modifier": 0.32, "time_between_shots": 0.115},
-    "GROUP_SNIPER": {"damage": 110.0, "weapon_range": 520.0, "falloff_min": 450.0, "falloff_max": 520.0, "falloff_modifier": 0.90, "hit_limbs": 0.65, "network_hit_limbs": 0.65, "lightly_armoured": 2.0, "vehicle_damage_modifier": 0.35, "time_between_shots": 1.25}
+    "GROUP_SMG": {
+      "damage": 34.0,
+      "weapon_range": 125.0,
+      "falloff_min": 90.0,
+      "falloff_max": 125.0,
+      "falloff_modifier": 0.55,
+      "hit_limbs": 0.55,
+      "network_hit_limbs": 0.55,
+      "lightly_armoured": 2.0,
+      "vehicle_damage_modifier": 0.22,
+      "time_between_shots": 0.105
+    },
+    "GROUP_MG": {
+      "damage": 36.0,
+      "weapon_range": 200.0,
+      "falloff_min": 155.0,
+      "falloff_max": 200.0,
+      "falloff_modifier": 0.62,
+      "hit_limbs": 0.55,
+      "network_hit_limbs": 0.55,
+      "lightly_armoured": 2.0,
+      "vehicle_damage_modifier": 0.32,
+      "time_between_shots": 0.115
+    },
+    "GROUP_SNIPER": {
+      "damage": 110.0,
+      "weapon_range": 520.0,
+      "falloff_min": 450.0,
+      "falloff_max": 520.0,
+      "falloff_modifier": 0.9,
+      "hit_limbs": 0.65,
+      "network_hit_limbs": 0.65,
+      "lightly_armoured": 2.0,
+      "vehicle_damage_modifier": 0.35,
+      "time_between_shots": 1.25
+    }
   },
-  "ignore_weapons": ["WEAPON_STUNGUN", "WEAPON_FIREEXTINGUISHER", "WEAPON_SNOWBALL"]
+  "ignore_weapons": [
+    "WEAPON_STUNGUN",
+    "WEAPON_FIREEXTINGUISHER",
+    "WEAPON_SNOWBALL"
+  ],
+  "harmless_weapons": [
+    "WEAPON_SNOWBALL",
+    "WEAPON_BALL"
+  ],
+  "allow_damage_weapons": []
 }

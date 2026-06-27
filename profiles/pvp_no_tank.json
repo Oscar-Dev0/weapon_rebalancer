@@ -139,5 +139,10 @@
     "WEAPON_STUNGUN",
     "WEAPON_FIREEXTINGUISHER",
     "WEAPON_SNOWBALL"
-  ]
+  ],
+  "harmless_weapons": [
+    "WEAPON_SNOWBALL",
+    "WEAPON_BALL"
+  ],
+  "allow_damage_weapons": []
 }

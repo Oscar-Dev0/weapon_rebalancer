@@ -21,5 +21,10 @@
   },
   "groups": {},
   "weapons": {},
-  "ignore_weapons": []
+  "ignore_weapons": [],
+  "harmless_weapons": [
+    "WEAPON_SNOWBALL",
+    "WEAPON_BALL"
+  ],
+  "allow_damage_weapons": []
 }

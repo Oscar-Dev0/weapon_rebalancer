@@ -103,31 +103,41 @@ class RebalanceEngine:
             block_source=block.source,
         )
 
-        if self.settings.only_weapons and weapon not in self.settings.only_weapons:
-            change.skipped = True
-            change.reason = 'not_in_only_weapons'
-            return change, block.text
+        # Las armas marcadas como inofensivas tienen prioridad absoluta.
+        # Se procesan aunque el grupo sea UNKNOWN, estén fuera de --only/--weapontype,
+        # aparezcan en ignore_weapons o no exista un perfil base para su grupo.
+        # El objetivo es buscar cualquier META que las defina y limpiar daño previo.
+        is_harmless = weapon in self.settings.harmless_weapons
 
-        if self.settings.weapon_types and not self.weapon_matches_types(weapon, group):
-            change.skipped = True
-            change.reason = 'not_in_weapon_type'
-            return change, block.text
+        if not is_harmless:
+            if self.settings.only_weapons and weapon not in self.settings.only_weapons:
+                change.skipped = True
+                change.reason = 'not_in_only_weapons'
+                return change, block.text
 
-        if weapon in self.settings.ignore_weapons:
-            change.skipped = True
-            change.reason = 'ignored_weapon'
-            return change, block.text
+            if self.settings.weapon_types and not self.weapon_matches_types(weapon, group):
+                change.skipped = True
+                change.reason = 'not_in_weapon_type'
+                return change, block.text
 
-        if self.package_ignores_weapon(block, weapon):
-            change.skipped = True
-            change.reason = 'ignored_by_package_config'
-            return change, block.text
+            if weapon in self.settings.ignore_weapons:
+                change.skipped = True
+                change.reason = 'ignored_weapon'
+                return change, block.text
+
+            if self.package_ignores_weapon(block, weapon):
+                change.skipped = True
+                change.reason = 'ignored_by_package_config'
+                return change, block.text
 
         profile = self.build_profile(weapon, group, block)
         if profile is None:
-            change.skipped = True
-            change.reason = f'no_profile_for_group_{group}'
-            return change, block.text
+            if is_harmless:
+                profile = {}
+            else:
+                change.skipped = True
+                change.reason = f'no_profile_for_group_{group}'
+                return change, block.text
 
         self.settings.current_group = group
         profile = self.apply_weapon_range_multiplier(weapon, group, profile)
@@ -135,6 +145,7 @@ class RebalanceEngine:
         if self.settings.headshot_profile != 'original':
             profile = self.apply_headshot_policy(weapon, profile, block)
         profile = self.calculate_falloff_min(group, profile)
+        profile = self.apply_harmless_policy(weapon, profile)
         profile = self.clamp_profile(profile, change)
 
         updated = block.text
@@ -161,7 +172,33 @@ class RebalanceEngine:
                 else:
                     change.missing_fields.append(key)
 
+        if is_harmless:
+            change.reason = 'harmless_weapon_damage_forced_to_zero'
+
         return change, updated
+
+    def apply_harmless_policy(self, weapon: str, profile: dict[str, Any]) -> dict[str, Any]:
+        """Fuerza daño cero en armas recreativas, incluso bajo perfiles letales."""
+        if weapon not in self.settings.harmless_weapons:
+            return profile
+
+        result = deepcopy(profile)
+        result.update({
+            'damage': 0.0,
+            'hit_limbs': 0.0,
+            'network_hit_limbs': 0.0,
+            'lightly_armoured': 0.0,
+            'vehicle_damage_modifier': 0.0,
+            'headshot_player': 0.0,
+            'network_headshot': 0.0,
+            'headshot_ai': 0.0,
+            'min_headshot_player': 0.0,
+            'max_headshot_player': 0.0,
+            'min_headshot_ai': 0.0,
+            'max_headshot_ai': 0.0,
+            'falloff_modifier': 0.0,
+        })
+        return result
 
     def should_create_missing_headshot_tag(self, key: str) -> bool:
         if key not in {

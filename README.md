@@ -231,3 +231,97 @@ Los conteos de impactos son objetivos de balance sobre 200 HP estándar. Pueden 
 4. Ejecuta con `--write`.
 5. Reinicia el recurso o el servidor.
 6. Prueba sin armor, con armor y a varias distancias.
+
+---
+
+## Armas inofensivas protegidas
+
+Los perfiles incluyen una protección final para armas recreativas. Aunque uses `rebelion_server`, `pvp_no_tank`, daño letal o headshot `1500x`, estas armas se fuerzan a daño cero:
+
+```json
+"harmless_weapons": [
+  "WEAPON_SNOWBALL",
+  "WEAPON_BALL"
+]
+```
+
+La protección deja en `0.0`:
+
+- daño base;
+- daño de cabeza de jugador, red y NPC;
+- daño a extremidades;
+- modificador contra armadura;
+- daño a vehículos;
+- caída de daño ofensiva.
+
+Puedes agregar cualquier arma custom inofensiva sin tocar Python:
+
+```json
+"harmless_weapons": [
+  "WEAPON_SNOWBALL",
+  "WEAPON_BALL",
+  "WEAPON_MI_OBJETO_CUSTOM"
+]
+```
+
+Si excepcionalmente quieres devolverle daño a una de las protegidas por defecto:
+
+```json
+"allow_damage_weapons": [
+  "WEAPON_BALL"
+]
+```
+
+`harmless_weapons` se aplica al final, por lo que tiene prioridad sobre módulos, grupos y overrides por arma.
+
+---
+
+## Escaneo obligatorio de armas inofensivas
+
+Las armas incluidas en `harmless_weapons` se buscan en **todos los archivos `.meta` detectados**.
+La corrección tiene prioridad sobre:
+
+- el perfil activo;
+- grupos desconocidos (`UNKNOWN`);
+- filtros `--only` y `--weapontype`;
+- `ignore_weapons`;
+- configuraciones locales por carpeta;
+- overrides letales por arma.
+
+Cuando encuentra `WEAPON_SNOWBALL` o `WEAPON_BALL`, revisa su bloque `CWeaponInfo`. Si cualquiera de sus modificadores ofensivos tiene daño, lo reemplaza por `0.0` al ejecutar con `--write`.
+
+Campos limpiados:
+
+```text
+Damage
+HitLimbsDamageModifier
+NetworkHitLimbsDamageModifier
+LightlyArmouredDamageModifier
+VehicleDamageModifier
+HeadShotDamageModifierPlayer
+NetworkHeadShotPlayerDamageModifier
+HeadShotDamageModifierAI
+MinHeadShotDistancePlayer
+MaxHeadShotDistancePlayer
+MinHeadShotDistanceAI
+MaxHeadShotDistanceAI
+DamageFallOffModifier
+```
+
+Prueba primero sin escribir:
+
+```powershell
+python run_rebalance.py --root "C:\RUTA\[PackArmas]" --profile profiles\rebelion_server.json
+```
+
+Después aplica la limpieza real:
+
+```powershell
+python run_rebalance.py --root "C:\RUTA\[PackArmas]" --profile profiles\rebelion_server.json --write
+```
+
+En el reporte aparecerá la razón:
+
+```text
+harmless_weapon_damage_forced_to_zero
+```
