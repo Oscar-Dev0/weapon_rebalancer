@@ -1,0 +1,8 @@
+{
+  "name": "Solo cabeza META",
+  "description": "El cuerpo recibe 0.2 porque META multiplica el daño base; con daño 0 la cabeza también sería 0.",
+  "base_preset": "rp_balanced",
+  "modules": {"damage":"head_only","armour":"max","recoil":"normal","accuracy":"normal","range":"normal","fire_rate":"original","reload":"original","headshot":"onetap"},
+  "headshot": {"mode":"onetap","multiplier":1500.0,"distance":300.0,"no_falloff":true,"create_missing_tags":true},
+  "groups": {}
+}

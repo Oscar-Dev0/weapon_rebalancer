@@ -1,0 +1,8 @@
+{
+  "name": "Daño absoluto cero",
+  "description": "Desactiva todo daño del arma, incluida la cabeza.",
+  "base_preset": "rp_balanced",
+  "modules": {"damage":"none","armour":"none","recoil":"original","accuracy":"original","range":"original","fire_rate":"original","reload":"original","headshot":"off"},
+  "headshot": {"mode":"off","create_missing_tags":true},
+  "groups": {}
+}

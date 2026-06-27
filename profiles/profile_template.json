@@ -1,0 +1,25 @@
+{
+  "name": "Mi perfil",
+  "description": "Perfil editable sin tocar Python.",
+  "base_preset": "rp_balanced",
+  "modules": {
+    "damage": "original",
+    "armour": "original",
+    "recoil": "original",
+    "accuracy": "original",
+    "range": "original",
+    "fire_rate": "original",
+    "reload": "original",
+    "headshot": "original"
+  },
+  "headshot": {
+    "mode": "normal",
+    "multiplier": 4.0,
+    "distance": 150.0,
+    "no_falloff": false,
+    "create_missing_tags": true
+  },
+  "groups": {},
+  "weapons": {},
+  "ignore_weapons": []
+}
