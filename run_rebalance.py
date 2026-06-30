@@ -6,6 +6,8 @@ from pathlib import Path
 
 from weapon_rebalancer.config import Settings
 from weapon_rebalancer.fields import print_supported_fields
+from weapon_rebalancer.inventory import export_full_profile, export_meta_inventory
+from weapon_rebalancer.weapon_flags import print_weapon_flags
 from weapon_rebalancer.rebalance import RebalanceEngine
 from weapon_rebalancer.profile_loader import ProfileError, apply_external_profile, load_profile
 
@@ -29,7 +31,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--only', nargs='*', default=None, help='Procesar solo estas armas: WEAPON_PISTOL ...')
     parser.add_argument('--weapontype', nargs='+', default=None, help='Filtrar por tipo o familia: revolver, pistol, smg, rifle, shotgun, sniper, mg, melee.')
     parser.add_argument('--ignore', nargs='*', default=None, help='Ignorar estas armas.')
-    parser.add_argument('--list-fields', action='store_true', help='Lista campos modificables y sale.')
+    parser.add_argument('--list-fields', action='store_true', help='Lista campos CWeaponInfo modificables y sale.')
+    parser.add_argument('--list-flags', action='store_true', help='Lista WeaponFlags conocidas y sale.')
+    parser.add_argument('--export-meta', type=Path, default=None, help='Exporta inventario JSON de TODOS los .meta y sus hojas XML.')
+    parser.add_argument('--export-full-profile', type=Path, default=None, help='Genera un perfil JSON completo desde todos los CWeaponInfo encontrados.')
+    parser.add_argument('--export-only', action='store_true', help='Solo exporta información; no ejecuta el rebalanceo.')
     parser.add_argument('--disable-headshots', action='store_true', help='Quita daño extra de cabeza a todas las armas procesadas.')
     parser.add_argument('--enable-headshots', action='store_true', help='Activa headshot normal/balanceado. No es one tap.')
     parser.add_argument('--onetap-headshots', action='store_true', help='Activa headshot one tap en las armas procesadas.')
@@ -37,6 +43,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--onetap-distance', type=float, default=None, help='Distancia máxima real del one tap. Si no se usa, toma WeaponRange del perfil.')
     parser.add_argument('--onetap-multiplier', type=float, default=None, help='Multiplicador de headshot para one tap. Recomendado: 300 para matar sí o sí dentro del rango.')
     parser.add_argument('--onetap-no-falloff', action='store_true', help='Fuerza que el one tap no pierda daño dentro de su distancia.')
+    parser.add_argument('--onetap-through-helmets', action='store_true', help='Fuerza META contra cascos nativos mediante LightlyArmouredDamageModifier.')
+    parser.add_argument('--no-onetap-through-helmets', action='store_true', help='No fuerza el modificador META específico para cascos.')
+    parser.add_argument('--helmet-multiplier', type=float, default=None, help='Valor de LightlyArmouredDamageModifier usado por one tap. Default del perfil: 100.')
+    parser.add_argument('--helmet-penetration', type=float, default=None, help='Valor Penetration usado junto al modo cascos. Default del perfil: 1.0.')
     parser.add_argument('--include-bak', action='store_true', help='También escanea .bak/.meta.bak. Normalmente NO recomendado.')
     parser.add_argument('--no-recursive', action='store_true', help='No buscar en subcarpetas.')
     parser.add_argument('--report', type=Path, default=None, help='Ruta del reporte JSON.')
@@ -49,6 +59,9 @@ def main() -> None:
     if args.list_fields:
         print_supported_fields()
         return
+    if args.list_flags:
+        print_weapon_flags()
+        return
 
     settings = Settings.from_config()
 
@@ -60,6 +73,20 @@ def main() -> None:
 
     if args.root is not None:
         settings.root = args.root
+    if not settings.root.exists() or not settings.root.is_dir():
+        raise SystemExit(f'ROOT inválido o inexistente: {settings.root}')
+
+    if args.export_meta is not None:
+        result = export_meta_inventory(settings.root, args.export_meta)
+        print(f'[EXPORT META] archivos={result["summary"]["meta_files"]} tags={result["summary"]["unique_tags"]} -> {args.export_meta}')
+    if args.export_full_profile is not None:
+        result = export_full_profile(settings.root, args.export_full_profile, settings.scan)
+        print(f'[EXPORT PROFILE] armas={result["_documentation"]["weapons_exported"]} -> {args.export_full_profile}')
+    if args.export_only:
+        if args.export_meta is None and args.export_full_profile is None:
+            raise SystemExit('--export-only requiere --export-meta y/o --export-full-profile')
+        return
+
     if args.write:
         settings.dry_run = False
     if args.preset:
@@ -123,12 +150,22 @@ def main() -> None:
         settings.headshot.one_tap_ai_modifier = args.onetap_multiplier
     if args.onetap_no_falloff:
         settings.headshot.one_tap_force_no_falloff = True
+    if args.onetap_through_helmets:
+        settings.headshot.one_tap_through_helmets = True
+    if args.no_onetap_through_helmets:
+        settings.headshot.one_tap_through_helmets = False
+    if args.helmet_multiplier is not None:
+        settings.headshot.one_tap_helmet_damage_modifier = args.helmet_multiplier
+    if args.helmet_penetration is not None:
+        settings.headshot.one_tap_force_penetration = True
+        settings.headshot.one_tap_penetration = args.helmet_penetration
     if args.include_bak:
         settings.scan.include_bak = True
     if args.no_recursive:
         settings.scan.recursive = False
     if args.report:
         settings.report_path = args.report
+        settings.write_json_report = True
 
     engine = RebalanceEngine(settings)
     report = engine.run()

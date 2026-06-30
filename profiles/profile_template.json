@@ -17,7 +17,13 @@
     "multiplier": 4.0,
     "distance": 150.0,
     "no_falloff": false,
-    "create_missing_tags": true
+    "create_missing_tags": true,
+    "bypass_helmets": true,
+    "helmet_multiplier": 100.0,
+    "force_penetration": true,
+    "penetration": 1.0,
+    "create_missing_armour_tag": true,
+    "create_missing_penetration_tag": true
   },
   "groups": {},
   "weapons": {},

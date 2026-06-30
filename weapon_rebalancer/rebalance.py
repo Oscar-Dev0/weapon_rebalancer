@@ -6,7 +6,14 @@ from typing import Any
 
 from .config import Settings
 from .fields import FIELDS
-from .meta_utils import insert_field_if_missing, read_text, replace_field, write_text
+from .meta_utils import (
+    insert_field_if_missing,
+    read_text,
+    replace_dynamic_field,
+    replace_field,
+    update_weapon_flags,
+    write_text,
+)
 from .profiles import category_defaults
 from .tuning import apply_modular_profiles
 from .report import FileChange, RebalanceReport
@@ -162,7 +169,7 @@ class RebalanceEngine:
                 # Muchos packs custom no traen NetworkHeadShotPlayerDamageModifier.
                 # Si el usuario habilita headshot completo, lo creamos dentro del bloque
                 # para que el daño de cabeza también aplique en red.
-                if self.should_create_missing_headshot_tag(key):
+                if self.should_create_missing_policy_tag(key):
                     inserted_content, inserted = insert_field_if_missing(updated, key, self.format_value(value))
                     if inserted:
                         updated = inserted_content
@@ -171,6 +178,34 @@ class RebalanceEngine:
                         change.missing_fields.append(key)
                 else:
                     change.missing_fields.append(key)
+
+        # Overrides XML exactos: permiten modificar cualquier hoja escalar del META,
+        # incluso tags custom que todavía no estén en el catálogo de FIELDS.
+        for tag, spec in self.collect_meta_overrides(weapon, group, block).items():
+            new_content, changed, found, error = replace_dynamic_field(updated, str(tag), spec)
+            if error:
+                change.missing_fields.append(f'meta_error:{error}')
+                continue
+            if changed:
+                updated = new_content
+                change.changed_fields.append(f'meta:{tag}')
+            elif not found:
+                change.missing_fields.append(f'meta:{tag}')
+
+        one_tap_active = (not is_harmless) and self.is_one_tap_active_for_weapon(weapon, group, block)
+        flag_ops = self.collect_flag_ops(weapon, group, block, one_tap_active=one_tap_active)
+        if flag_ops.get('add') or flag_ops.get('remove'):
+            new_content, changed, found = update_weapon_flags(
+                updated,
+                add=flag_ops.get('add', []),
+                remove=flag_ops.get('remove', []),
+                create_if_missing=bool(flag_ops.get('create_if_missing', False)),
+            )
+            if changed:
+                updated = new_content
+                change.changed_fields.append('weapon_flags')
+            elif not found:
+                change.missing_fields.append('weapon_flags')
 
         if is_harmless:
             change.reason = 'harmless_weapon_damage_forced_to_zero'
@@ -197,11 +232,13 @@ class RebalanceEngine:
             'min_headshot_ai': 0.0,
             'max_headshot_ai': 0.0,
             'falloff_modifier': 0.0,
+            'penetration': 0.0,
         })
         return result
 
-    def should_create_missing_headshot_tag(self, key: str) -> bool:
-        if key not in {
+    def should_create_missing_policy_tag(self, key: str) -> bool:
+        """Decide qué campos calculados se pueden insertar en metas custom incompletos."""
+        if key in {
             'headshot_player',
             'network_headshot',
             'headshot_ai',
@@ -210,21 +247,35 @@ class RebalanceEngine:
             'min_headshot_ai',
             'max_headshot_ai',
         }:
-            return False
-        return bool(getattr(self.settings.headshot, 'create_missing_tags', True))
+            return bool(getattr(self.settings.headshot, 'create_missing_tags', True))
+
+        if key == 'lightly_armoured':
+            return bool(getattr(self.settings.headshot, 'create_missing_lightly_armoured_tag', True))
+
+        if key == 'penetration':
+            return bool(getattr(self.settings.headshot, 'create_missing_penetration_tag', True))
+
+        return False
+
 
 
     def build_profile(self, weapon: str, group: str, block: WeaponBlock) -> dict[str, Any] | None:
+        global_external = self.settings.external_group_profiles.get('__GLOBAL__', {})
         external = self.settings.external_group_profiles.get(group)
         base = deepcopy(external) if external is not None else category_defaults(group, self.settings.active_preset)
         explicit = self.settings.explicit_overrides.get(weapon)
 
-        if base is None and explicit is None:
-            # intenta overrides por config de carpeta antes de abandonar
+        if base is None and explicit is None and not global_external:
             package_profile = self.package_profile(block, weapon, group)
-            return package_profile or None
+            if package_profile:
+                return package_profile
+            if self.has_extended_overrides(weapon, group, block):
+                return {}
+            return None
 
         profile: dict[str, Any] = {}
+        if global_external:
+            profile.update(deepcopy(global_external))
         if base:
             profile.update(deepcopy(base))
         # configs por carpeta se aplican entre base y overrides globales/per-arma
@@ -234,6 +285,110 @@ class RebalanceEngine:
         if explicit:
             profile.update(deepcopy(explicit))
         return profile
+
+    def has_extended_overrides(self, weapon: str, group: str, block: WeaponBlock) -> bool:
+        if self.settings.global_meta_overrides or self.settings.global_flag_ops.get('add') or self.settings.global_flag_ops.get('remove'):
+            return True
+        if group in self.settings.group_meta_overrides or group in self.settings.group_flag_ops:
+            return True
+        if weapon in self.settings.weapon_meta_overrides or weapon in self.settings.weapon_flag_ops:
+            return True
+        for pc in block.config_stack:
+            if isinstance(pc.data.get('meta'), dict) or isinstance(pc.data.get('weapon_flags'), dict):
+                return True
+        return False
+
+    def collect_meta_overrides(self, weapon: str, group: str, block: WeaponBlock) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        result.update(deepcopy(self.settings.global_meta_overrides))
+        result.update(deepcopy(self.settings.group_meta_overrides.get(group, {})))
+        result.update(deepcopy(self.settings.weapon_meta_overrides.get(weapon, {})))
+        for pc in block.config_stack:
+            global_meta = pc.data.get('meta')
+            if isinstance(global_meta, dict):
+                result.update(deepcopy(global_meta))
+            groups = pc.data.get('groups')
+            if isinstance(groups, dict) and isinstance(groups.get(group), dict):
+                local = groups[group].get('meta')
+                if isinstance(local, dict):
+                    result.update(deepcopy(local))
+            weapons = pc.data.get('weapons')
+            if isinstance(weapons, dict) and isinstance(weapons.get(weapon), dict):
+                local = weapons[weapon].get('meta')
+                if isinstance(local, dict):
+                    result.update(deepcopy(local))
+        return result
+
+    @staticmethod
+    def merge_flag_ops(*ops: dict[str, Any]) -> dict[str, Any]:
+        add: list[str] = []
+        remove: list[str] = []
+        create = False
+        for op in ops:
+            if not isinstance(op, dict):
+                continue
+            add.extend(str(v) for v in op.get('add', []) if str(v).strip())
+            remove.extend(str(v) for v in op.get('remove', []) if str(v).strip())
+            create = create or bool(op.get('create_if_missing', False))
+        return {
+            'add': list(dict.fromkeys(add)),
+            'remove': list(dict.fromkeys(remove)),
+            'create_if_missing': create,
+        }
+
+    def collect_flag_ops(self, weapon: str, group: str, block: WeaponBlock, *, one_tap_active: bool) -> dict[str, Any]:
+        ops = [
+            self.settings.global_flag_ops,
+            self.settings.group_flag_ops.get(group, {}),
+            self.settings.weapon_flag_ops.get(weapon, {}),
+        ]
+        for pc in block.config_stack:
+            ops.append(pc.data.get('weapon_flags', {}))
+            groups = pc.data.get('groups')
+            if isinstance(groups, dict) and isinstance(groups.get(group), dict):
+                ops.append(groups[group].get('weapon_flags', {}))
+            weapons = pc.data.get('weapons')
+            if isinstance(weapons, dict) and isinstance(weapons.get(weapon), dict):
+                ops.append(weapons[weapon].get('weapon_flags', {}))
+
+        merged = self.merge_flag_ops(*ops)
+        if one_tap_active and self.settings.headshot.one_tap_through_helmets:
+            if self.settings.headshot.one_tap_add_ignore_helmets_flag:
+                merged['add'].append('IgnoreHelmets')
+            if self.settings.headshot.one_tap_add_armour_penetrating_flag:
+                merged['add'].append('ArmourPenetrating')
+            merged['add'] = list(dict.fromkeys(merged['add']))
+            merged['create_if_missing'] = bool(
+                merged['create_if_missing'] or self.settings.headshot.create_missing_weapon_flags_tag
+            )
+        return merged
+
+    def is_one_tap_active_for_weapon(self, weapon: str, group: str, block: WeaponBlock) -> bool:
+        h = self.settings.headshot
+        if self.settings.headshot_profile == 'original':
+            return False
+        active = bool(h.enabled and h.one_tap)
+        if weapon in {str(w).upper() for w in h.one_tap_weapons}:
+            active = True
+        if weapon in {str(w).upper() for w in h.no_one_tap_weapons}:
+            active = False
+        if weapon in {str(w).upper() for w in h.disabled_weapons}:
+            active = False
+        if h.disable_one_tap_for_melee and group == 'GROUP_MELEE':
+            active = False
+        for pc in block.config_stack:
+            head = pc.data.get('headshot')
+            if not isinstance(head, dict):
+                continue
+            if head.get('enabled') is False or head.get('one_tap') is False:
+                active = False
+            if head.get('one_tap') is True:
+                active = True
+            if weapon in {str(v).upper() for v in head.get('no_one_tap_weapons', [])}:
+                active = False
+            if weapon in {str(v).upper() for v in head.get('one_tap_weapons', [])}:
+                active = True
+        return active
 
     def weapon_matches_types(self, weapon: str, group: str) -> bool:
         """Comprueba filtros de --weapontype por grupo o familia de nombre."""
@@ -299,13 +454,19 @@ class RebalanceEngine:
             data = pc.data
             groups = data.get('groups')
             if isinstance(groups, dict) and isinstance(groups.get(group), dict):
-                profile.update(deepcopy(groups[group]))
+                values = groups[group].get('fields', groups[group])
+                if isinstance(values, dict):
+                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields'}})
             weapons = data.get('weapons')
             if isinstance(weapons, dict) and isinstance(weapons.get(weapon), dict):
-                profile.update(deepcopy(weapons[weapon]))
+                values = weapons[weapon].get('fields', weapons[weapon])
+                if isinstance(values, dict):
+                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields'}})
             defaults = data.get('defaults')
             if isinstance(defaults, dict):
-                profile.update(deepcopy(defaults))
+                values = defaults.get('fields', defaults)
+                if isinstance(values, dict):
+                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields'}})
         return profile
 
     def package_ignores_weapon(self, block: WeaponBlock, weapon: str) -> bool:
@@ -439,6 +600,29 @@ class RebalanceEngine:
 
                 if getattr(h, 'one_tap_sync_lock_on_range', False):
                     profile['lock_on_range'] = max_distance
+
+                # Ruta META específica para cascos nativos/lightly armoured.
+                # Se ejecuta al final para que modules.armour o un override por grupo
+                # no vuelva a bajar el valor a 2.0.
+                if getattr(h, 'one_tap_through_helmets', True):
+                    try:
+                        current_armour_modifier = float(profile.get('lightly_armoured', 0.0))
+                    except Exception:  # noqa: BLE001
+                        current_armour_modifier = 0.0
+                    profile['lightly_armoured'] = max(
+                        current_armour_modifier,
+                        float(getattr(h, 'one_tap_helmet_damage_modifier', 100.0)),
+                    )
+
+                    if getattr(h, 'one_tap_force_penetration', True):
+                        try:
+                            current_penetration = float(profile.get('penetration', 0.0))
+                        except Exception:  # noqa: BLE001
+                            current_penetration = 0.0
+                        profile['penetration'] = max(
+                            current_penetration,
+                            float(getattr(h, 'one_tap_penetration', 1.0)),
+                        )
             else:
                 player_modifier = h.enabled_player_modifier
                 network_modifier = h.enabled_network_modifier

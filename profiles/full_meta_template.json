@@ -1,0 +1,1109 @@
+{
+  "name": "Plantilla META completa y segura",
+  "base_preset": "rp_balanced",
+  "modules": {
+    "damage": "original",
+    "armour": "original",
+    "recoil": "original",
+    "accuracy": "original",
+    "range": "original",
+    "fire_rate": "original",
+    "reload": "original",
+    "headshot": "original"
+  },
+  "validation": {
+    "strict_unknown_fields": true
+  },
+  "_documentation": {
+    "standard_field_count": 133,
+    "known_weapon_flags_count": 146,
+    "usage": "Copia campos de _field_reference hacia defaults/groups/weapons. Para tags no catalogados usa meta con el nombre XML exacto.",
+    "warning": "No rellenes todos los campos a la vez. Los META incompletos/custom pueden depender de valores originales."
+  },
+  "_field_reference": {
+    "accuracy": {
+      "accuracy_spread": {
+        "xml_tag": "AccuracySpread",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "accurate_mode_accuracy_modifier": {
+        "xml_tag": "AccurateModeAccuracyModifier",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "run_and_gun_accuracy_min_override": {
+        "xml_tag": "RunAndGunAccuracyMinOverride",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "run_and_gun_accuracy_modifier": {
+        "xml_tag": "RunAndGunAccuracyModifier",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "aim": {
+      "bullet_bending_far_radius": {
+        "xml_tag": "BulletBendingFarRadius",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "bullet_bending_near_radius": {
+        "xml_tag": "BulletBendingNearRadius",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "bullet_bending_zoomed_radius": {
+        "xml_tag": "BulletBendingZoomedRadius",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "fp_bullet_bending_far_radius": {
+        "xml_tag": "FirstPersonBulletBendingFarRadius",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "fp_bullet_bending_near_radius": {
+        "xml_tag": "FirstPersonBulletBendingNearRadius",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "fp_bullet_bending_zoomed_radius": {
+        "xml_tag": "FirstPersonBulletBendingZoomedRadius",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "ammo": {
+      "ammo_diminishing_rate": {
+        "xml_tag": "AmmoDiminishingRate",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "clip_size": {
+        "xml_tag": "ClipSize",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "animation": {
+      "aiming_breathing_weight": {
+        "xml_tag": "AimingBreathingAdditiveWeight",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "firing_breathing_weight": {
+        "xml_tag": "FiringBreathingAdditiveWeight",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "movement_mode_conditional_idle": {
+        "xml_tag": "MovementModeConditionalIdle",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "nm_shot_tuning_set": {
+        "xml_tag": "NmShotTuningSet",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "camera": {
+      "accuracy_offset_shake_hash": {
+        "xml_tag": "AccuracyOffsetShakeHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "aim_camera_hash": {
+        "xml_tag": "AimCameraHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "aim_fov": {
+        "xml_tag": "AimFOV",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "camera_fov": {
+        "xml_tag": "CameraFov",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "cover_camera_hash": {
+        "xml_tag": "CoverCameraHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "cover_ready_camera_hash": {
+        "xml_tag": "CoverReadyToFireCameraHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "default_camera_hash": {
+        "xml_tag": "DefaultCameraHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "fire_camera_hash": {
+        "xml_tag": "FireCameraHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "first_person_aim_fov_max": {
+        "xml_tag": "FirstPersonAimFovMax",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "first_person_aim_fov_min": {
+        "xml_tag": "FirstPersonAimFovMin",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "first_person_scope_attachment_fov": {
+        "xml_tag": "FirstPersonScopeAttachmentFov",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "first_person_scope_fov": {
+        "xml_tag": "FirstPersonScopeFov",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "recoil_shake_hash": {
+        "xml_tag": "RecoilShakeHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "recoil_shake_hash_fp": {
+        "xml_tag": "RecoilShakeHashFirstPerson",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "run_and_gun_camera_hash": {
+        "xml_tag": "RunAndGunCameraHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "zoom_factor_accurate_mode": {
+        "xml_tag": "ZoomFactorForAccurateMode",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "damage": {
+      "damage": {
+        "xml_tag": "Damage",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "damage_time": {
+        "xml_tag": "DamageTime",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "damage_time_in_vehicle": {
+        "xml_tag": "DamageTimeInVehicle",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "damage_time_in_vehicle_headshot": {
+        "xml_tag": "DamageTimeInVehicleHeadShot",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "hit_limbs": {
+        "xml_tag": "HitLimbsDamageModifier",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "killshot_impulse_scale": {
+        "xml_tag": "KillshotImpulseScale",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "knockdown_count": {
+        "xml_tag": "KnockdownCount",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "lightly_armoured": {
+        "xml_tag": "LightlyArmouredDamageModifier",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "network_hit_limbs": {
+        "xml_tag": "NetworkHitLimbsDamageModifier",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "network_ped_damage_modifier": {
+        "xml_tag": "NetworkPedDamageModifier",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "network_player_damage_modifier": {
+        "xml_tag": "NetworkPlayerDamageModifier",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "penetration": {
+        "xml_tag": "Penetration",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "vehicle_damage_modifier": {
+        "xml_tag": "VehicleDamageModifier",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      }
+    },
+    "fire_rate": {
+      "alternate_wait_time": {
+        "xml_tag": "AlternateWaitTime",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "anim_fire_rate_modifier": {
+        "xml_tag": "AnimFireRateModifier",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "cached_fire_window": {
+        "xml_tag": "TimeLeftBetweenShotsWhereShouldFireIsCached",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "firing_pattern": {
+        "xml_tag": "FiringPattern",
+        "kind": "ref_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "spin_down_time": {
+        "xml_tag": "SpinDownTime",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "spin_time": {
+        "xml_tag": "SpinTime",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "spin_up_time": {
+        "xml_tag": "SpinUpTime",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "time_between_shots": {
+        "xml_tag": "TimeBetweenShots",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "flags": {
+      "weapon_flags": {
+        "xml_tag": "WeaponFlags",
+        "kind": "text",
+        "safe_insert": true,
+        "description": ""
+      }
+    },
+    "force": {
+      "force": {
+        "xml_tag": "Force",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "force_falloff_min": {
+        "xml_tag": "ForceFalloffMin",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "force_falloff_range_end": {
+        "xml_tag": "ForceFalloffRangeEnd",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "force_falloff_range_start": {
+        "xml_tag": "ForceFalloffRangeStart",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "force_hit_flying_heli": {
+        "xml_tag": "ForceHitFlyingHeli",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "force_hit_ped": {
+        "xml_tag": "ForceHitPed",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "force_hit_vehicle": {
+        "xml_tag": "ForceHitVehicle",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "force_max_strength_mult": {
+        "xml_tag": "ForceMaxStrengthMult",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "frag_impulse": {
+        "xml_tag": "FragImpulse",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "projectile_force": {
+        "xml_tag": "ProjectileForce",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "headshot": {
+      "headshot_ai": {
+        "xml_tag": "HeadShotDamageModifierAI",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "headshot_player": {
+        "xml_tag": "HeadShotDamageModifierPlayer",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "max_headshot_ai": {
+        "xml_tag": "MaxHeadShotDistanceAI",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "max_headshot_player": {
+        "xml_tag": "MaxHeadShotDistancePlayer",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "min_headshot_ai": {
+        "xml_tag": "MinHeadShotDistanceAI",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "min_headshot_player": {
+        "xml_tag": "MinHeadShotDistancePlayer",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "network_headshot": {
+        "xml_tag": "NetworkHeadShotPlayerDamageModifier",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "recoil_accuracy_to_allow_headshot_ai": {
+        "xml_tag": "RecoilAccuracyToAllowHeadShotAI",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "recoil_accuracy_to_allow_headshot_player": {
+        "xml_tag": "RecoilAccuracyToAllowHeadShotPlayer",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "hud": {
+      "first_person_reticule_style_hash": {
+        "xml_tag": "FirstPersonReticuleStyleHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "reticule_min_size_crouched": {
+        "xml_tag": "ReticuleMinSizeCrouched",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "reticule_min_size_standing": {
+        "xml_tag": "ReticuleMinSizeStanding",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "reticule_scale": {
+        "xml_tag": "ReticuleScale",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "reticule_style_hash": {
+        "xml_tag": "ReticuleStyleHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "identity": {
+      "aiming_info": {
+        "xml_tag": "AimingInfo",
+        "kind": "ref_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "ammo_info": {
+        "xml_tag": "AmmoInfo",
+        "kind": "ref_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "audio": {
+        "xml_tag": "Audio",
+        "kind": "text",
+        "safe_insert": false,
+        "description": "Audio item."
+      },
+      "damage_type": {
+        "xml_tag": "DamageType",
+        "kind": "text",
+        "safe_insert": false,
+        "description": "BULLET, MELEE, EXPLOSIVE, etc."
+      },
+      "fire_type": {
+        "xml_tag": "FireType",
+        "kind": "text",
+        "safe_insert": false,
+        "description": "INSTANT_HIT, PROJECTILE, etc."
+      },
+      "group": {
+        "xml_tag": "Group",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "human_name_hash": {
+        "xml_tag": "HumanNameHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "model": {
+        "xml_tag": "Model",
+        "kind": "text",
+        "safe_insert": false,
+        "description": "Modelo del arma."
+      },
+      "mp_pickup_hash": {
+        "xml_tag": "MPPickupHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "name": {
+        "xml_tag": "Name",
+        "kind": "text",
+        "safe_insert": false,
+        "description": "Nombre interno WEAPON_*."
+      },
+      "pickup_hash": {
+        "xml_tag": "PickupHash",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "slot": {
+        "xml_tag": "Slot",
+        "kind": "text",
+        "safe_insert": false,
+        "description": "Slot interno."
+      },
+      "stat_name": {
+        "xml_tag": "StatName",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      },
+      "wheel_slot": {
+        "xml_tag": "WheelSlot",
+        "kind": "text",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "projectile": {
+      "batch_spread": {
+        "xml_tag": "BatchSpread",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "bullet_direction_offset_degrees": {
+        "xml_tag": "BulletDirectionOffsetInDegrees",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "bullet_direction_pitch_homing_offset": {
+        "xml_tag": "BulletDirectionPitchHomingOffset",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "bullet_direction_pitch_offset": {
+        "xml_tag": "BulletDirectionPitchOffset",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "bullets_in_batch": {
+        "xml_tag": "BulletsInBatch",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "drop_forward_velocity": {
+        "xml_tag": "DropForwardVelocity",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "speed": {
+        "xml_tag": "Speed",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "vertical_launch_adjustment": {
+        "xml_tag": "VerticalLaunchAdjustment",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "range": {
+      "ai_potential_blast_event_range": {
+        "xml_tag": "AiPotentialBlastEventRange",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "ai_sound_range": {
+        "xml_tag": "AiSoundRange",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "falloff_max": {
+        "xml_tag": "DamageFallOffRangeMax",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "falloff_min": {
+        "xml_tag": "DamageFallOffRangeMin",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "falloff_modifier": {
+        "xml_tag": "DamageFallOffModifier",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      },
+      "lock_on_range": {
+        "xml_tag": "LockOnRange",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "weapon_range": {
+        "xml_tag": "WeaponRange",
+        "kind": "value_attr",
+        "safe_insert": true,
+        "description": ""
+      }
+    },
+    "recoil": {
+      "explosion_shake_amplitude": {
+        "xml_tag": "ExplosionShakeAmplitude",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "ik_recoil_displacement": {
+        "xml_tag": "IkRecoilDisplacement",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "ik_recoil_displacement_scope": {
+        "xml_tag": "IkRecoilDisplacementScope",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "ik_recoil_scale_backward": {
+        "xml_tag": "IkRecoilDisplacementScaleBackward",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "ik_recoil_scale_vertical": {
+        "xml_tag": "IkRecoilDisplacementScaleVertical",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "min_time_between_recoil_shakes": {
+        "xml_tag": "MinTimeBetweenRecoilShakes",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "recoil_accuracy_max": {
+        "xml_tag": "RecoilAccuracyMax",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "recoil_error_time": {
+        "xml_tag": "RecoilErrorTime",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "recoil_recovery_rate": {
+        "xml_tag": "RecoilRecoveryRate",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "recoil_shake_amplitude": {
+        "xml_tag": "RecoilShakeAmplitude",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "reload": {
+      "anim_reload_rate": {
+        "xml_tag": "AnimReloadRate",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "bullets_per_anim_loop": {
+        "xml_tag": "BulletsPerAnimLoop",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "reload_time_mp": {
+        "xml_tag": "ReloadTimeMP",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "reload_time_sp": {
+        "xml_tag": "ReloadTimeSP",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "vehicle_reload_time": {
+        "xml_tag": "VehicleReloadTime",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    },
+    "rumble": {
+      "initial_rumble_duration": {
+        "xml_tag": "InitialRumbleDuration",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "initial_rumble_duration_fps": {
+        "xml_tag": "InitialRumbleDurationFps",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "initial_rumble_intensity": {
+        "xml_tag": "InitialRumbleIntensity",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "initial_rumble_intensity_fps": {
+        "xml_tag": "InitialRumbleIntensityFps",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "initial_rumble_trigger": {
+        "xml_tag": "InitialRumbleIntensityTrigger",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "rumble_damage_intensity": {
+        "xml_tag": "RumbleDamageIntensity",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "rumble_duration": {
+        "xml_tag": "RumbleDuration",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "rumble_duration_fps": {
+        "xml_tag": "RumbleDurationFps",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "rumble_intensity": {
+        "xml_tag": "RumbleIntensity",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "rumble_intensity_fps": {
+        "xml_tag": "RumbleIntensityFps",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      },
+      "rumble_trigger": {
+        "xml_tag": "RumbleIntensityTrigger",
+        "kind": "value_attr",
+        "safe_insert": false,
+        "description": ""
+      }
+    }
+  },
+  "_known_weapon_flags": [
+    "CarriedInHand",
+    "Automatic",
+    "Silenced",
+    "FirstPersonScope",
+    "ArmourPenetrating",
+    "ApplyBulletForce",
+    "Gun",
+    "CanLockonOnFoot",
+    "CanLockonInVehicle",
+    "Homing",
+    "CanFreeAim",
+    "Heavy",
+    "TwoHanded",
+    "Launched",
+    "MeleeBlade",
+    "MeleeClub",
+    "AnimReload",
+    "AnimCrouchFire",
+    "CreateVisibleOrdnance",
+    "TreatAsOneHandedInCover",
+    "Thrown",
+    "Bomb",
+    "UsableOnFoot",
+    "UsableUnderwater",
+    "UsableClimbing",
+    "UsableInCover",
+    "AllowEarlyExitFromFireAnimAfterBulletFired",
+    "DisableRightHandIk",
+    "DisableLeftHandIkInCover",
+    "DontSwapWeaponIfNoAmmo",
+    "DoesRevivableDamage",
+    "NoFriendlyFireDamage",
+    "Detonator",
+    "DisplayRechargeTimeHUD",
+    "OnlyFireOneShot",
+    "OnlyFireOneShotPerTriggerPress",
+    "UseLegDamageVoice",
+    "CanBeFiredLikeGun",
+    "OnlyAllowFiring",
+    "NoLeftHandIK",
+    "NoLeftHandIKWhenBlocked",
+    "Vehicle",
+    "EnforceAimingRestrictions",
+    "ForceEjectShellAfterFiring",
+    "NonViolent",
+    "NonLethal",
+    "Scary",
+    "AllowCloseQuarterKills",
+    "DisablePlayerBlockingInMP",
+    "StaticReticulePosition",
+    "CanPerformArrest",
+    "AllowMeleeIntroAnim",
+    "ManualDetonation",
+    "SuppressGunshotEvent",
+    "HiddenFromWeaponWheel",
+    "AllowDriverLockOnToAmbientPeds",
+    "NeedsGunCockingInCover",
+    "ThrowOnly",
+    "NoAutoRunWhenFiring",
+    "DisableIdleVariations",
+    "HasLowCoverReloads",
+    "HasLowCoverSwaps",
+    "DontBreakRopes",
+    "CookWhileAiming",
+    "UseLeftHandIkWhenAiming",
+    "DropWhenCooked",
+    "NotAWeapon",
+    "RemoveEarlyWhenEnteringVehicles",
+    "DontBlendFireOutro",
+    "DiscardWhenOutOfAmmo",
+    "DelayedFiringAfterAutoSwap",
+    "EnforceFiringAngularThreshold",
+    "ForcesActionMode",
+    "CreatesAPotentialExplosionEventWhenFired",
+    "CreateBulletExplosionWhenOutOfTime",
+    "DelayedFiringAfterAutoSwapPreviousWeapon",
+    "DisableCombatRoll",
+    "NoWheelStats",
+    "ProcessGripAnim",
+    "DisableStealth",
+    "DangerousLookingMeleeWeapon",
+    "QuitTransitionToIdleIntroOnWeaponChange",
+    "DisableLeftHandIkWhenOnFoot",
+    "IgnoreHelmets",
+    "Rpg",
+    "NoAmmoDisplay",
+    "TorsoIKForWeaponBlock",
+    "LongWeapon",
+    "AssistedAimVehicleWeapon",
+    "CanBlowUpVehicleAtZeroBodyHealth",
+    "IgnoreAnimReloadRateModifiers",
+    "DisableIdleAnimationFilter",
+    "HomingToggle",
+    "ApplyVehicleDamageToEngine",
+    "Turret",
+    "DisableAimAngleChecksForReticule",
+    "AllowMovementDuringFirstPersonScope",
+    "DriveByMPOnly",
+    "CreateWeaponWithNoModel",
+    "RemoveWhenUnequipped",
+    "BlockAmbientIdles",
+    "NotUnarmed",
+    "UseFPSAimIK",
+    "DisableFPSScope",
+    "DisableFPSAimForScope",
+    "EnableFPSRNGOnly",
+    "EnableFPSIdleOnly",
+    "MeleeHatchet",
+    "UseAlternateFPDrivebyClipset",
+    "AttachFPSLeftHandIKToRight",
+    "OnlyUseAimingInfoInFPS",
+    "UseFPSAnimatedRecoil",
+    "UseFPSSecondaryMotion",
+    "HasFPSProjectileWeaponAnims",
+    "AllowMeleeBlock",
+    "DontPlayDryFireAnim",
+    "SwapToUnarmedWhenOutOfThrownAmmo",
+    "PlayOutOfAmmoAnim",
+    "DisableIdleAnimationFilterWhenReloading",
+    "OnFootHoming",
+    "DamageCausesDisputes",
+    "UsePlaneExplosionDamageCapInMP",
+    "FPSOnlyExitFireAnimAfterRecoilEnds",
+    "SkipVehiclePetrolTankDamage",
+    "DontAutoSwapOnPickUp",
+    "DisableTorsoIKAboveAngleThreshold",
+    "MeleeFist",
+    "NotAllowedForDriveby",
+    "AttachReloadObjectToRightHand",
+    "CanBeAimedLikeGunWithoutFiring",
+    "MeleeMachete",
+    "HideReticule",
+    "UseHolsterAnimation",
+    "BlockFirstPersonStateTransitionWhileFiring",
+    "ForceFullFireAnimation",
+    "DisableLeftHandIkInDriveby",
+    "CanUseInVehMelee",
+    "UseVehicleWeaponBoneForward",
+    "UseManualTargetingMode",
+    "IgnoreTracerVfxMuzzleDirectionCheck",
+    "IgnoreHomingCloseThresholdCheck",
+    "LockOnRequiresAim",
+    "DisableCameraPullAround",
+    "VehicleChargedLaunch",
+    "ForcePedAsFiringEntity",
+    "FiringEntityIgnoresExplosionDamage"
+  ],
+  "headshot": {
+    "mode": "onetap",
+    "multiplier": 1500.0,
+    "distance": 300.0,
+    "no_falloff": true,
+    "create_missing_tags": true,
+    "bypass_helmets": true,
+    "helmet_multiplier": 100.0,
+    "force_penetration": true,
+    "penetration": 1.0,
+    "create_missing_armour_tag": true,
+    "create_missing_penetration_tag": true,
+    "add_ignore_helmets_flag": true,
+    "add_armour_penetrating_flag": true,
+    "create_missing_weapon_flags_tag": true
+  },
+  "defaults": {
+    "fields": {},
+    "meta": {},
+    "weapon_flags": {
+      "add": [],
+      "remove": [],
+      "create_if_missing": false
+    }
+  },
+  "groups": {
+    "GROUP_RIFLE": {
+      "fields": {
+        "damage": 40.0,
+        "weapon_range": 250.0,
+        "falloff_min": 249.999,
+        "falloff_max": 250.0,
+        "falloff_modifier": 1.0,
+        "headshot_player": 1500.0,
+        "network_headshot": 1500.0,
+        "headshot_ai": 1500.0,
+        "lightly_armoured": 100.0,
+        "penetration": 1.0
+      },
+      "meta": {
+        "NetworkPlayerDamageModifier": {
+          "kind": "value_attr",
+          "value": 1.0,
+          "create_if_missing": false
+        },
+        "NetworkPedDamageModifier": {
+          "kind": "value_attr",
+          "value": 1.0,
+          "create_if_missing": false
+        }
+      },
+      "weapon_flags": {
+        "add": [
+          "IgnoreHelmets",
+          "ArmourPenetrating"
+        ],
+        "remove": [],
+        "create_if_missing": true
+      }
+    }
+  },
+  "weapons": {
+    "WEAPON_EXAMPLE": {
+      "fields": {
+        "clip_size": 30,
+        "recoil_accuracy_max": 0.3
+      },
+      "meta": {
+        "CustomScalarTag": {
+          "kind": "value_attr",
+          "value": 1.0,
+          "create_if_missing": false
+        },
+        "CustomTextTag": {
+          "kind": "text",
+          "value": "EXAMPLE",
+          "create_if_missing": false
+        },
+        "CustomVector": {
+          "attributes": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "create_if_missing": false
+        }
+      },
+      "weapon_flags": {
+        "add": [
+          "IgnoreHelmets"
+        ],
+        "remove": [
+          "NonLethal"
+        ],
+        "create_if_missing": true
+      }
+    }
+  },
+  "ignore_weapons": [],
+  "harmless_weapons": [
+    "WEAPON_SNOWBALL",
+    "WEAPON_BALL"
+  ],
+  "allow_damage_weapons": []
+}

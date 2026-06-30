@@ -1,6 +1,6 @@
 {
   "name": "Rebelion Server",
-  "description": "Pistolas 2 impactos al torso, rifles 5, escopeta 1 disparo cercano y cabeza letal.",
+  "description": "Pistolas 2 impactos al torso, rifles 5, escopeta cercana y cabeza letal incluso contra cascos nativos mediante META.",
   "base_preset": "rp_balanced",
   "modules": {
     "damage": "normal",
@@ -17,7 +17,16 @@
     "multiplier": 1500.0,
     "distance": 300.0,
     "no_falloff": true,
-    "create_missing_tags": true
+    "create_missing_tags": true,
+    "bypass_helmets": true,
+    "helmet_multiplier": 100.0,
+    "force_penetration": true,
+    "penetration": 1.0,
+    "create_missing_armour_tag": true,
+    "create_missing_penetration_tag": true,
+    "add_ignore_helmets_flag": true,
+    "add_armour_penetrating_flag": true,
+    "create_missing_weapon_flags_tag": true
   },
   "groups": {
     "GROUP_PISTOL": {

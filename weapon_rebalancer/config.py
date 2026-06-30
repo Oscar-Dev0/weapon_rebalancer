@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -38,7 +39,8 @@ SKIP_BASENAMES = {
 }
 
 SAFE_BOUNDS: dict[str, tuple[float, float]] = {
-    'damage': (0.0, 85.0),
+    # Los perfiles externos incluidos usan 100+ de daño; no deben recortarse silenciosamente.
+    'damage': (0.0, 1000.0),
     'weapon_range': (0.1, 650.0),
     'falloff_min': (0.0, 650.0),
     'falloff_max': (0.1, 650.0),
@@ -50,7 +52,10 @@ SAFE_BOUNDS: dict[str, tuple[float, float]] = {
     'max_headshot_player': (0.0, 650.0),
     'hit_limbs': (0.0, 2.0),
     'network_hit_limbs': (0.0, 2.0),
-    'lightly_armoured': (0.0, 2.0),
+    # Este campo es un float real del CWeaponInfo. El límite anterior de 2.0
+    # impedía crear perfiles META agresivos contra cascos/armadura ligera.
+    'lightly_armoured': (0.0, 1000.0),
+    'penetration': (0.0, 10.0),
     'vehicle_damage_modifier': (0.0, 5.0),
     'time_between_shots': (0.030, 2.500),
     'clip_size': (1.0, 250.0),
@@ -146,8 +151,29 @@ class HeadshotConfig:
     # pero está disponible para pruebas/servidores PvP.
     one_tap_sync_lock_on_range: bool = False
 
-    # Si un meta no trae NetworkHeadShotPlayerDamageModifier u otros tags de cabeza, los crea dentro del bloque.
+    # Compatibilidad META para cascos nativos / peds marcados como lightly armoured.
+    # No usa loops ni modifica vida: únicamente fuerza campos de CWeaponInfo.
+    one_tap_through_helmets: bool = True
+
+    # Se aplica a LightlyArmouredDamageModifier únicamente cuando one_tap está activo.
+    # El valor anterior del proyecto quedaba limitado a 2.0 y algunos cascos absorbían el disparo.
+    one_tap_helmet_damage_modifier: float = 100.0
+
+    # Penetration no sustituye el multiplicador de cabeza, pero ayuda con metas custom
+    # que modelan protecciones/objetos delante del bone de cabeza.
+    one_tap_force_penetration: bool = True
+    one_tap_penetration: float = 1.0
+
+    # Si el META custom no trae estos tags, el rebalancer puede crearlos.
     create_missing_tags: bool = True
+    create_missing_lightly_armoured_tag: bool = True
+    create_missing_penetration_tag: bool = True
+
+    # Flags META que realmente gobiernan la protección del casco. Se agregan
+    # preservando todas las flags existentes del arma.
+    one_tap_add_ignore_helmets_flag: bool = True
+    one_tap_add_armour_penetrating_flag: bool = True
+    create_missing_weapon_flags_tag: bool = True
 
     # Distancia máxima cuando se desactiva: 0 evita multiplicador por distancia.
     disabled_max_distance: float = 0.0
@@ -173,6 +199,12 @@ HEADSHOT = HeadshotConfig(
     one_tap_player_modifier=1500.0,
     one_tap_network_modifier=1500.0,
     one_tap_ai_modifier=1500.0,
+
+    # Fuerza la ruta META contra cascos nativos sin instalar un antitank Lua.
+    one_tap_through_helmets=True,
+    one_tap_helmet_damage_modifier=100.0,
+    one_tap_force_penetration=True,
+    one_tap_penetration=1.0,
 
     disabled_weapons={
         # 'WEAPON_GLIZZYG26SWITCH',
@@ -292,6 +324,12 @@ class Settings:
     headshot_profile: str
     current_group: str
     external_group_profiles: dict[str, dict[str, Any]]
+    global_meta_overrides: dict[str, Any]
+    group_meta_overrides: dict[str, dict[str, Any]]
+    weapon_meta_overrides: dict[str, dict[str, Any]]
+    global_flag_ops: dict[str, list[str] | bool]
+    group_flag_ops: dict[str, dict[str, list[str] | bool]]
+    weapon_flag_ops: dict[str, dict[str, list[str] | bool]]
     scan: ScanConfig
 
     @classmethod
@@ -307,7 +345,7 @@ class Settings:
             skip_on_missing_required_tags=SKIP_ON_MISSING_REQUIRED_TAGS,
             skip_basenames=set(SKIP_BASENAMES),
             safe_bounds=dict(SAFE_BOUNDS),
-            headshot=HEADSHOT,
+            headshot=deepcopy(HEADSHOT),
             ignore_weapons={w.upper() for w in IGNORE_WEAPONS},
             harmless_weapons={w.upper() for w in HARMLESS_WEAPONS},
             only_weapons={w.upper() for w in ONLY_WEAPONS},
@@ -326,5 +364,11 @@ class Settings:
             headshot_profile=HEADSHOT_PROFILE,
             current_group='',
             external_group_profiles={},
+            global_meta_overrides={},
+            group_meta_overrides={},
+            weapon_meta_overrides={},
+            global_flag_ops={'add': [], 'remove': [], 'create_if_missing': False},
+            group_flag_ops={},
+            weapon_flag_ops={},
             scan=SCAN,
         )
