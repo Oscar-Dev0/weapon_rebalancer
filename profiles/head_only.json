@@ -1,22 +1,31 @@
 {
-  "name": "Solo cabeza META",
-  "description": "Cuerpo casi nulo y cabeza letal; fuerza los campos META necesarios para cascos nativos.",
+  "name": "Solo cabeza META V3",
+  "description": "El cuerpo hace daño casi nulo y la cabeza mata. El piso matemático se calcula automáticamente para no romper el one-tap.",
+  "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
     "damage": "head_only",
-    "armour": "max",
+    "armour": "normal",
     "recoil": "normal",
     "accuracy": "normal",
-    "range": "normal",
-    "fire_rate": "original",
+    "range": "configured",
+    "fire_rate": "configured",
     "reload": "original",
     "headshot": "onetap"
+  },
+  "validation": {
+    "strict_unknown_fields": true,
+    "fail_on_onetap_audit": false,
+    "warn_duplicates": true,
+    "warn_unregistered_meta": true
   },
   "headshot": {
     "mode": "onetap",
     "multiplier": 1500.0,
     "distance": 300.0,
     "no_falloff": true,
+    "sync_weapon_range": true,
+    "sync_lock_on_range": false,
     "create_missing_tags": true,
     "bypass_helmets": true,
     "helmet_multiplier": 100.0,
@@ -26,9 +35,170 @@
     "create_missing_penetration_tag": true,
     "add_ignore_helmets_flag": true,
     "add_armour_penetrating_flag": true,
-    "create_missing_weapon_flags_tag": true
+    "create_missing_weapon_flags_tag": true,
+    "auto_minimum_base_damage": true,
+    "target_effective_health": 400.0,
+    "safety_margin": 1.25,
+    "minimum_base_damage": 0.35,
+    "repair_zero_network_modifier": true,
+    "network_player_modifier_fallback": 1.0,
+    "create_missing_network_player_modifier_tag": true,
+    "remove_nonlethal_flags": true,
+    "blocking_flags": [
+      "NonLethal",
+      "NonViolent"
+    ]
   },
-  "groups": {},
+  "groups": {
+    "GROUP_PISTOL": {
+      "fields": {
+        "weapon_range": 130.0,
+        "falloff_min": 95.0,
+        "falloff_max": 130.0,
+        "falloff_modifier": 0.72,
+        "hit_limbs": 0.6,
+        "network_hit_limbs": 0.6,
+        "vehicle_damage_modifier": 0.2,
+        "time_between_shots": 0.18,
+        "accuracy_spread": 0.85,
+        "run_and_gun_accuracy_modifier": 1.1,
+        "accurate_mode_accuracy_modifier": 0.55,
+        "recoil_accuracy_max": 0.3,
+        "recoil_error_time": 0.05,
+        "recoil_recovery_rate": 1.55,
+        "recoil_shake_amplitude": 0.11,
+        "damage": 0.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 130.0
+      }
+    },
+    "GROUP_SMG": {
+      "fields": {
+        "weapon_range": 160.0,
+        "falloff_min": 115.0,
+        "falloff_max": 160.0,
+        "falloff_modifier": 0.55,
+        "hit_limbs": 0.58,
+        "network_hit_limbs": 0.58,
+        "vehicle_damage_modifier": 0.22,
+        "time_between_shots": 0.105,
+        "accuracy_spread": 1.0,
+        "run_and_gun_accuracy_modifier": 1.35,
+        "accurate_mode_accuracy_modifier": 0.7,
+        "recoil_accuracy_max": 0.38,
+        "recoil_error_time": 0.06,
+        "recoil_recovery_rate": 1.35,
+        "recoil_shake_amplitude": 0.15,
+        "damage": 0.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 160.0
+      }
+    },
+    "GROUP_RIFLE": {
+      "fields": {
+        "weapon_range": 320.0,
+        "falloff_min": 245.0,
+        "falloff_max": 320.0,
+        "falloff_modifier": 0.68,
+        "hit_limbs": 0.58,
+        "network_hit_limbs": 0.58,
+        "vehicle_damage_modifier": 0.3,
+        "time_between_shots": 0.125,
+        "accuracy_spread": 0.92,
+        "run_and_gun_accuracy_modifier": 1.25,
+        "accurate_mode_accuracy_modifier": 0.62,
+        "recoil_accuracy_max": 0.4,
+        "recoil_error_time": 0.07,
+        "recoil_recovery_rate": 1.25,
+        "recoil_shake_amplitude": 0.18,
+        "damage": 0.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 320.0
+      }
+    },
+    "GROUP_MG": {
+      "fields": {
+        "weapon_range": 280.0,
+        "falloff_min": 210.0,
+        "falloff_max": 280.0,
+        "falloff_modifier": 0.62,
+        "hit_limbs": 0.56,
+        "network_hit_limbs": 0.56,
+        "vehicle_damage_modifier": 0.32,
+        "time_between_shots": 0.115,
+        "accuracy_spread": 1.15,
+        "run_and_gun_accuracy_modifier": 1.55,
+        "accurate_mode_accuracy_modifier": 0.82,
+        "recoil_accuracy_max": 0.5,
+        "recoil_error_time": 0.08,
+        "recoil_recovery_rate": 1.05,
+        "recoil_shake_amplitude": 0.23,
+        "damage": 0.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 280.0
+      }
+    },
+    "GROUP_SHOTGUN": {
+      "fields": {
+        "weapon_range": 30.0,
+        "falloff_min": 8.0,
+        "falloff_max": 18.0,
+        "falloff_modifier": 0.1,
+        "hit_limbs": 0.7,
+        "network_hit_limbs": 0.7,
+        "vehicle_damage_modifier": 0.18,
+        "time_between_shots": 0.8,
+        "accuracy_spread": 1.45,
+        "run_and_gun_accuracy_modifier": 1.85,
+        "accurate_mode_accuracy_modifier": 1.1,
+        "recoil_accuracy_max": 0.78,
+        "recoil_error_time": 0.12,
+        "recoil_recovery_rate": 0.75,
+        "recoil_shake_amplitude": 0.44,
+        "damage": 0.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 30.0
+      }
+    },
+    "GROUP_SNIPER": {
+      "fields": {
+        "weapon_range": 600.0,
+        "falloff_min": 520.0,
+        "falloff_max": 600.0,
+        "falloff_modifier": 0.9,
+        "hit_limbs": 0.6,
+        "network_hit_limbs": 0.6,
+        "vehicle_damage_modifier": 0.35,
+        "time_between_shots": 1.25,
+        "accuracy_spread": 0.16,
+        "run_and_gun_accuracy_modifier": 1.8,
+        "accurate_mode_accuracy_modifier": 0.1,
+        "recoil_accuracy_max": 0.85,
+        "recoil_error_time": 0.12,
+        "recoil_recovery_rate": 0.68,
+        "recoil_shake_amplitude": 0.52,
+        "damage": 0.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 600.0
+      }
+    }
+  },
+  "ignore_weapons": [
+    "WEAPON_STUNGUN",
+    "WEAPON_FIREEXTINGUISHER"
+  ],
   "harmless_weapons": [
     "WEAPON_SNOWBALL",
     "WEAPON_BALL"

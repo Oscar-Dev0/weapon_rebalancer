@@ -39,6 +39,31 @@ def replace_field(content: str, key: str, value: str) -> tuple[str, bool]:
     return new_content, count > 0
 
 
+def read_field_value(content: str, key: str, default: Any = None) -> Any:
+    """Lee el primer valor de un campo catalogado sin modificar el XML."""
+    field = FIELDS[key]
+    match = field.pattern.search(content)
+    if not match:
+        return default
+    raw = match.group(2).strip()
+    if field.kind in {'value_attr'}:
+        lowered = raw.lower()
+        if lowered in {'true', 'false'}:
+            return lowered == 'true'
+        try:
+            if any(ch in raw for ch in ('.', 'e', 'E')):
+                return float(raw)
+            return int(raw)
+        except ValueError:
+            return raw
+    return raw
+
+
+def read_weapon_flags(content: str) -> list[str]:
+    value = read_field_value(content, 'weapon_flags', '')
+    return parse_weapon_flags(str(value)) if value is not None else []
+
+
 def iter_weapon_meta_files(root: Path, skip_basenames: set[str]) -> list[Path]:
     return discover_meta_paths(root, ScanConfig(), skip_basenames)
 

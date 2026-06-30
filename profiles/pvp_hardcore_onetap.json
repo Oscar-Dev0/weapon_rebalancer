@@ -1,16 +1,16 @@
 {
-  "name": "Rebelion Balanced V3",
-  "description": "Perfil recomendado: pistolas 2 al torso, rifles 5, SMG/MG controladas y one-tap real por grupo incluso con casco.",
+  "name": "PvP Hardcore One-Tap",
+  "description": "TTK corporal corto para eventos intensos; mantiene límites de rango y cabeza one-tap real.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
     "damage": "configured",
-    "armour": "max",
-    "recoil": "configured",
-    "accuracy": "configured",
+    "armour": "piercing",
+    "recoil": "low",
+    "accuracy": "high",
     "range": "configured",
     "fire_rate": "configured",
-    "reload": "original",
+    "reload": "fast",
     "headshot": "onetap"
   },
   "validation": {
@@ -91,7 +91,7 @@
         "recoil_error_time": 0.06,
         "recoil_recovery_rate": 1.35,
         "recoil_shake_amplitude": 0.15,
-        "damage": 34.0
+        "damage": 67.0
       },
       "headshot": {
         "mode": "onetap",
@@ -115,7 +115,7 @@
         "recoil_error_time": 0.07,
         "recoil_recovery_rate": 1.25,
         "recoil_shake_amplitude": 0.18,
-        "damage": 40.0
+        "damage": 67.0
       },
       "headshot": {
         "mode": "onetap",
@@ -139,7 +139,7 @@
         "recoil_error_time": 0.08,
         "recoil_recovery_rate": 1.05,
         "recoil_shake_amplitude": 0.23,
-        "damage": 34.0
+        "damage": 57.0
       },
       "headshot": {
         "mode": "onetap",
@@ -163,7 +163,7 @@
         "recoil_error_time": 0.12,
         "recoil_recovery_rate": 0.75,
         "recoil_shake_amplitude": 0.44,
-        "damage": 34.0
+        "damage": 45.0
       },
       "headshot": {
         "mode": "onetap",
@@ -187,7 +187,7 @@
         "recoil_error_time": 0.12,
         "recoil_recovery_rate": 0.68,
         "recoil_shake_amplitude": 0.52,
-        "damage": 110.0
+        "damage": 150.0
       },
       "headshot": {
         "mode": "onetap",

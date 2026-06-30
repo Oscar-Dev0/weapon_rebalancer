@@ -1,15 +1,15 @@
 {
-  "name": "Mi perfil V3",
-  "description": "Plantilla editable sin tocar Python.",
+  "name": "Original Body Damage + Real One-Tap",
+  "description": "Conserva daño, recoil, cadencia y recarga originales; solo normaliza la ruta META del headshot y casco.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
-    "damage": "configured",
-    "armour": "configured",
-    "recoil": "configured",
-    "accuracy": "configured",
-    "range": "configured",
-    "fire_rate": "configured",
+    "damage": "original",
+    "armour": "original",
+    "recoil": "original",
+    "accuracy": "original",
+    "range": "original",
+    "fire_rate": "original",
     "reload": "original",
     "headshot": "onetap"
   },
@@ -49,50 +49,47 @@
       "NonViolent"
     ]
   },
-  "defaults": {
-    "fields": {},
-    "meta": {},
-    "weapon_flags": {
-      "add": [],
-      "remove": [],
-      "create_if_missing": false
-    }
-  },
   "groups": {
     "GROUP_PISTOL": {
-      "fields": {
-        "damage": 50.0,
-        "weapon_range": 130.0,
-        "falloff_min": 95.0,
-        "falloff_max": 130.0,
-        "falloff_modifier": 0.72
-      },
+      "fields": {},
       "headshot": {
         "mode": "onetap",
         "distance": 130.0
-      },
-      "meta": {},
-      "weapon_flags": {
-        "add": [],
-        "remove": [],
-        "create_if_missing": false
       }
-    }
-  },
-  "weapons": {
-    "WEAPON_EXAMPLE": {
-      "fields": {
-        "damage": 60.0
-      },
+    },
+    "GROUP_SMG": {
+      "fields": {},
       "headshot": {
         "mode": "onetap",
-        "distance": 150.0
-      },
-      "meta": {},
-      "weapon_flags": {
-        "add": [],
-        "remove": [],
-        "create_if_missing": false
+        "distance": 160.0
+      }
+    },
+    "GROUP_RIFLE": {
+      "fields": {},
+      "headshot": {
+        "mode": "onetap",
+        "distance": 320.0
+      }
+    },
+    "GROUP_MG": {
+      "fields": {},
+      "headshot": {
+        "mode": "onetap",
+        "distance": 280.0
+      }
+    },
+    "GROUP_SHOTGUN": {
+      "fields": {},
+      "headshot": {
+        "mode": "onetap",
+        "distance": 30.0
+      }
+    },
+    "GROUP_SNIPER": {
+      "fields": {},
+      "headshot": {
+        "mode": "onetap",
+        "distance": 600.0
       }
     }
   },

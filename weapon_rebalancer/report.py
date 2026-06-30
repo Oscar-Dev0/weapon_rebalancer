@@ -17,6 +17,10 @@ class FileChange:
     block_source: str = 'CWeaponInfo'
     skipped: bool = False
     reason: str | None = None
+    onetap_expected: bool = False
+    onetap_ready: bool | None = None
+    onetap_issues: list[str] = field(default_factory=list)
+    onetap_metrics: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -35,6 +39,11 @@ class RebalanceReport:
     warnings: list[str] = field(default_factory=list)
     only_weapons: list[str] = field(default_factory=list)
     only_found: dict[str, str] = field(default_factory=dict)
+    duplicate_weapons: dict[str, list[str]] = field(default_factory=dict)
+    unregistered_meta_files: list[str] = field(default_factory=list)
+    onetap_audit_total: int = 0
+    onetap_audit_passed: int = 0
+    onetap_audit_failed: int = 0
 
     def add(self, change: FileChange) -> None:
         self.changes.append(change)
@@ -42,12 +51,19 @@ class RebalanceReport:
             self.files_skipped += 1
         elif change.changed_fields:
             self.weapons_changed += 1
+        if change.onetap_expected:
+            self.onetap_audit_total += 1
+            if change.onetap_ready:
+                self.onetap_audit_passed += 1
+            else:
+                self.onetap_audit_failed += 1
 
     def finalize_file_count(self) -> None:
         changed_paths = {c.path for c in self.changes if c.changed_fields and not c.skipped}
         self.files_changed = len(changed_paths)
 
     def save_json(self, path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(asdict(self), indent=2, ensure_ascii=False), encoding='utf-8')
 
     def print_summary(self) -> None:
@@ -73,6 +89,16 @@ class RebalanceReport:
                 print(f'  # {manifest}')
                 for entry in entries[:12]:
                     print(f'    - {entry}')
+        if self.duplicate_weapons:
+            print(f'\nDefiniciones duplicadas: {len(self.duplicate_weapons)}')
+            for weapon, sources in list(self.duplicate_weapons.items())[:20]:
+                print(f'  ! {weapon}: {" | ".join(sources)}')
+        if self.unregistered_meta_files:
+            print(f'\nMETA sin registro visible en manifest: {len(self.unregistered_meta_files)}')
+            for path in self.unregistered_meta_files[:20]:
+                print(f'  ! {path}')
+        if self.onetap_audit_total:
+            print(f'\nAuditoría one-tap: ok={self.onetap_audit_passed} | fallos={self.onetap_audit_failed} | total={self.onetap_audit_total}')
         if self.warnings:
             print('\nWarnings:')
             for w in self.warnings[:40]:
@@ -83,7 +109,10 @@ class RebalanceReport:
             if c.skipped:
                 print(f'  - SKIP {c.weapon} [{c.group}] ({c.reason}){cfg} {c.path}')
             elif c.changed_fields:
-                print(f'  * {c.weapon} [{c.group}] {c.block_source}{cfg} -> {", ".join(c.changed_fields)}')
+                audit = ''
+                if c.onetap_expected:
+                    audit = ' [ONETAP OK]' if c.onetap_ready else f' [ONETAP FAIL: {",".join(c.onetap_issues)}]'
+                print(f'  * {c.weapon} [{c.group}] {c.block_source}{cfg}{audit} -> {", ".join(c.changed_fields)}')
 
 
     def print_only_summary(self) -> None:

@@ -6,6 +6,7 @@ from typing import Any
 
 from .config import Settings
 from .fields import FIELDS
+from .headshot import apply_policy as apply_headshot_profile, audit_block as audit_headshot_block, resolve_headshot_policy
 from .meta_utils import (
     insert_field_if_missing,
     read_text,
@@ -15,6 +16,7 @@ from .meta_utils import (
     write_text,
 )
 from .profiles import category_defaults
+from .pack_audit import build_pack_audit
 from .tuning import apply_modular_profiles
 from .report import FileChange, RebalanceReport
 from .scanner import (
@@ -29,6 +31,7 @@ from .scanner import (
 class RebalanceEngine:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
+        self._active_headshot_policy: dict[str, Any] = {}
 
     def run(self) -> RebalanceReport:
         report = RebalanceReport(
@@ -43,6 +46,20 @@ class RebalanceEngine:
         report.package_configs_found = [str(p.path) for p in package_configs]
         report.fxmanifest_data_files = discover_fxmanifest_data_files(self.settings.root)
         report.files_scanned = len(paths)
+
+        pack_audit = build_pack_audit(paths, self.settings.scan, package_configs, self.settings.root)
+        if self.settings.validation_options.get('warn_duplicates', True):
+            report.duplicate_weapons = pack_audit['duplicate_weapons']
+        if self.settings.validation_options.get('warn_unregistered_meta', True):
+            report.unregistered_meta_files = pack_audit['unregistered_meta_files']
+        if report.duplicate_weapons:
+            report.warnings.append(
+                f'{len(report.duplicate_weapons)} armas tienen múltiples definiciones; la última cargada puede sobrescribir el one-tap.'
+            )
+        if report.unregistered_meta_files:
+            report.warnings.append(
+                f'{len(report.unregistered_meta_files)} META no tienen un WEAPONINFO_FILE visible en su manifest más cercano.'
+            )
 
         for path in paths:
             changes = self.process_file(path, package_configs)
@@ -149,8 +166,17 @@ class RebalanceEngine:
         self.settings.current_group = group
         profile = self.apply_weapon_range_multiplier(weapon, group, profile)
         profile = apply_modular_profiles(profile, self.settings)
+        policy = resolve_headshot_policy(self.settings, weapon, group, block)
+        self._active_headshot_policy = policy
+        policy_metrics: dict[str, Any] = {}
         if self.settings.headshot_profile != 'original':
-            profile = self.apply_headshot_policy(weapon, profile, block)
+            profile, policy_metrics = apply_headshot_profile(
+                profile,
+                block.text,
+                policy,
+                disable_ai_headshot=self.settings.headshot.disable_ai_headshot,
+                disabled_max_distance=self.settings.headshot.disabled_max_distance,
+            )
         profile = self.calculate_falloff_min(group, profile)
         profile = self.apply_harmless_policy(weapon, profile)
         profile = self.clamp_profile(profile, change)
@@ -192,8 +218,8 @@ class RebalanceEngine:
             elif not found:
                 change.missing_fields.append(f'meta:{tag}')
 
-        one_tap_active = (not is_harmless) and self.is_one_tap_active_for_weapon(weapon, group, block)
-        flag_ops = self.collect_flag_ops(weapon, group, block, one_tap_active=one_tap_active)
+        one_tap_active = (not is_harmless) and policy.get('mode') == 'onetap' and self.settings.headshot_profile != 'original'
+        flag_ops = self.collect_flag_ops(weapon, group, block, policy=policy, one_tap_active=one_tap_active)
         if flag_ops.get('add') or flag_ops.get('remove'):
             new_content, changed, found = update_weapon_flags(
                 updated,
@@ -207,6 +233,12 @@ class RebalanceEngine:
             elif not found:
                 change.missing_fields.append('weapon_flags')
 
+        if one_tap_active:
+            audit = audit_headshot_block(updated, policy, expected=True)
+            change.onetap_expected = True
+            change.onetap_ready = bool(audit['ready'])
+            change.onetap_issues = list(audit['issues'])
+            change.onetap_metrics = {**policy_metrics, **dict(audit['metrics'])}
         if is_harmless:
             change.reason = 'harmless_weapon_damage_forced_to_zero'
 
@@ -238,6 +270,7 @@ class RebalanceEngine:
 
     def should_create_missing_policy_tag(self, key: str) -> bool:
         """Decide qué campos calculados se pueden insertar en metas custom incompletos."""
+        policy = self._active_headshot_policy or {}
         if key in {
             'headshot_player',
             'network_headshot',
@@ -247,13 +280,22 @@ class RebalanceEngine:
             'min_headshot_ai',
             'max_headshot_ai',
         }:
-            return bool(getattr(self.settings.headshot, 'create_missing_tags', True))
+            return bool(policy.get('create_missing_tags', getattr(self.settings.headshot, 'create_missing_tags', True)))
 
         if key == 'lightly_armoured':
-            return bool(getattr(self.settings.headshot, 'create_missing_lightly_armoured_tag', True))
+            return bool(policy.get('create_missing_armour_tag', getattr(self.settings.headshot, 'create_missing_lightly_armoured_tag', True)))
 
         if key == 'penetration':
-            return bool(getattr(self.settings.headshot, 'create_missing_penetration_tag', True))
+            return bool(policy.get('create_missing_penetration_tag', getattr(self.settings.headshot, 'create_missing_penetration_tag', True)))
+
+        if key == 'network_player_damage_modifier':
+            return bool(policy.get(
+                'create_missing_network_player_modifier_tag',
+                getattr(self.settings.headshot, 'create_missing_network_player_modifier_tag', True),
+            ))
+
+        if key == 'damage':
+            return bool(policy.get('mode') == 'onetap' and policy.get('auto_minimum_base_damage', True))
 
         return False
 
@@ -292,6 +334,8 @@ class RebalanceEngine:
         if group in self.settings.group_meta_overrides or group in self.settings.group_flag_ops:
             return True
         if weapon in self.settings.weapon_meta_overrides or weapon in self.settings.weapon_flag_ops:
+            return True
+        if group in self.settings.group_headshot_overrides or weapon in self.settings.weapon_headshot_overrides:
             return True
         for pc in block.config_stack:
             if isinstance(pc.data.get('meta'), dict) or isinstance(pc.data.get('weapon_flags'), dict):
@@ -336,7 +380,15 @@ class RebalanceEngine:
             'create_if_missing': create,
         }
 
-    def collect_flag_ops(self, weapon: str, group: str, block: WeaponBlock, *, one_tap_active: bool) -> dict[str, Any]:
+    def collect_flag_ops(
+        self,
+        weapon: str,
+        group: str,
+        block: WeaponBlock,
+        *,
+        policy: dict[str, Any],
+        one_tap_active: bool,
+    ) -> dict[str, Any]:
         ops = [
             self.settings.global_flag_ops,
             self.settings.group_flag_ops.get(group, {}),
@@ -352,43 +404,24 @@ class RebalanceEngine:
                 ops.append(weapons[weapon].get('weapon_flags', {}))
 
         merged = self.merge_flag_ops(*ops)
-        if one_tap_active and self.settings.headshot.one_tap_through_helmets:
-            if self.settings.headshot.one_tap_add_ignore_helmets_flag:
+        if one_tap_active and policy.get('bypass_helmets', True):
+            if policy.get('add_ignore_helmets_flag', True):
                 merged['add'].append('IgnoreHelmets')
-            if self.settings.headshot.one_tap_add_armour_penetrating_flag:
+            if policy.get('add_armour_penetrating_flag', True):
                 merged['add'].append('ArmourPenetrating')
+            if policy.get('remove_nonlethal_flags', True) and group != 'GROUP_MELEE':
+                merged['remove'].extend(str(v) for v in policy.get('blocking_flags', ('NonLethal', 'NonViolent')))
             merged['add'] = list(dict.fromkeys(merged['add']))
+            merged['remove'] = list(dict.fromkeys(merged['remove']))
             merged['create_if_missing'] = bool(
-                merged['create_if_missing'] or self.settings.headshot.create_missing_weapon_flags_tag
+                merged['create_if_missing'] or policy.get('create_missing_weapon_flags_tag', True)
             )
         return merged
 
     def is_one_tap_active_for_weapon(self, weapon: str, group: str, block: WeaponBlock) -> bool:
-        h = self.settings.headshot
         if self.settings.headshot_profile == 'original':
             return False
-        active = bool(h.enabled and h.one_tap)
-        if weapon in {str(w).upper() for w in h.one_tap_weapons}:
-            active = True
-        if weapon in {str(w).upper() for w in h.no_one_tap_weapons}:
-            active = False
-        if weapon in {str(w).upper() for w in h.disabled_weapons}:
-            active = False
-        if h.disable_one_tap_for_melee and group == 'GROUP_MELEE':
-            active = False
-        for pc in block.config_stack:
-            head = pc.data.get('headshot')
-            if not isinstance(head, dict):
-                continue
-            if head.get('enabled') is False or head.get('one_tap') is False:
-                active = False
-            if head.get('one_tap') is True:
-                active = True
-            if weapon in {str(v).upper() for v in head.get('no_one_tap_weapons', [])}:
-                active = False
-            if weapon in {str(v).upper() for v in head.get('one_tap_weapons', [])}:
-                active = True
-        return active
+        return resolve_headshot_policy(self.settings, weapon, group, block).get('mode') == 'onetap'
 
     def weapon_matches_types(self, weapon: str, group: str) -> bool:
         """Comprueba filtros de --weapontype por grupo o familia de nombre."""
@@ -456,17 +489,17 @@ class RebalanceEngine:
             if isinstance(groups, dict) and isinstance(groups.get(group), dict):
                 values = groups[group].get('fields', groups[group])
                 if isinstance(values, dict):
-                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields'}})
+                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields', 'headshot'}})
             weapons = data.get('weapons')
             if isinstance(weapons, dict) and isinstance(weapons.get(weapon), dict):
                 values = weapons[weapon].get('fields', weapons[weapon])
                 if isinstance(values, dict):
-                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields'}})
+                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields', 'headshot'}})
             defaults = data.get('defaults')
             if isinstance(defaults, dict):
                 values = defaults.get('fields', defaults)
                 if isinstance(values, dict):
-                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields'}})
+                    profile.update({k: deepcopy(v) for k, v in values.items() if k not in {'meta', 'weapon_flags', 'fields', 'headshot'}})
         return profile
 
     def package_ignores_weapon(self, block: WeaponBlock, weapon: str) -> bool:
@@ -477,166 +510,18 @@ class RebalanceEngine:
         return False
 
     def apply_headshot_policy(self, weapon: str, profile: dict[str, Any], block: WeaponBlock | None = None) -> dict[str, Any]:
-        """Política final de headshot y one tap.
-
-        Modos:
-        - disabled: cabeza sin multiplicador extra.
-        - normal: cabeza pega más, pero no fuerza one tap.
-        - onetap: cabeza letal tipo vanilla usando multiplicador alto.
-        """
-        h = self.settings.headshot
-        disabled = False
-        enabled = bool(h.enabled)
-        one_tap = bool(getattr(h, 'one_tap', False))
-
-        one_tap_weapons = {str(w).upper() for w in getattr(h, 'one_tap_weapons', set())}
-        no_one_tap_weapons = {str(w).upper() for w in getattr(h, 'no_one_tap_weapons', set())}
-
-        if not h.enabled and weapon not in h.allowed_weapons:
-            disabled = True
-        if weapon in h.disabled_weapons:
-            disabled = True
-            enabled = False
-            one_tap = False
-        if not h.enabled and weapon in h.allowed_weapons:
-            disabled = False
-            enabled = True
-
-        if weapon in one_tap_weapons:
-            enabled = True
-            disabled = False
-            one_tap = True
-        if weapon in no_one_tap_weapons:
-            one_tap = False
-
-        # Evita que bates/dagas/hachas queden one tap si activas one tap global.
-        if getattr(h, 'disable_one_tap_for_melee', True) and block is not None and block.group.upper() == 'GROUP_MELEE':
-            one_tap = False
-
-        # Config local por carpeta: weapon_rebalance.json.
-        if block is not None:
-            for pc in block.config_stack:
-                head = pc.data.get('headshot')
-                if not isinstance(head, dict):
-                    continue
-
-                local_disabled = {str(w).upper() for w in head.get('disabled_weapons', []) if isinstance(w, str)}
-                local_allowed = {str(w).upper() for w in head.get('allowed_weapons', []) if isinstance(w, str)}
-                local_one_tap = {str(w).upper() for w in head.get('one_tap_weapons', []) if isinstance(w, str)}
-                local_no_one_tap = {str(w).upper() for w in head.get('no_one_tap_weapons', []) if isinstance(w, str)}
-
-                if head.get('enabled') is False:
-                    disabled = True
-                    enabled = False
-                    one_tap = False
-
-                if head.get('enabled') is True:
-                    disabled = False
-                    enabled = True
-
-                if head.get('one_tap') is True:
-                    disabled = False
-                    enabled = True
-                    one_tap = True
-
-                if head.get('one_tap') is False:
-                    one_tap = False
-
-                if weapon in local_disabled:
-                    disabled = True
-                    enabled = False
-                    one_tap = False
-
-                if weapon in local_allowed:
-                    disabled = False
-                    enabled = True
-
-                if weapon in local_one_tap:
-                    disabled = False
-                    enabled = True
-                    one_tap = True
-
-                if weapon in local_no_one_tap:
-                    one_tap = False
-
-        if disabled:
-            profile['headshot_player'] = 0.0
-            profile['network_headshot'] = 0.0
-            profile['min_headshot_player'] = 0.0
-            profile['max_headshot_player'] = h.disabled_max_distance
-            if h.disable_ai_headshot:
-                profile['headshot_ai'] = 0.0
-                profile['min_headshot_ai'] = 0.0
-                profile['max_headshot_ai'] = h.disabled_max_distance
+        """Compatibilidad pública: delega en el motor de política V3."""
+        if block is None:
             return profile
-
-        if enabled and h.force_enabled_values:
-            max_distance = h.enabled_default_max_distance
-            if max_distance is None:
-                try:
-                    max_distance = float(profile.get('weapon_range', 100.0))
-                except Exception:  # noqa: BLE001
-                    max_distance = 100.0
-
-            if one_tap:
-                # One tap debe funcionar dentro de TODO el radio configurado.
-                # No basta con poner multiplicador alto: si MaxHeadShotDistancePlayer o
-                # DamageFallOffRangeMax quedan cortos, a distancia parece que no hace headshot.
-                max_distance = self.resolve_one_tap_distance(profile, h)
-                player_modifier = h.one_tap_player_modifier
-                network_modifier = h.one_tap_network_modifier
-                ai_modifier = h.one_tap_ai_modifier
-
-                if getattr(h, 'one_tap_sync_distance_with_weapon_range', True):
-                    profile['weapon_range'] = max(float(profile.get('weapon_range', max_distance)), float(max_distance))
-
-                if getattr(h, 'one_tap_force_no_falloff', True):
-                    # Para one tap a distancia NO queremos que el daño vaya bajando antes del rango.
-                    # En GTA/FiveM la caída empieza en DamageFallOffRangeMin y termina en Max.
-                    # Por eso se deja el inicio casi al final del rango y el modifier en 1.0.
-                    profile['falloff_min'] = max(0.0, float(max_distance) - 0.001)
-                    profile['falloff_max'] = max_distance
-                    profile['falloff_modifier'] = 1.0
-
-                if getattr(h, 'one_tap_sync_lock_on_range', False):
-                    profile['lock_on_range'] = max_distance
-
-                # Ruta META específica para cascos nativos/lightly armoured.
-                # Se ejecuta al final para que modules.armour o un override por grupo
-                # no vuelva a bajar el valor a 2.0.
-                if getattr(h, 'one_tap_through_helmets', True):
-                    try:
-                        current_armour_modifier = float(profile.get('lightly_armoured', 0.0))
-                    except Exception:  # noqa: BLE001
-                        current_armour_modifier = 0.0
-                    profile['lightly_armoured'] = max(
-                        current_armour_modifier,
-                        float(getattr(h, 'one_tap_helmet_damage_modifier', 100.0)),
-                    )
-
-                    if getattr(h, 'one_tap_force_penetration', True):
-                        try:
-                            current_penetration = float(profile.get('penetration', 0.0))
-                        except Exception:  # noqa: BLE001
-                            current_penetration = 0.0
-                        profile['penetration'] = max(
-                            current_penetration,
-                            float(getattr(h, 'one_tap_penetration', 1.0)),
-                        )
-            else:
-                player_modifier = h.enabled_player_modifier
-                network_modifier = h.enabled_network_modifier
-                ai_modifier = h.enabled_ai_modifier
-
-            profile['headshot_player'] = player_modifier
-            profile['network_headshot'] = network_modifier
-            profile['headshot_ai'] = ai_modifier
-            profile['min_headshot_player'] = 0.0
-            profile['max_headshot_player'] = max_distance
-            profile['min_headshot_ai'] = 0.0
-            profile['max_headshot_ai'] = max_distance
-
-        return profile
+        policy = resolve_headshot_policy(self.settings, weapon, block.group, block)
+        result, _ = apply_headshot_profile(
+            profile,
+            block.text,
+            policy,
+            disable_ai_headshot=self.settings.headshot.disable_ai_headshot,
+            disabled_max_distance=self.settings.headshot.disabled_max_distance,
+        )
+        return result
 
     @staticmethod
     def resolve_one_tap_distance(profile: dict[str, Any], headshot_config: Any) -> float:

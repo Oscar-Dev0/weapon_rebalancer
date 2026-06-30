@@ -49,7 +49,7 @@ def export_meta_inventory(root: Path, destination: Path) -> dict[str, Any]:
         files.append(entry)
 
     result = {
-        'format': 'weapon_rebalancer_meta_inventory_v2',
+        'format': 'weapon_rebalancer_meta_inventory_v3',
         'root': str(root),
         'summary': {
             'meta_files': len(files),
@@ -145,6 +145,7 @@ def export_full_profile(root: Path, destination: Path, scan: ScanConfig | None =
 
     result = {
         'name': 'Perfil completo exportado desde los META originales',
+        'schema_version': 3,
         'base_preset': 'rp_balanced',
         'modules': {
             'damage': 'original',
@@ -156,7 +157,12 @@ def export_full_profile(root: Path, destination: Path, scan: ScanConfig | None =
             'reload': 'original',
             'headshot': 'original',
         },
-        'validation': {'strict_unknown_fields': True},
+        'validation': {
+            'strict_unknown_fields': True,
+            'fail_on_onetap_audit': False,
+            'warn_duplicates': True,
+            'warn_unregistered_meta': True,
+        },
         '_documentation': {
             'root': str(root),
             'weapons_exported': len(weapons),

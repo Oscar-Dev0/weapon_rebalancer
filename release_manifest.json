@@ -1,0 +1,32 @@
+{
+  "name": "weapon_rebalancer_meta_v3",
+  "version": "3.0.0",
+  "python_min": "3.10",
+  "entrypoint": "run_rebalance.py",
+  "recommended_profile": "profiles/rebelion_balanced_v3.json",
+  "profiles": [
+    "profiles/catalog.json",
+    "profiles/full_meta_template.json",
+    "profiles/head_only.json",
+    "profiles/headshot_focus_onetap.json",
+    "profiles/no_body_or_head_damage.json",
+    "profiles/original_body_real_onetap.json",
+    "profiles/profile_template.json",
+    "profiles/pvp_competitive_onetap.json",
+    "profiles/pvp_hardcore_onetap.json",
+    "profiles/pvp_no_tank.json",
+    "profiles/rebelion_balanced_v3.json",
+    "profiles/rebelion_server.json",
+    "profiles/rp_serious_onetap.json"
+  ],
+  "tests": [
+    "tests/test_full_meta.py",
+    "tests/test_helmet_onetap.py",
+    "tests/test_v3_onetap_audit.py"
+  ],
+  "documentation": [
+    "docs/COMMIT_GUIDE.md",
+    "docs/ONE_TAP_TROUBLESHOOTING.md",
+    "docs/PROFILE_REFERENCE.md"
+  ]
+}

@@ -48,8 +48,12 @@ SAFE_BOUNDS: dict[str, tuple[float, float]] = {
     'headshot_player': (0.0, 1500.0),
     'network_headshot': (0.0, 1500.0),
     'headshot_ai': (0.0, 1500.0),
+    'network_player_damage_modifier': (0.0, 10.0),
+    'network_ped_damage_modifier': (0.0, 10.0),
     'min_headshot_player': (0.0, 650.0),
     'max_headshot_player': (0.0, 650.0),
+    'min_headshot_ai': (0.0, 650.0),
+    'max_headshot_ai': (0.0, 650.0),
     'hit_limbs': (0.0, 2.0),
     'network_hit_limbs': (0.0, 2.0),
     # Este campo es un float real del CWeaponInfo. El límite anterior de 2.0
@@ -180,6 +184,25 @@ class HeadshotConfig:
 
     # También desactiva daño de cabeza contra NPC.
     disable_ai_headshot: bool = True
+
+    # Garantía matemática mínima para perfiles head-only o META con Damage=0.
+    # El rebalancer calcula un piso de daño base para que el multiplicador de red
+    # alcance esta vida efectiva con margen, sin subir innecesariamente el daño corporal.
+    one_tap_auto_minimum_base_damage: bool = True
+    one_tap_target_effective_health: float = 400.0
+    one_tap_safety_margin: float = 1.25
+    one_tap_minimum_base_damage: float = 0.35
+
+    # Si NetworkPlayerDamageModifier existe en 0, cualquier multiplicador de cabeza
+    # sigue dando 0. Solo se corrige cuando está ausente/cero, no se pisa un balance válido.
+    one_tap_repair_zero_network_modifier: bool = True
+    one_tap_network_player_modifier_fallback: float = 1.0
+    create_missing_network_player_modifier_tag: bool = True
+
+    # Flags que contradicen un arma letal. Solo se eliminan cuando el one-tap está
+    # activo en un arma de fuego; no toca tasers, snowballs ni melee.
+    one_tap_remove_nonlethal_flags: bool = True
+    one_tap_blocking_flags: tuple[str, ...] = ('NonLethal', 'NonViolent')
 
 
 HEADSHOT = HeadshotConfig(
@@ -330,6 +353,9 @@ class Settings:
     global_flag_ops: dict[str, list[str] | bool]
     group_flag_ops: dict[str, dict[str, list[str] | bool]]
     weapon_flag_ops: dict[str, dict[str, list[str] | bool]]
+    group_headshot_overrides: dict[str, dict[str, Any]]
+    weapon_headshot_overrides: dict[str, dict[str, Any]]
+    validation_options: dict[str, Any]
     scan: ScanConfig
 
     @classmethod
@@ -370,5 +396,13 @@ class Settings:
             global_flag_ops={'add': [], 'remove': [], 'create_if_missing': False},
             group_flag_ops={},
             weapon_flag_ops={},
+            group_headshot_overrides={},
+            weapon_headshot_overrides={},
+            validation_options={
+                'strict_unknown_fields': False,
+                'fail_on_onetap_audit': False,
+                'warn_duplicates': True,
+                'warn_unregistered_meta': True,
+            },
             scan=SCAN,
         )

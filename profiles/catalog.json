@@ -1,0 +1,30 @@
+{
+  "schema_version": 3,
+  "recommended": "rebelion_balanced_v3.json",
+  "profiles": [
+    {
+      "file": "rebelion_balanced_v3.json",
+      "summary": "Recomendado para Rebelion; cuerpo medio y cabeza siempre letal."
+    },
+    {
+      "file": "rp_serious_onetap.json",
+      "summary": "Más táctico: daño corporal bajo y recoil normal."
+    },
+    {
+      "file": "pvp_competitive_onetap.json",
+      "summary": "PvP competitivo: 3-5 impactos al torso según clase."
+    },
+    {
+      "file": "pvp_hardcore_onetap.json",
+      "summary": "PvP agresivo: 2-4 impactos corporales."
+    },
+    {
+      "file": "headshot_focus_onetap.json",
+      "summary": "Cuerpo casi sin daño; solo la precisión a cabeza define el combate."
+    },
+    {
+      "file": "original_body_real_onetap.json",
+      "summary": "Mantiene el balance corporal original y corrige únicamente el one-tap."
+    }
+  ]
+}

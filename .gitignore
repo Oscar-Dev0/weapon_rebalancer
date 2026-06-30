@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.bak
+*.meta.bak
+reports/
+exports/
+weapon_rebalance_report.json
+meta_inventory.json
+perfil_pack_completo.json

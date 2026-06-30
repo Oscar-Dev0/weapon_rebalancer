@@ -2,22 +2,25 @@
   "name": "Plantilla META completa y segura",
   "base_preset": "rp_balanced",
   "modules": {
-    "damage": "original",
-    "armour": "original",
-    "recoil": "original",
-    "accuracy": "original",
-    "range": "original",
-    "fire_rate": "original",
-    "reload": "original",
-    "headshot": "original"
+    "damage": "configured",
+    "armour": "configured",
+    "recoil": "configured",
+    "accuracy": "configured",
+    "range": "configured",
+    "fire_rate": "configured",
+    "reload": "configured",
+    "headshot": "onetap"
   },
   "validation": {
-    "strict_unknown_fields": true
+    "strict_unknown_fields": true,
+    "fail_on_onetap_audit": false,
+    "warn_duplicates": true,
+    "warn_unregistered_meta": true
   },
   "_documentation": {
     "standard_field_count": 133,
     "known_weapon_flags_count": 146,
-    "usage": "Copia campos de _field_reference hacia defaults/groups/weapons. Para tags no catalogados usa meta con el nombre XML exacto.",
+    "usage": "Usa configured para conservar los valores escritos en este JSON; original deja intacto el XML. Los scopes group/weapon aceptan fields, meta, weapon_flags y headshot.",
     "warning": "No rellenes todos los campos a la vez. Los META incompletos/custom pueden depender de valores originales."
   },
   "_field_reference": {
@@ -1007,6 +1010,8 @@
     "multiplier": 1500.0,
     "distance": 300.0,
     "no_falloff": true,
+    "sync_weapon_range": true,
+    "sync_lock_on_range": false,
     "create_missing_tags": true,
     "bypass_helmets": true,
     "helmet_multiplier": 100.0,
@@ -1016,7 +1021,19 @@
     "create_missing_penetration_tag": true,
     "add_ignore_helmets_flag": true,
     "add_armour_penetrating_flag": true,
-    "create_missing_weapon_flags_tag": true
+    "create_missing_weapon_flags_tag": true,
+    "auto_minimum_base_damage": true,
+    "target_effective_health": 400.0,
+    "safety_margin": 1.25,
+    "minimum_base_damage": 0.35,
+    "repair_zero_network_modifier": true,
+    "network_player_modifier_fallback": 1.0,
+    "create_missing_network_player_modifier_tag": true,
+    "remove_nonlethal_flags": true,
+    "blocking_flags": [
+      "NonLethal",
+      "NonViolent"
+    ]
   },
   "defaults": {
     "fields": {},
@@ -1105,5 +1122,6 @@
     "WEAPON_SNOWBALL",
     "WEAPON_BALL"
   ],
-  "allow_damage_weapons": []
+  "allow_damage_weapons": [],
+  "schema_version": 3
 }

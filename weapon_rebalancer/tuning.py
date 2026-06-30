@@ -3,30 +3,15 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from .fields import FIELDS
+
 GROUPS = ('GROUP_PISTOL', 'GROUP_SMG', 'GROUP_RIFLE', 'GROUP_MG', 'GROUP_SHOTGUN', 'GROUP_SNIPER')
 
 FIELD_SECTIONS: dict[str, set[str]] = {
-    'damage': {
-        'damage', 'hit_limbs', 'network_hit_limbs', 'lightly_armoured',
-        'vehicle_damage_modifier',
-    },
-    'range': {'weapon_range', 'falloff_min', 'falloff_max', 'falloff_modifier', 'lock_on_range'},
-    'recoil': {
-        'recoil_accuracy_max', 'recoil_error_time', 'recoil_recovery_rate',
-        'recoil_shake_amplitude', 'recoil_accuracy_to_allow_headshot_ai',
-    },
-    'accuracy': {
-        'accuracy_spread', 'run_and_gun_accuracy_modifier',
-        'accurate_mode_accuracy_modifier',
-    },
-    'fire_rate': {'time_between_shots', 'anim_fire_rate_modifier'},
-    'reload': {'reload_time_mp', 'reload_time_sp', 'anim_reload_rate'},
-    'headshot': {
-        'headshot_player', 'network_headshot', 'headshot_ai',
-        'min_headshot_player', 'max_headshot_player',
-        'min_headshot_ai', 'max_headshot_ai',
-    },
+    section: {key for key, field in FIELDS.items() if field.section == section}
+    for section in ('damage', 'range', 'recoil', 'accuracy', 'fire_rate', 'reload', 'headshot')
 }
+
 
 RECOIL_PROFILES: dict[str, dict[str, float]] = {
     'none': {'recoil_accuracy_max': 0.01, 'recoil_error_time': 0.01, 'recoil_recovery_rate': 10.0, 'recoil_shake_amplitude': 0.0},
@@ -61,6 +46,7 @@ def apply_modular_profiles(profile: dict[str, Any], settings: Any) -> dict[str, 
     """Applies independent overlays and removes sections configured as original.
 
     `original` means that no XML tag from that section is touched.
+    `configured` keeps the values authored in the selected JSON/group profile.
     """
     result = deepcopy(profile)
 
@@ -97,33 +83,33 @@ def apply_modular_profiles(profile: dict[str, Any], settings: Any) -> dict[str, 
         result['hit_limbs'] = 0.0
         result['network_hit_limbs'] = 0.0
         result['vehicle_damage_modifier'] = 0.0
-    elif settings.damage_profile not in ('original', 'normal'):
+    elif settings.damage_profile not in ('original', 'normal', 'configured'):
         _scaled(result, ('damage',), DAMAGE_MULTIPLIERS[settings.damage_profile])
 
-    if settings.armour_profile != 'original':
+    if settings.armour_profile not in ('original', 'configured'):
         result['lightly_armoured'] = ARMOUR_PROFILES[settings.armour_profile]
 
-    if settings.range_profile not in ('original', 'normal'):
+    if settings.range_profile not in ('original', 'normal', 'configured'):
         multiplier = RANGE_MULTIPLIERS[settings.range_profile]
         _scaled(result, ('weapon_range', 'falloff_min', 'falloff_max', 'max_headshot_player', 'max_headshot_ai', 'lock_on_range'), multiplier)
 
-    if settings.recoil_profile != 'original':
+    if settings.recoil_profile not in ('original', 'configured'):
         result.update(RECOIL_PROFILES[settings.recoil_profile])
 
-    if settings.accuracy_profile != 'original':
+    if settings.accuracy_profile not in ('original', 'configured'):
         accuracy = deepcopy(ACCURACY_PROFILES[settings.accuracy_profile])
         # Shotguns must retain pellet spread; never turn them into slug lasers by accident.
         if settings.current_group == 'GROUP_SHOTGUN':
             accuracy['accuracy_spread'] = max(accuracy['accuracy_spread'], 1.10)
         result.update(accuracy)
 
-    if settings.fire_rate_profile not in ('original', 'normal'):
+    if settings.fire_rate_profile not in ('original', 'normal', 'configured'):
         _scaled(result, ('time_between_shots',), FIRE_RATE_MULTIPLIERS[settings.fire_rate_profile])
         inverse = 1.0 / FIRE_RATE_MULTIPLIERS[settings.fire_rate_profile]
         if 'anim_fire_rate_modifier' in result:
             result['anim_fire_rate_modifier'] = float(result['anim_fire_rate_modifier']) * inverse
 
-    if settings.reload_profile not in ('original', 'normal'):
+    if settings.reload_profile not in ('original', 'normal', 'configured'):
         multiplier = RELOAD_MULTIPLIERS[settings.reload_profile]
         _scaled(result, ('reload_time_mp', 'reload_time_sp'), multiplier)
         if 'anim_reload_rate' in result:

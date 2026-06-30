@@ -1,13 +1,13 @@
 {
-  "name": "Rebelion Balanced V3",
-  "description": "Perfil recomendado: pistolas 2 al torso, rifles 5, SMG/MG controladas y one-tap real por grupo incluso con casco.",
+  "name": "Headshot Focus One-Tap",
+  "description": "El cuerpo hace daño casi nulo y la cabeza mata. El piso matemático se calcula automáticamente para no romper el one-tap.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
-    "damage": "configured",
-    "armour": "max",
-    "recoil": "configured",
-    "accuracy": "configured",
+    "damage": "head_only",
+    "armour": "normal",
+    "recoil": "normal",
+    "accuracy": "normal",
     "range": "configured",
     "fire_rate": "configured",
     "reload": "original",
@@ -67,7 +67,7 @@
         "recoil_error_time": 0.05,
         "recoil_recovery_rate": 1.55,
         "recoil_shake_amplitude": 0.11,
-        "damage": 100.0
+        "damage": 0.0
       },
       "headshot": {
         "mode": "onetap",
@@ -91,7 +91,7 @@
         "recoil_error_time": 0.06,
         "recoil_recovery_rate": 1.35,
         "recoil_shake_amplitude": 0.15,
-        "damage": 34.0
+        "damage": 0.0
       },
       "headshot": {
         "mode": "onetap",
@@ -115,7 +115,7 @@
         "recoil_error_time": 0.07,
         "recoil_recovery_rate": 1.25,
         "recoil_shake_amplitude": 0.18,
-        "damage": 40.0
+        "damage": 0.0
       },
       "headshot": {
         "mode": "onetap",
@@ -139,7 +139,7 @@
         "recoil_error_time": 0.08,
         "recoil_recovery_rate": 1.05,
         "recoil_shake_amplitude": 0.23,
-        "damage": 34.0
+        "damage": 0.0
       },
       "headshot": {
         "mode": "onetap",
@@ -163,7 +163,7 @@
         "recoil_error_time": 0.12,
         "recoil_recovery_rate": 0.75,
         "recoil_shake_amplitude": 0.44,
-        "damage": 34.0
+        "damage": 0.0
       },
       "headshot": {
         "mode": "onetap",
@@ -187,7 +187,7 @@
         "recoil_error_time": 0.12,
         "recoil_recovery_rate": 0.68,
         "recoil_shake_amplitude": 0.52,
-        "damage": 110.0
+        "damage": 0.0
       },
       "headshot": {
         "mode": "onetap",

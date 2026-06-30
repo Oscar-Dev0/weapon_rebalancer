@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 from weapon_rebalancer.config import Settings
@@ -17,16 +18,19 @@ def parse_args() -> argparse.Namespace:
         description='Rebalanceador deep-scan de weapon metas para FiveM/GTA V RP.'
     )
     parser.add_argument('--root', type=Path, default=None, help='Ruta del pack de armas.')
+    parser.add_argument('--version', action='store_true', help='Muestra la versión y sale.')
+    parser.add_argument('--list-profiles', action='store_true', help='Lista los perfiles JSON incluidos y sale.')
+    parser.add_argument('--validate-profiles', nargs='?', const='profiles', default=None, help='Valida un perfil o todos los JSON de una carpeta y sale.')
     parser.add_argument('--write', action='store_true', help='Escribe cambios reales. Sin esto corre en dry-run.')
     parser.add_argument('--preset', default=None, help='Preset interno base.')
     parser.add_argument('--profile', type=Path, default=None, help='Perfil JSON externo. Permite configurar todo sin editar Python.')
-    parser.add_argument('--recoil', choices=('original', 'none', 'low', 'normal', 'high'), default=None, help='Perfil independiente de recoil.')
-    parser.add_argument('--accuracy', choices=('original', 'laser', 'high', 'normal', 'low'), default=None, help='Perfil independiente de precisión/dispersión.')
-    parser.add_argument('--damage', choices=('original', 'none', 'head_only', 'low', 'normal', 'high', 'lethal'), default=None, help='Perfil de daño. none=0 total; head_only=daño corporal mínimo para permitir headshot por META.')
-    parser.add_argument('--armour', choices=('original', 'none', 'normal', 'piercing', 'max'), default=None, help='Modificador independiente contra armadura ligera/cascos nativos.')
-    parser.add_argument('--range-profile', choices=('original', 'short', 'normal', 'long', 'very_long'), default=None, help='Perfil independiente de alcance.')
-    parser.add_argument('--fire-rate', choices=('original', 'slow', 'normal', 'fast', 'very_fast'), default=None, help='Perfil independiente de cadencia.')
-    parser.add_argument('--reload', choices=('original', 'slow', 'normal', 'fast', 'very_fast'), default=None, help='Perfil independiente de recarga.')
+    parser.add_argument('--recoil', choices=('original', 'configured', 'none', 'low', 'normal', 'high'), default=None, help='Perfil independiente de recoil.')
+    parser.add_argument('--accuracy', choices=('original', 'configured', 'laser', 'high', 'normal', 'low'), default=None, help='Perfil independiente de precisión/dispersión.')
+    parser.add_argument('--damage', choices=('original', 'configured', 'none', 'head_only', 'low', 'normal', 'high', 'lethal'), default=None, help='Perfil de daño. none=0 total; head_only=daño corporal mínimo para permitir headshot por META.')
+    parser.add_argument('--armour', choices=('original', 'configured', 'none', 'normal', 'piercing', 'max'), default=None, help='Modificador independiente contra armadura ligera/cascos nativos.')
+    parser.add_argument('--range-profile', choices=('original', 'configured', 'short', 'normal', 'long', 'very_long'), default=None, help='Perfil independiente de alcance.')
+    parser.add_argument('--fire-rate', choices=('original', 'configured', 'slow', 'normal', 'fast', 'very_fast'), default=None, help='Perfil independiente de cadencia.')
+    parser.add_argument('--reload', choices=('original', 'configured', 'slow', 'normal', 'fast', 'very_fast'), default=None, help='Perfil independiente de recarga.')
     parser.add_argument('--headshot-profile', choices=('original', 'off', 'normal', 'onetap'), default=None, help='Perfil independiente de headshot.')
     parser.add_argument('--only', nargs='*', default=None, help='Procesar solo estas armas: WEAPON_PISTOL ...')
     parser.add_argument('--weapontype', nargs='+', default=None, help='Filtrar por tipo o familia: revolver, pistol, smg, rifle, shotgun, sniper, mg, melee.')
@@ -47,15 +51,76 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--no-onetap-through-helmets', action='store_true', help='No fuerza el modificador META específico para cascos.')
     parser.add_argument('--helmet-multiplier', type=float, default=None, help='Valor de LightlyArmouredDamageModifier usado por one tap. Default del perfil: 100.')
     parser.add_argument('--helmet-penetration', type=float, default=None, help='Valor Penetration usado junto al modo cascos. Default del perfil: 1.0.')
+    parser.add_argument('--target-effective-health', type=float, default=None, help='Vida+armadura máxima que el one-tap debe superar matemáticamente.')
+    parser.add_argument('--onetap-safety-margin', type=float, default=None, help='Margen aplicado sobre la vida efectiva objetivo. Ejemplo: 1.25.')
+    parser.add_argument('--strict-onetap-audit', action='store_true', help='Devuelve error si alguna arma procesada no pasa la auditoría one-tap.')
+    parser.add_argument('--no-duplicate-audit', action='store_true', help='No reporta definiciones WEAPON_* duplicadas.')
+    parser.add_argument('--no-manifest-audit', action='store_true', help='No reporta META sin WEAPONINFO_FILE visible.')
     parser.add_argument('--include-bak', action='store_true', help='También escanea .bak/.meta.bak. Normalmente NO recomendado.')
     parser.add_argument('--no-recursive', action='store_true', help='No buscar en subcarpetas.')
     parser.add_argument('--report', type=Path, default=None, help='Ruta del reporte JSON.')
     return parser.parse_args()
 
 
+
+def _project_root() -> Path:
+    return Path(__file__).resolve().parent
+
+
+def print_version() -> None:
+    version_path = _project_root() / 'VERSION'
+    version = version_path.read_text(encoding='utf-8').strip() if version_path.exists() else 'unknown'
+    print(f'weapon_rebalancer {version}')
+
+
+def list_profiles() -> None:
+    catalog_path = _project_root() / 'profiles' / 'catalog.json'
+    if catalog_path.exists():
+        data = json.loads(catalog_path.read_text(encoding='utf-8'))
+        print(f'Recomendado: {data.get("recommended", "-")}')
+        for item in data.get('profiles', []):
+            print(f'- {item.get("file")}: {item.get("summary", "")}')
+        return
+    for path in sorted((_project_root() / 'profiles').glob('*.json')):
+        if path.name != 'catalog.json':
+            print(f'- {path.name}')
+
+
+def validate_profiles(target: str) -> None:
+    path = Path(target)
+    if not path.is_absolute():
+        local = _project_root() / path
+        if local.exists():
+            path = local
+    files = sorted(path.glob('*.json')) if path.is_dir() else [path]
+    files = [p for p in files if p.name != 'catalog.json']
+    if not files:
+        raise SystemExit(f'No se encontraron perfiles JSON en: {path}')
+    failures = 0
+    for profile_path in files:
+        try:
+            settings = Settings.from_config()
+            apply_external_profile(settings, load_profile(profile_path))
+            print(f'[OK] {profile_path}')
+        except Exception as exc:  # noqa: BLE001
+            failures += 1
+            print(f'[ERROR] {profile_path}: {exc}')
+    if failures:
+        raise SystemExit(f'Fallaron {failures} perfiles.')
+    print(f'Perfiles válidos: {len(files)}')
+
 def main() -> None:
     args = parse_args()
 
+    if args.version:
+        print_version()
+        return
+    if args.list_profiles:
+        list_profiles()
+        return
+    if args.validate_profiles is not None:
+        validate_profiles(args.validate_profiles)
+        return
     if args.list_fields:
         print_supported_fields()
         return
@@ -159,6 +224,14 @@ def main() -> None:
     if args.helmet_penetration is not None:
         settings.headshot.one_tap_force_penetration = True
         settings.headshot.one_tap_penetration = args.helmet_penetration
+    if args.target_effective_health is not None:
+        settings.headshot.one_tap_target_effective_health = args.target_effective_health
+    if args.onetap_safety_margin is not None:
+        settings.headshot.one_tap_safety_margin = args.onetap_safety_margin
+    if args.no_duplicate_audit:
+        settings.validation_options['warn_duplicates'] = False
+    if args.no_manifest_audit:
+        settings.validation_options['warn_unregistered_meta'] = False
     if args.include_bak:
         settings.scan.include_bak = True
     if args.no_recursive:
@@ -170,6 +243,9 @@ def main() -> None:
     engine = RebalanceEngine(settings)
     report = engine.run()
     report.print_summary()
+    strict_audit = args.strict_onetap_audit or bool(settings.validation_options.get('fail_on_onetap_audit', False))
+    if strict_audit and report.onetap_audit_failed:
+        raise SystemExit(f'Auditoría one-tap fallida en {report.onetap_audit_failed} arma(s).')
 
 
 if __name__ == '__main__':
