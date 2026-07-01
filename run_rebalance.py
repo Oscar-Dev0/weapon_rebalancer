@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 from weapon_rebalancer.config import Settings
@@ -11,6 +12,7 @@ from weapon_rebalancer.inventory import export_full_profile, export_meta_invento
 from weapon_rebalancer.weapon_flags import print_weapon_flags
 from weapon_rebalancer.rebalance import RebalanceEngine
 from weapon_rebalancer.profile_loader import ProfileError, apply_external_profile, load_profile
+from weapon_rebalancer.runtime_audit import scan_runtime_conflicts
 
 
 def parse_args() -> argparse.Namespace:
@@ -59,6 +61,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--include-bak', action='store_true', help='También escanea .bak/.meta.bak. Normalmente NO recomendado.')
     parser.add_argument('--no-recursive', action='store_true', help='No buscar en subcarpetas.')
     parser.add_argument('--report', type=Path, default=None, help='Ruta del reporte JSON.')
+    parser.add_argument('--audit-runtime', action='store_true', help='Escanea scripts Lua/JS/TS/C# que puedan apagar critical hits, cancelar daño o restaurar vida/armadura.')
+    parser.add_argument('--runtime-root', type=Path, default=None, help='Ruta a resources para la auditoría runtime. Por defecto usa --root.')
+    parser.add_argument('--runtime-report', type=Path, default=Path('runtime_headshot_audit.json'), help='Reporte JSON de conflictos runtime.')
+    parser.add_argument('--runtime-only', action='store_true', help='Ejecuta únicamente la auditoría runtime y sale.')
+    parser.add_argument('--strict-runtime-audit', action='store_true', help='Devuelve error cuando encuentra bloqueos runtime duros.')
+    parser.add_argument('--install-headshot-guard', type=Path, default=None, help='Copia el recurso mínimo os_headshot_guard en la ruta indicada.')
+    parser.add_argument('--force-install', action='store_true', help='Permite reemplazar una instalación existente de os_headshot_guard.')
     return parser.parse_args()
 
 
@@ -128,6 +137,19 @@ def main() -> None:
         print_weapon_flags()
         return
 
+    if args.install_headshot_guard is not None:
+        source = _project_root() / 'extras' / 'os_headshot_guard'
+        destination = args.install_headshot_guard
+        if destination.exists():
+            if not args.force_install:
+                raise SystemExit(f'La ruta ya existe: {destination}. Usa --force-install para reemplazarla.')
+            shutil.rmtree(destination)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(source, destination)
+        print(f'[GUARD INSTALADO] {destination}')
+        if not args.audit_runtime and not args.runtime_only and args.root is None:
+            return
+
     settings = Settings.from_config()
 
     if args.profile is not None:
@@ -138,6 +160,22 @@ def main() -> None:
 
     if args.root is not None:
         settings.root = args.root
+
+    runtime_audit = None
+    runtime_root = args.runtime_root or (args.root if args.root is not None else settings.root)
+    if args.audit_runtime or args.runtime_only:
+        try:
+            runtime_audit = scan_runtime_conflicts(runtime_root)
+        except ValueError as exc:
+            raise SystemExit(str(exc)) from exc
+        runtime_audit.save_json(args.runtime_report)
+        runtime_audit.print_summary()
+        print(f'Reporte runtime: {args.runtime_report}')
+        if args.runtime_only:
+            if args.strict_runtime_audit and runtime_audit.hard_blockers:
+                raise SystemExit(f'Auditoría runtime fallida: {runtime_audit.hard_blockers} bloqueo(s) duro(s).')
+            return
+
     if not settings.root.exists() or not settings.root.is_dir():
         raise SystemExit(f'ROOT inválido o inexistente: {settings.root}')
 
@@ -246,6 +284,8 @@ def main() -> None:
     strict_audit = args.strict_onetap_audit or bool(settings.validation_options.get('fail_on_onetap_audit', False))
     if strict_audit and report.onetap_audit_failed:
         raise SystemExit(f'Auditoría one-tap fallida en {report.onetap_audit_failed} arma(s).')
+    if args.strict_runtime_audit and runtime_audit is not None and runtime_audit.hard_blockers:
+        raise SystemExit(f'Auditoría runtime fallida: {runtime_audit.hard_blockers} bloqueo(s) duro(s).')
 
 
 if __name__ == '__main__':

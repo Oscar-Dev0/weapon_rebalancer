@@ -88,10 +88,10 @@ class V3OneTapAuditTests(unittest.TestCase):
             meta_text(damage=0.0, network_modifier=0.0),
         )
         self.assertIn('<NetworkPlayerDamageModifier value="1.000000" />', output)
-        self.assertIn('<Damage value="0.350000" />', output)
+        self.assertIn('<Damage value="0.833334" />', output)
         self.assertEqual(report.onetap_audit_failed, 0)
         change = next(c for c in report.changes if c.weapon == 'WEAPON_TEST')
-        self.assertGreaterEqual(float(change.onetap_metrics['estimated_network_headshot_damage']), 500.0)
+        self.assertGreaterEqual(float(change.onetap_metrics['estimated_network_headshot_damage']), 1250.0)
 
     def test_nonlethal_flags_are_removed_only_for_onetap_firearm(self) -> None:
         output, report = self._run(

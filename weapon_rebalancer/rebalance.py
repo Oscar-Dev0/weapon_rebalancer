@@ -69,6 +69,12 @@ class RebalanceEngine:
 
         report.finalize_file_count()
 
+        if report.onetap_audit_total:
+            report.warnings.append(
+                'La auditoría META no puede comprobar SetPedSuffersCriticalHits(false), cancelación de weaponDamageEvent '
+                'ni restauración de vida/armadura. Ejecuta --audit-runtime sobre toda la carpeta resources.'
+            )
+
         if self.settings.write_json_report:
             try:
                 report.save_json(self.settings.report_path)

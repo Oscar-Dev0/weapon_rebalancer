@@ -1,32 +1,56 @@
 {
-  "name": "weapon_rebalancer_meta_v3",
-  "version": "3.0.0",
+  "name": "weapon_rebalancer_meta_v4",
+  "version": "4.0.0",
   "python_min": "3.10",
   "entrypoint": "run_rebalance.py",
-  "recommended_profile": "profiles/rebelion_balanced_v3.json",
+  "recommended_profile": "profiles/rebelion_real_onetap_v4.json",
+  "runtime_audit": "weapon_rebalancer/runtime_audit.py",
+  "optional_guard": "extras/os_headshot_guard",
   "profiles": [
     "profiles/catalog.json",
     "profiles/full_meta_template.json",
     "profiles/head_only.json",
     "profiles/headshot_focus_onetap.json",
+    "profiles/headshot_focus_real_onetap_v4.json",
     "profiles/no_body_or_head_damage.json",
     "profiles/original_body_real_onetap.json",
+    "profiles/original_body_real_onetap_v4.json",
     "profiles/profile_template.json",
     "profiles/pvp_competitive_onetap.json",
     "profiles/pvp_hardcore_onetap.json",
     "profiles/pvp_no_tank.json",
     "profiles/rebelion_balanced_v3.json",
+    "profiles/rebelion_real_onetap_v4.json",
     "profiles/rebelion_server.json",
     "profiles/rp_serious_onetap.json"
   ],
   "tests": [
     "tests/test_full_meta.py",
     "tests/test_helmet_onetap.py",
-    "tests/test_v3_onetap_audit.py"
+    "tests/test_v3_onetap_audit.py",
+    "tests/test_v4_runtime_audit.py"
   ],
   "documentation": [
     "docs/COMMIT_GUIDE.md",
     "docs/ONE_TAP_TROUBLESHOOTING.md",
     "docs/PROFILE_REFERENCE.md"
-  ]
+  ],
+  "scripts": [
+    "apply_profile.bat",
+    "apply_rebelion.bat",
+    "audit_rebelion_runtime.bat",
+    "export_meta_info.bat",
+    "install_headshot_guard_rebelion.bat",
+    "preview_profile.bat",
+    "preview_rebelion.bat",
+    "validate_all.bat",
+    "verify_rebelion_v4.bat"
+  ],
+  "release_notes": [
+    "CHANGELOG.md",
+    "CHANGESET_V4.md",
+    "RELEASE_NOTES_4.0.0.md",
+    "CHANGELOG_2026-06-30_V4.md"
+  ],
+  "test_count": 23
 }

@@ -1,54 +1,83 @@
-# Diagnóstico cuando el one-tap no se refleja en el servidor
+# Diagnóstico one-tap V4
 
-## 1. Ejecutar auditoría estricta
+## Caso: una gorra, casco o ropa tanquea el disparo
+
+Ese síntoma normalmente indica que el headshot está entrando como daño corporal. Ejecuta primero:
 
 ```powershell
-python run_rebalance.py --root "C:\RUTA\PACK" --profile profiles\rebelion_balanced_v3.json --report reports\audit.json --strict-onetap-audit
+python run_rebalance.py --runtime-only --audit-runtime --runtime-root "C:\TxData\rebelion\resources" --runtime-report reports\runtime.json
 ```
 
-No apliques cambios hasta que el resumen indique `fallos=0`.
+### Bloqueos duros
 
-## 2. Revisar armas duplicadas
+#### `critical_hits_disabled`
 
-Si el mismo `WEAPON_*` aparece en dos recursos, el último META cargado puede sobrescribir el corregido. El reporte muestra todas las rutas detectadas.
-
-## 3. Revisar el manifest
-
-Cada archivo de arma debe estar cargado mediante un `data_file` compatible, normalmente:
+Busca una línea parecida a:
 
 ```lua
+SetPedSuffersCriticalHits(PlayerPedId(), false)
+```
+
+Cámbiala a `true`, elimina el loop o desactiva esa opción en el recurso responsable.
+
+#### `weapon_damage_event_cancelled`
+
+Un handler de `weaponDamageEvent` llama `CancelEvent()`. Revisa la condición: probablemente está cancelando más armas o zonas de las necesarias.
+
+#### `damage_event_health_or_armour_restore`
+
+El archivo procesa `CEventNetworkEntityDamage` y vuelve a ejecutar `SetEntityHealth`, `SetPedArmour` o `AddArmourToPed`. Eso es un antitank real y debe corregirse en su lógica.
+
+## Verificar el META
+
+```powershell
+python run_rebalance.py --root "C:\RUTA\PACK" --profile profiles\rebelion_real_onetap_v4.json --strict-onetap-audit --report reports\meta.json
+```
+
+Debe mostrar:
+
+```text
+Auditoría one-tap: ok=N | fallos=0
+```
+
+## Revisar duplicados
+
+Si el mismo `WEAPON_*` aparece en varios recursos, el último META cargado puede reemplazar el corregido. El reporte lista todas las rutas.
+
+## Revisar manifest
+
+El archivo debe estar registrado, por ejemplo:
+
+```lua
+files { 'weapons.meta' }
 data_file 'WEAPONINFO_FILE_PATCH' 'weapons.meta'
 ```
 
-Un archivo presente en disco pero no registrado no afecta el juego. Decoración XML premium, funcionalidad cero.
+## Reinicio correcto
 
-## 4. Reiniciar realmente el recurso
+1. reinicia el recurso del META;
+2. reinicia el recurso conflictivo o el guard;
+3. reconecta el cliente;
+4. si persiste caché, reinicia el servidor y limpia caché del cliente de prueba.
 
-Después de cambiar META:
+## Guard mínimo
 
-1. detener el recurso;
-2. iniciarlo de nuevo o reiniciar el servidor;
-3. reconectar el cliente si conserva assets antiguos;
-4. evitar probar con una definición duplicada cargada después.
-
-## 5. Buscar recursos que desactivan críticos
-
-En PowerShell, desde la carpeta de recursos:
+Instálalo únicamente cuando no puedas corregir inmediatamente el recurso que pone críticos en `false`:
 
 ```powershell
-Get-ChildItem -Recurse -Include *.lua,*.js,*.ts,*.cs | Select-String -Pattern "SetPedSuffersCriticalHits|CEventNetworkEntityDamage|SetEntityHealth|SetPedArmour"
+python run_rebalance.py --install-headshot-guard "C:\RUTA\resources\[standalone]\os_headshot_guard"
 ```
 
-Una llamada a `SetPedSuffersCriticalHits(PlayerPedId(), false)` impide que el sistema de críticos del ped se comporte normalmente. El META no puede revertir una native ejecutada por otro recurso.
+En `server.cfg`, asegúralo después de recursos de combate, safezone, apariencia y antitank:
 
-## 6. Cascos custom
+```cfg
+ensure os_headshot_guard
+```
 
-`IgnoreHelmets`, `ArmourPenetrating` y `LightlyArmouredDamageModifier` cubren la protección nativa representada en `CWeaponInfo`. Un casco implementado por un script que resta daño o restaura armadura necesita corregirse en ese recurso específico.
+El guard no mata jugadores ni restaura estados; únicamente mantiene critical hits activos.
 
-## 7. Confirmar la arma exacta
-
-Usa `--only` para aislarla:
+## Aislar un arma
 
 ```powershell
-python run_rebalance.py --root "C:\RUTA\PACK" --profile profiles\rebelion_balanced_v3.json --only WEAPON_CUSTOMRIFLE --report reports\customrifle.json
+python run_rebalance.py --root "C:\RUTA\PACK" --profile profiles\rebelion_real_onetap_v4.json --only WEAPON_CUSTOMRIFLE --report reports\customrifle.json
 ```

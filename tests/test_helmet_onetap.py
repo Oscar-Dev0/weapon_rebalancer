@@ -82,11 +82,11 @@ class HelmetOneTapTests(unittest.TestCase):
         self.assertIn('<Damage value="100.000000" />', content)
         self.assertIn('<HeadShotDamageModifierPlayer value="1500.000000" />', content)
         self.assertIn('<NetworkHeadShotPlayerDamageModifier value="1500.000000" />', content)
-        self.assertIn('<LightlyArmouredDamageModifier value="100.000000" />', content)
+        self.assertIn('<LightlyArmouredDamageModifier value="1.000000" />', content)
         self.assertIn('<Penetration value="1.000000" />', content)
         self.assertEqual(report.files_changed, 1)
 
-    def test_existing_armour_tag_is_replaced_not_clamped_to_two(self) -> None:
+    def test_existing_armour_tag_is_normalized_without_bodyshot_amplification(self) -> None:
         profile = load_profile(PROJECT_ROOT / 'profiles/pvp_no_tank.json')
         content, _ = self._run_profile(
             profile,
@@ -94,7 +94,7 @@ class HelmetOneTapTests(unittest.TestCase):
         )
 
         self.assertEqual(content.count('<LightlyArmouredDamageModifier'), 1)
-        self.assertIn('<LightlyArmouredDamageModifier value="100.000000" />', content)
+        self.assertIn('<LightlyArmouredDamageModifier value="1.000000" />', content)
 
     def test_bypass_helmets_can_be_disabled_from_json(self) -> None:
         profile = load_profile(PROJECT_ROOT / 'profiles/rebelion_server.json')
@@ -106,8 +106,8 @@ class HelmetOneTapTests(unittest.TestCase):
             armour_tag='<LightlyArmouredDamageModifier value="0.750000" />',
         )
 
-        self.assertIn('<LightlyArmouredDamageModifier value="2.000000" />', content)
-        self.assertNotIn('<LightlyArmouredDamageModifier value="100.000000" />', content)
+        self.assertIn('<LightlyArmouredDamageModifier value="0.750000" />', content)
+        self.assertNotIn('<LightlyArmouredDamageModifier value="1.000000" />', content)
 
     def test_harmless_weapon_stays_at_zero_even_with_helmet_bypass(self) -> None:
         profile = load_profile(PROJECT_ROOT / 'profiles/rebelion_server.json')

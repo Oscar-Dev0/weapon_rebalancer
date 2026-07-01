@@ -1,40 +1,54 @@
-# Flujo recomendado para commits
+# Flujo de commits V4
 
-## Commit 1 — núcleo
-
-```text
-feat(rebalancer): add scoped one-tap policy and mathematical damage floor
-```
-
-Incluye `headshot.py`, loader, configuración y campos.
-
-## Commit 2 — auditoría
+## Commit 1 — auditoría runtime
 
 ```text
-feat(audit): detect duplicate weapons, missing manifests and one-tap blockers
+feat(audit): detect runtime headshot blockers and armour restoration
 ```
 
-Incluye `pack_audit.py`, reporte y CLI estricta.
+Incluye:
 
-## Commit 3 — perfiles
+- `weapon_rebalancer/runtime_audit.py`;
+- opciones `--audit-runtime`, `--runtime-only` y `--strict-runtime-audit`;
+- `audit_rebelion_runtime.bat`.
+
+## Commit 2 — corrección META
 
 ```text
-feat(profiles): add balanced RP and PvP one-tap variants
+fix(meta): avoid bodyshot amplification in helmet bypass policy
 ```
 
-Incluye `profiles/*.json` y `catalog.json`.
+Cambios:
 
-## Commit 4 — pruebas y documentación
+- `LightlyArmouredDamageModifier` neutral en `1.0`;
+- contrato efectivo subido a `1000 × 1.25`;
+- redondeo hacia arriba a seis decimales.
+
+## Commit 3 — guard de compatibilidad
 
 ```text
-test(rebalancer): cover helmet bypass, zero network damage and scoped ranges
+feat(runtime): add minimal critical-hit guard without health or damage writes
+```
+
+Incluye `extras/os_headshot_guard` y el instalador CLI.
+
+## Commit 4 — perfiles
+
+```text
+feat(profiles): add Rebelion real one-tap V4 variants
+```
+
+## Commit 5 — pruebas y documentación
+
+```text
+test(rebalancer): cover runtime conflicts and non-invasive guard
 ```
 
 ```text
-docs(rebalancer): document V3 profiles and troubleshooting
+docs(rebalancer): document V4 headshot diagnosis and migration
 ```
 
-## Antes de hacer push
+## Validación previa al push
 
 ```powershell
 python run_rebalance.py --validate-profiles profiles
@@ -42,9 +56,10 @@ python -m unittest discover -s tests -v
 python -m compileall -q .
 ```
 
-No incluyas en Git:
+No subas:
 
 - `*.bak`;
-- reportes generados;
-- inventarios exportados;
-- perfiles completos extraídos de packs privados.
+- `reports/*.json`;
+- `exports/*.json`;
+- `__pycache__`;
+- META privados extraídos de clientes.

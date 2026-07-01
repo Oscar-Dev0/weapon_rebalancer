@@ -1,11 +1,11 @@
 {
-  "name": "Rebelion Balanced V3",
-  "description": "Perfil recomendado: pistolas 2 al torso, rifles 5, SMG/MG controladas y one-tap real por grupo incluso con casco.",
+  "name": "Rebelion Server V4 Alias",
+  "description": "Balance corporal controlado y one-tap real de cabeza. No amplifica daño corporal por llevar ropa/armadura; requiere critical hits activos en runtime.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
     "damage": "configured",
-    "armour": "max",
+    "armour": "configured",
     "recoil": "configured",
     "accuracy": "configured",
     "range": "configured",
@@ -17,7 +17,8 @@
     "strict_unknown_fields": true,
     "fail_on_onetap_audit": false,
     "warn_duplicates": true,
-    "warn_unregistered_meta": true
+    "warn_unregistered_meta": true,
+    "require_runtime_critical_hits": true
   },
   "headshot": {
     "mode": "onetap",
@@ -28,7 +29,7 @@
     "sync_lock_on_range": false,
     "create_missing_tags": true,
     "bypass_helmets": true,
-    "helmet_multiplier": 100.0,
+    "helmet_multiplier": 1.0,
     "force_penetration": true,
     "penetration": 1.0,
     "create_missing_armour_tag": true,
@@ -37,7 +38,7 @@
     "add_armour_penetrating_flag": true,
     "create_missing_weapon_flags_tag": true,
     "auto_minimum_base_damage": true,
-    "target_effective_health": 400.0,
+    "target_effective_health": 1000.0,
     "safety_margin": 1.25,
     "minimum_base_damage": 0.35,
     "repair_zero_network_modifier": true,

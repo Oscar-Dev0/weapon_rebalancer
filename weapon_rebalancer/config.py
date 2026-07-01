@@ -160,8 +160,9 @@ class HeadshotConfig:
     one_tap_through_helmets: bool = True
 
     # Se aplica a LightlyArmouredDamageModifier únicamente cuando one_tap está activo.
-    # El valor anterior del proyecto quedaba limitado a 2.0 y algunos cascos absorbían el disparo.
-    one_tap_helmet_damage_modifier: float = 100.0
+    # 1.0 evita reducción contra peds protegidos sin multiplicar también los bodyshots.
+    # La protección específica del casco se resuelve con IgnoreHelmets y critical hits activos.
+    one_tap_helmet_damage_modifier: float = 1.0
 
     # Penetration no sustituye el multiplicador de cabeza, pero ayuda con metas custom
     # que modelan protecciones/objetos delante del bone de cabeza.
@@ -189,7 +190,7 @@ class HeadshotConfig:
     # El rebalancer calcula un piso de daño base para que el multiplicador de red
     # alcance esta vida efectiva con margen, sin subir innecesariamente el daño corporal.
     one_tap_auto_minimum_base_damage: bool = True
-    one_tap_target_effective_health: float = 400.0
+    one_tap_target_effective_health: float = 1000.0
     one_tap_safety_margin: float = 1.25
     one_tap_minimum_base_damage: float = 0.35
 
@@ -225,7 +226,7 @@ HEADSHOT = HeadshotConfig(
 
     # Fuerza la ruta META contra cascos nativos sin instalar un antitank Lua.
     one_tap_through_helmets=True,
-    one_tap_helmet_damage_modifier=100.0,
+    one_tap_helmet_damage_modifier=1.0,
     one_tap_force_penetration=True,
     one_tap_penetration=1.0,
 

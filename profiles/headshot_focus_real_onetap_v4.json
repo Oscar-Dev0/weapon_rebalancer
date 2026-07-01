@@ -1,7 +1,7 @@
 {
-  "name": "Headshot Focus One-Tap",
-  "description": "El cuerpo hace daño casi nulo y la cabeza mata. El piso matemático se calcula automáticamente para no romper el one-tap.",
-  "schema_version": 3,
+  "name": "Headshot Focus Real One-Tap V4",
+  "description": "Daño corporal mínimo y headshot letal; requiere critical hits runtime activos.",
+  "schema_version": 4,
   "base_preset": "rp_balanced",
   "modules": {
     "damage": "head_only",
@@ -17,7 +17,8 @@
     "strict_unknown_fields": true,
     "fail_on_onetap_audit": false,
     "warn_duplicates": true,
-    "warn_unregistered_meta": true
+    "warn_unregistered_meta": true,
+    "require_runtime_critical_hits": true
   },
   "headshot": {
     "mode": "onetap",

@@ -1,7 +1,7 @@
 {
-  "name": "Original Body Damage + Real One-Tap",
-  "description": "Conserva daño, recoil, cadencia y recarga originales; solo normaliza la ruta META del headshot y casco.",
-  "schema_version": 3,
+  "name": "Original Body + Real One-Tap V4",
+  "description": "Conserva daño corporal original y fuerza cabeza letal; requiere critical hits runtime activos.",
+  "schema_version": 4,
   "base_preset": "rp_balanced",
   "modules": {
     "damage": "original",
@@ -17,7 +17,8 @@
     "strict_unknown_fields": true,
     "fail_on_onetap_audit": false,
     "warn_duplicates": true,
-    "warn_unregistered_meta": true
+    "warn_unregistered_meta": true,
+    "require_runtime_critical_hits": true
   },
   "headshot": {
     "mode": "onetap",

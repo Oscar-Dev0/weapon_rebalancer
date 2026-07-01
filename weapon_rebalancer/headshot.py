@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import math
 from typing import Any
 
 from .meta_utils import read_field_value, read_weapon_flags
@@ -206,7 +207,7 @@ def apply_policy(
 
         if _as_bool(policy.get('bypass_helmets'), True):
             current_armour = _as_float(result.get('lightly_armoured', read_field_value(block_text, 'lightly_armoured', 0.0)), 0.0)
-            result['lightly_armoured'] = max(current_armour, _as_float(policy.get('helmet_multiplier'), 100.0))
+            result['lightly_armoured'] = max(current_armour, _as_float(policy.get('helmet_multiplier'), 1.0))
             if _as_bool(policy.get('force_penetration'), True):
                 current_pen = _as_float(result.get('penetration', read_field_value(block_text, 'penetration', 0.0)), 0.0)
                 result['penetration'] = max(current_pen, _as_float(policy.get('penetration'), 1.0))
@@ -220,11 +221,14 @@ def apply_policy(
             result['network_player_damage_modifier'] = network_damage_modifier
 
         network_headshot = max(_as_float(policy.get('network_multiplier'), 1500.0), 0.001)
-        target = max(_as_float(policy.get('target_effective_health'), 400.0), 1.0)
+        target = max(_as_float(policy.get('target_effective_health'), 1000.0), 1.0)
         margin = max(_as_float(policy.get('safety_margin'), 1.25), 1.0)
         configured_floor = max(_as_float(policy.get('minimum_base_damage'), 0.35), 0.001)
         calculated_floor = (target * margin) / max(network_headshot * max(network_damage_modifier, 0.001), 0.001)
         damage_floor = max(configured_floor, calculated_floor)
+        # Los META se escriben con seis decimales. Redondear normalmente puede dejar
+        # el valor unas milésimas por debajo del contrato one-tap, así que elevamos.
+        damage_floor = math.ceil(damage_floor * 1_000_000.0) / 1_000_000.0
 
         current_damage = _as_float(result.get('damage', read_field_value(block_text, 'damage', 0.0)), 0.0)
         if _as_bool(policy.get('auto_minimum_base_damage'), True) and current_damage < damage_floor:
@@ -280,7 +284,7 @@ def audit_block(content: str, policy: dict[str, Any], *, expected: bool) -> dict
     armour_modifier = number('lightly_armoured')
     penetration = number('penetration')
     target_distance = _as_float(policy.get('distance'), max_distance)
-    target_health = _as_float(policy.get('target_effective_health'), 400.0)
+    target_health = _as_float(policy.get('target_effective_health'), 1000.0)
     margin = _as_float(policy.get('safety_margin'), 1.25)
     estimated = base_damage * max(network_damage, 0.0) * max(network_headshot, 0.0)
     flags = read_weapon_flags(content)
@@ -299,6 +303,7 @@ def audit_block(content: str, policy: dict[str, Any], *, expected: bool) -> dict
         'lightly_armoured_modifier': armour_modifier,
         'penetration': penetration,
         'weapon_flags': flags,
+        'requires_runtime_critical_hits': True,
     }
     result['metrics'] = metrics
 
@@ -321,7 +326,7 @@ def audit_block(content: str, policy: dict[str, Any], *, expected: bool) -> dict
         if falloff_modifier + 1e-6 < 1.0:
             issues.append('falloff_modifier_below_one')
     if _as_bool(policy.get('bypass_helmets'), True):
-        if armour_modifier + 1e-6 < _as_float(policy.get('helmet_multiplier'), 100.0):
+        if armour_modifier + 1e-6 < _as_float(policy.get('helmet_multiplier'), 1.0):
             issues.append('helmet_modifier_too_low')
         if _as_bool(policy.get('force_penetration'), True) and penetration + 1e-6 < _as_float(policy.get('penetration'), 1.0):
             issues.append('penetration_too_low')

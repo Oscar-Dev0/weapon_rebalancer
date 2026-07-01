@@ -1,30 +1,33 @@
 {
-  "schema_version": 3,
-  "recommended": "rebelion_balanced_v3.json",
+  "recommended": "rebelion_real_onetap_v4.json",
   "profiles": [
     {
-      "file": "rebelion_balanced_v3.json",
-      "summary": "Recomendado para Rebelion; cuerpo medio y cabeza siempre letal."
+      "file": "rebelion_real_onetap_v4.json",
+      "summary": "Recomendado para Rebelion: cuerpo balanceado, casco ignorado por META y auditoría runtime obligatoria."
+    },
+    {
+      "file": "original_body_real_onetap_v4.json",
+      "summary": "Conserva el daño corporal original del pack y fuerza one-tap en cabeza."
+    },
+    {
+      "file": "headshot_focus_real_onetap_v4.json",
+      "summary": "Cuerpo casi nulo, cabeza letal."
     },
     {
       "file": "rp_serious_onetap.json",
-      "summary": "Más táctico: daño corporal bajo y recoil normal."
+      "summary": "RP serio con daño corporal reducido."
     },
     {
       "file": "pvp_competitive_onetap.json",
-      "summary": "PvP competitivo: 3-5 impactos al torso según clase."
+      "summary": "PvP competitivo balanceado."
     },
     {
       "file": "pvp_hardcore_onetap.json",
-      "summary": "PvP agresivo: 2-4 impactos corporales."
+      "summary": "PvP de TTK rápido."
     },
     {
-      "file": "headshot_focus_onetap.json",
-      "summary": "Cuerpo casi sin daño; solo la precisión a cabeza define el combate."
-    },
-    {
-      "file": "original_body_real_onetap.json",
-      "summary": "Mantiene el balance corporal original y corrige únicamente el one-tap."
+      "file": "no_body_or_head_damage.json",
+      "summary": "Sin daño corporal ni de cabeza."
     }
   ]
 }
