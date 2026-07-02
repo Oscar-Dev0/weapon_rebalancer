@@ -1,0 +1,89 @@
+{
+  "name": "Vanilla normal + custom 15% + revolver torso one-shot",
+  "schema_version": 5,
+  "description": "Restaura cada weapons.meta desde su .meta.bak cuando existe, conserva todas las armas oficiales con sus valores originales, aumenta un 15% el daño y las distancias de las armas custom, y hace letales al torso los revólveres.",
+  "base_preset": "rp_balanced",
+  "modules": {
+    "recoil": "original",
+    "accuracy": "original",
+    "damage": "original",
+    "armour": "original",
+    "range": "original",
+    "fire_rate": "original",
+    "reload": "original",
+    "headshot": "original"
+  },
+  "restore": {
+    "from_backup": true,
+    "backup_suffix": ".bak"
+  },
+  "weapon_classification": {
+    "official_catalog": "cfx_weapon_models_2026_07_02",
+    "official_additions": [],
+    "official_removals": [],
+    "custom_when_not_official": true,
+    "custom": {
+      "groups": [
+        "GROUP_PISTOL",
+        "GROUP_SMG",
+        "GROUP_RIFLE",
+        "GROUP_MG",
+        "GROUP_SHOTGUN",
+        "GROUP_SNIPER"
+      ],
+      "field_multipliers": {
+        "damage": 1.15,
+        "weapon_range": 1.15,
+        "falloff_min": 1.15,
+        "falloff_max": 1.15,
+        "max_headshot_player": 1.15,
+        "max_headshot_ai": 1.15
+      },
+      "group_field_multipliers": {}
+    }
+  },
+  "family_rules": [
+    {
+      "name": "revolver_one_shot_torso",
+      "contains": [
+        "REVOLVER",
+        "DOUBLEACTION"
+      ],
+      "groups": [
+        "GROUP_PISTOL"
+      ],
+      "fields": {
+        "damage": 350.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0,
+        "hit_limbs": 0.25,
+        "network_hit_limbs": 0.25,
+        "lightly_armoured": 1.0,
+        "falloff_modifier": 1.0
+      }
+    }
+  ],
+  "allow_damage_weapons": [
+    "WEAPON_SNOWBALL",
+    "WEAPON_BALL"
+  ],
+  "validation": {
+    "strict_unknown_fields": true,
+    "warn_duplicates": true,
+    "warn_unregistered_meta": true,
+    "fail_on_onetap_audit": false
+  },
+  "_documentation": {
+    "official_behavior": "Las armas presentes en el catálogo oficial de Cfx.re no reciben multiplicadores ni valores fijos, salvo los revólveres por la regla explícita.",
+    "custom_behavior": "Cualquier arma no presente en el catálogo oficial y perteneciente a un grupo de arma de fuego recibe +15% sobre los valores originales del propio META.",
+    "restore_behavior": "Si existe weapons.meta.bak, ese archivo es la base original. Si no existe, el programa usa el META actual y lo informa como advertencia.",
+    "headshots": "Los multiplicadores de daño de cabeza se conservan; solo se amplía 15% la distancia máxima de headshot de las custom cuando el tag existe.",
+    "revolver_note": "GTA no expone un campo exclusivo de pecho en weapons.meta. El torso usa Damage completo y las extremidades se reducen con HitLimbsDamageModifier."
+  },
+  "allow_ignored_weapons": [
+    "WEAPON_RPG",
+    "WEAPON_RAILGUN",
+    "WEAPON_MINIGUN",
+    "WEAPON_GRENADELAUNCHER"
+  ]
+}

@@ -1,6 +1,10 @@
 {
-  "recommended": "rebelion_real_onetap_v4.json",
+  "recommended": "vanilla_normal_custom_plus15_revolver_onetap.json",
   "profiles": [
+    {
+      "file": "vanilla_normal_custom_plus15_revolver_onetap.json",
+      "summary": "Restaura desde .meta.bak, deja oficiales originales, custom +15% y revólver letal al torso."
+    },
     {
       "file": "rebelion_real_onetap_v4.json",
       "summary": "Recomendado para Rebelion: cuerpo balanceado, casco ignorado por META y auditoría runtime obligatoria."

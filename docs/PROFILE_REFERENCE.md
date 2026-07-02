@@ -1,4 +1,4 @@
-# Referencia de perfiles V4
+# Referencia de perfiles V5
 
 ## Orden de precedencia
 
@@ -92,3 +92,59 @@ Usa `--audit-runtime` para encontrarlo y `extras/os_headshot_guard` como compati
 ## Config local por recurso
 
 Puedes colocar `weapon_rebalance.json`, `weapon_balance.json`, `rebalance.json` o `.weapon_rebalance.json` dentro de una carpeta. Solo afecta los META debajo de esa carpeta.
+
+## Restauración desde backup
+
+```json
+"restore": {
+  "from_backup": true,
+  "backup_suffix": ".bak"
+}
+```
+
+Con `from_backup=true`, cada bloque se calcula desde `weapons.meta.bak`. El archivo actual solo se usa cuando el backup no existe o no contiene esa arma. Esto hace que ejecutar el perfil varias veces no acumule el multiplicador.
+
+## Clasificación oficial/custom
+
+```json
+"weapon_classification": {
+  "official_catalog": "cfx_weapon_models_2026_07_02",
+  "official_additions": [],
+  "official_removals": [],
+  "custom_when_not_official": true,
+  "custom": {
+    "groups": ["GROUP_PISTOL", "GROUP_SMG", "GROUP_RIFLE"],
+    "field_multipliers": {
+      "damage": 1.15,
+      "weapon_range": 1.15
+    },
+    "group_field_multipliers": {}
+  }
+}
+```
+
+Los multiplicadores usan el valor encontrado en el bloque original. Un arma oficial no recibe esta capa. `official_additions` sirve para declarar como oficial una variante local que no esté en el catálogo; `official_removals` permite tratar una entrada como custom.
+
+`allow_ignored_weapons` elimina armas de la lista interna de exclusión para que el perfil pueda restaurarlas expresamente:
+
+```json
+"allow_ignored_weapons": ["WEAPON_RPG", "WEAPON_RAILGUN"]
+```
+
+## Reglas por familia
+
+```json
+"family_rules": [
+  {
+    "name": "revolver_torso",
+    "contains": ["REVOLVER", "DOUBLEACTION"],
+    "groups": ["GROUP_PISTOL"],
+    "fields": {
+      "damage": 350.0,
+      "hit_limbs": 0.25
+    }
+  }
+]
+```
+
+Una regla puede incluir `fields`, `field_multipliers`, `official_only` o `custom_only`. Los valores absolutos de `fields` se aplican después de los multiplicadores.

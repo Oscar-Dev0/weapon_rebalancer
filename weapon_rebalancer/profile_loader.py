@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .fields import FIELDS
+from .vanilla_weapons import get_catalog
 
 
 class ProfileError(ValueError):
@@ -193,6 +194,138 @@ def _apply_global_headshot(settings: Any, headshot: dict[str, Any]) -> None:
             setattr(settings.headshot, attr, {str(v).upper() for v in value})
 
 
+def _field_multipliers(value: Any, context: str) -> dict[str, float]:
+    if value is None:
+        return {}
+    if not isinstance(value, dict):
+        raise ProfileError(f'{context} debe ser un objeto JSON.')
+    result: dict[str, float] = {}
+    for key, raw in value.items():
+        field_name = str(key)
+        if field_name not in FIELDS:
+            raise ProfileError(f'{context}.{field_name} no es un campo estándar válido.')
+        if not isinstance(raw, (int, float)) or isinstance(raw, bool):
+            raise ProfileError(f'{context}.{field_name} debe ser numérico.')
+        multiplier = float(raw)
+        if multiplier <= 0.0:
+            raise ProfileError(f'{context}.{field_name} debe ser mayor que cero.')
+        result[field_name] = multiplier
+    return result
+
+
+def _parse_restore(settings: Any, data: dict[str, Any]) -> None:
+    restore = data.get('restore', {})
+    if restore is None:
+        return
+    if not isinstance(restore, dict):
+        raise ProfileError('restore debe ser un objeto JSON.')
+    if 'from_backup' in restore and not isinstance(restore['from_backup'], bool):
+        raise ProfileError('restore.from_backup debe ser booleano.')
+    settings.restore_from_backup = bool(restore.get('from_backup', settings.restore_from_backup))
+    suffix = restore.get('backup_suffix', settings.restore_backup_suffix)
+    if not isinstance(suffix, str) or not suffix.strip():
+        raise ProfileError('restore.backup_suffix debe ser texto no vacío.')
+    if '/' in suffix or '\\' in suffix:
+        raise ProfileError('restore.backup_suffix no puede contener rutas.')
+    settings.restore_backup_suffix = suffix
+
+
+def _parse_weapon_classification(settings: Any, data: dict[str, Any]) -> None:
+    classification = data.get('weapon_classification', {})
+    if classification is None:
+        return
+    if not isinstance(classification, dict):
+        raise ProfileError('weapon_classification debe ser un objeto JSON.')
+
+    catalog_id = classification.get('official_catalog')
+    if catalog_id is not None:
+        if not isinstance(catalog_id, str):
+            raise ProfileError('weapon_classification.official_catalog debe ser texto.')
+        try:
+            settings.official_weapons = set(get_catalog(catalog_id))
+        except KeyError as exc:
+            raise ProfileError(str(exc)) from exc
+
+    additions = classification.get('official_additions', [])
+    removals = classification.get('official_removals', [])
+    if not isinstance(additions, list) or not isinstance(removals, list):
+        raise ProfileError('official_additions/official_removals deben ser listas.')
+    settings.official_weapons.update(str(v).upper() for v in additions)
+    settings.official_weapons.difference_update(str(v).upper() for v in removals)
+
+    custom_enabled = classification.get('custom_when_not_official', False)
+    if not isinstance(custom_enabled, bool):
+        raise ProfileError('weapon_classification.custom_when_not_official debe ser booleano.')
+    settings.classify_custom_weapons = custom_enabled
+
+    custom = classification.get('custom', {})
+    if custom is None:
+        custom = {}
+    if not isinstance(custom, dict):
+        raise ProfileError('weapon_classification.custom debe ser un objeto JSON.')
+    groups = custom.get('groups', [])
+    if not isinstance(groups, list):
+        raise ProfileError('weapon_classification.custom.groups debe ser una lista.')
+    settings.custom_weapon_groups = {str(v).upper() for v in groups}
+    settings.custom_field_multipliers = _field_multipliers(
+        custom.get('field_multipliers', {}),
+        'weapon_classification.custom.field_multipliers',
+    )
+
+    group_maps = custom.get('group_field_multipliers', {})
+    if not isinstance(group_maps, dict):
+        raise ProfileError('weapon_classification.custom.group_field_multipliers debe ser un objeto JSON.')
+    settings.custom_group_field_multipliers = {
+        str(group).upper(): _field_multipliers(
+            values,
+            f'weapon_classification.custom.group_field_multipliers.{str(group).upper()}',
+        )
+        for group, values in group_maps.items()
+    }
+
+
+def _parse_family_rules(settings: Any, data: dict[str, Any]) -> None:
+    rules = data.get('family_rules', [])
+    if not isinstance(rules, list):
+        raise ProfileError('family_rules debe ser una lista JSON.')
+    parsed: list[dict[str, Any]] = []
+    for index, raw in enumerate(rules):
+        context = f'family_rules[{index}]'
+        if not isinstance(raw, dict):
+            raise ProfileError(f'{context} debe ser un objeto JSON.')
+        contains = raw.get('contains', [])
+        groups = raw.get('groups', [])
+        if isinstance(contains, str):
+            contains = [contains]
+        if isinstance(groups, str):
+            groups = [groups]
+        if not isinstance(contains, list) or not contains:
+            raise ProfileError(f'{context}.contains debe contener al menos un texto.')
+        if not isinstance(groups, list):
+            raise ProfileError(f'{context}.groups debe ser una lista.')
+        fields = raw.get('fields', {})
+        if not isinstance(fields, dict):
+            raise ProfileError(f'{context}.fields debe ser un objeto JSON.')
+        unknown = [str(key) for key in fields if str(key) not in FIELDS]
+        if unknown:
+            raise ProfileError(f'{context}.fields contiene campos desconocidos: {", ".join(unknown)}')
+        for flag_name in ('official_only', 'custom_only'):
+            if flag_name in raw and not isinstance(raw[flag_name], bool):
+                raise ProfileError(f'{context}.{flag_name} debe ser booleano.')
+        if raw.get('official_only') and raw.get('custom_only'):
+            raise ProfileError(f'{context} no puede ser official_only y custom_only a la vez.')
+        parsed.append({
+            'name': str(raw.get('name') or f'rule_{index + 1}'),
+            'contains': [str(v).upper() for v in contains if str(v).strip()],
+            'groups': {str(v).upper() for v in groups},
+            'official_only': bool(raw.get('official_only', False)),
+            'custom_only': bool(raw.get('custom_only', False)),
+            'field_multipliers': _field_multipliers(raw.get('field_multipliers', {}), f'{context}.field_multipliers'),
+            'fields': {str(key): value for key, value in fields.items()},
+        })
+    settings.family_rules = parsed
+
+
 def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
     modules = data.get('modules', {})
     if not isinstance(modules, dict):
@@ -228,6 +361,10 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
     base_preset = data.get('base_preset')
     if isinstance(base_preset, str):
         settings.active_preset = base_preset
+
+    _parse_restore(settings, data)
+    _parse_weapon_classification(settings, data)
+    _parse_family_rules(settings, data)
 
     headshot = data.get('headshot', {})
     if headshot is not None:
@@ -296,6 +433,11 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
     if not isinstance(ignored, list):
         raise ProfileError('ignore_weapons debe ser una lista JSON.')
     settings.ignore_weapons.update(str(w).upper() for w in ignored)
+
+    allowed_ignored = data.get('allow_ignored_weapons', [])
+    if not isinstance(allowed_ignored, list):
+        raise ProfileError('allow_ignored_weapons debe ser una lista JSON.')
+    settings.ignore_weapons.difference_update(str(w).upper() for w in allowed_ignored)
 
     validation = data.get('validation', {})
     if validation is None:

@@ -357,6 +357,14 @@ class Settings:
     group_headshot_overrides: dict[str, dict[str, Any]]
     weapon_headshot_overrides: dict[str, dict[str, Any]]
     validation_options: dict[str, Any]
+    restore_from_backup: bool
+    restore_backup_suffix: str
+    official_weapons: set[str]
+    classify_custom_weapons: bool
+    custom_weapon_groups: set[str]
+    custom_field_multipliers: dict[str, float]
+    custom_group_field_multipliers: dict[str, dict[str, float]]
+    family_rules: list[dict[str, Any]]
     scan: ScanConfig
 
     @classmethod
@@ -405,5 +413,13 @@ class Settings:
                 'warn_duplicates': True,
                 'warn_unregistered_meta': True,
             },
+            restore_from_backup=False,
+            restore_backup_suffix='.bak',
+            official_weapons=set(),
+            classify_custom_weapons=False,
+            custom_weapon_groups=set(),
+            custom_field_multipliers={},
+            custom_group_field_multipliers={},
+            family_rules=[],
             scan=SCAN,
         )

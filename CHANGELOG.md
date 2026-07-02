@@ -1,5 +1,21 @@
 # Changelog
 
+## 5.0.0 — 2026-07-02
+
+### Vanilla y custom automáticos
+
+- Restauración desde el `.meta.bak` original antes de calcular cambios.
+- Catálogo oficial Cfx.re integrado para distinguir armas default de armas custom.
+- Armas oficiales sin alteraciones; armas custom de fuego con `+15%` de daño y distancia.
+- Headshots originales conservados.
+- Revólveres oficiales y custom con un disparo letal al torso y daño reducido en extremidades.
+
+### Motor y calidad
+
+- Multiplicadores por clasificación y reglas por familia.
+- Advertencias cuando falta el backup.
+- 28 pruebas automáticas aprobadas.
+
 ## 4.0.0 — 2026-06-30
 
 ### Corrección del fallo real

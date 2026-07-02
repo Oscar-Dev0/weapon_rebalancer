@@ -9,6 +9,7 @@ from .fields import FIELDS
 from .headshot import apply_policy as apply_headshot_profile, audit_block as audit_headshot_block, resolve_headshot_policy
 from .meta_utils import (
     insert_field_if_missing,
+    read_field_value,
     read_text,
     replace_dynamic_field,
     replace_field,
@@ -32,6 +33,7 @@ class RebalanceEngine:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
         self._active_headshot_policy: dict[str, Any] = {}
+        self._restore_warnings: set[str] = set()
 
     def run(self) -> RebalanceReport:
         report = RebalanceReport(
@@ -68,6 +70,7 @@ class RebalanceEngine:
             report.weapon_blocks_found += len(changes)
 
         report.finalize_file_count()
+        report.warnings.extend(sorted(self._restore_warnings))
 
         if report.onetap_audit_total:
             report.warnings.append(
@@ -90,32 +93,73 @@ class RebalanceEngine:
         if not blocks:
             return []
 
+        backup_blocks_by_weapon: dict[str, list[WeaponBlock]] = {}
+        if self.settings.restore_from_backup:
+            backup_path = Path(str(path) + self.settings.restore_backup_suffix)
+            if backup_path.exists():
+                backup_content = read_text(backup_path)
+                for backup_block in extract_weapon_blocks(backup_path, backup_content, self.settings.scan, package_configs):
+                    backup_blocks_by_weapon.setdefault(backup_block.weapon.upper(), []).append(backup_block)
+            else:
+                self._restore_warnings.add(
+                    f'Restauración: no existe {backup_path}; {path} usa su contenido actual como base.'
+                )
+
         updated_content = content
         # Ajuste por offsets cuando reemplazamos bloques de distinto tamaño.
         offset = 0
         changes: list[FileChange] = []
 
         for block in blocks:
-            live_block = WeaponBlock(
+            current_start = block.start + offset
+            current_end = block.end + offset
+            current_text = updated_content[current_start:current_end]
+            processing_text = current_text
+            processing_weapon = block.weapon
+            processing_group = block.group
+            processing_source = block.source
+            restored_from_backup = False
+
+            candidates = backup_blocks_by_weapon.get(block.weapon.upper(), [])
+            if candidates:
+                backup_block = candidates.pop(0)
+                processing_text = backup_block.text
+                processing_weapon = backup_block.weapon
+                processing_group = backup_block.group
+                processing_source = f'{block.source}+backup_restore'
+                restored_from_backup = processing_text != current_text
+            elif self.settings.restore_from_backup and backup_blocks_by_weapon:
+                self._restore_warnings.add(
+                    f'Restauración: {block.weapon.upper()} no aparece en el backup de {path}; usa su bloque actual.'
+                )
+
+            processing_block = WeaponBlock(
                 path=block.path,
-                start=block.start + offset,
-                end=block.end + offset,
-                text=updated_content[block.start + offset:block.end + offset],
-                weapon=block.weapon,
-                group=block.group,
+                start=current_start,
+                end=current_end,
+                text=processing_text,
+                weapon=processing_weapon,
+                group=processing_group,
                 config_stack=block.config_stack,
-                source=block.source,
+                source=processing_source,
             )
-            change, new_block_text = self.process_block(live_block)
+            change, new_block_text = self.process_block(processing_block)
+            if change.skipped:
+                # Los filtros --only/--weapontype/--ignore y configs locales siguen siendo soberanos.
+                # Restaurar desde backup no debe tocar un bloque que el usuario pidió omitir.
+                new_block_text = current_text
+                restored_from_backup = False
+            elif restored_from_backup:
+                change.changed_fields.insert(0, 'restored_from_backup')
 
             # En --only no queremos llenar el print/reporte con cada arma que NO era objetivo.
             # Solo registramos armas objetivo, skips reales o cambios reales.
             if not (self.settings.only_weapons and change.skipped and change.reason == 'not_in_only_weapons'):
                 changes.append(change)
 
-            if new_block_text != live_block.text:
-                updated_content = updated_content[:live_block.start] + new_block_text + updated_content[live_block.end:]
-                offset += len(new_block_text) - len(live_block.text)
+            if new_block_text != current_text:
+                updated_content = updated_content[:current_start] + new_block_text + updated_content[current_end:]
+                offset += len(new_block_text) - len(current_text)
 
         if updated_content != content:
             write_text(path, updated_content, dry_run=self.settings.dry_run, backup=self.settings.create_backup)
@@ -172,6 +216,8 @@ class RebalanceEngine:
         self.settings.current_group = group
         profile = self.apply_weapon_range_multiplier(weapon, group, profile)
         profile = apply_modular_profiles(profile, self.settings)
+        profile = self.apply_custom_weapon_multipliers(weapon, group, block, profile)
+        profile = self.apply_family_rules(weapon, group, block, profile)
         policy = resolve_headshot_policy(self.settings, weapon, group, block)
         self._active_headshot_policy = policy
         policy_metrics: dict[str, Any] = {}
@@ -335,6 +381,12 @@ class RebalanceEngine:
         return profile
 
     def has_extended_overrides(self, weapon: str, group: str, block: WeaponBlock) -> bool:
+        if self.settings.restore_from_backup:
+            return True
+        if self.is_custom_weapon(weapon, group):
+            return True
+        if any(self.family_rule_matches(rule, weapon, group) for rule in self.settings.family_rules):
+            return True
         if self.settings.global_meta_overrides or self.settings.global_flag_ops.get('add') or self.settings.global_flag_ops.get('remove'):
             return True
         if group in self.settings.group_meta_overrides or group in self.settings.group_flag_ops:
@@ -347,6 +399,77 @@ class RebalanceEngine:
             if isinstance(pc.data.get('meta'), dict) or isinstance(pc.data.get('weapon_flags'), dict):
                 return True
         return False
+
+    def is_custom_weapon(self, weapon: str, group: str) -> bool:
+        if not self.settings.classify_custom_weapons:
+            return False
+        if weapon.upper() in self.settings.official_weapons:
+            return False
+        allowed_groups = self.settings.custom_weapon_groups
+        return not allowed_groups or group.upper() in allowed_groups
+
+    def family_rule_matches(self, rule: dict[str, Any], weapon: str, group: str) -> bool:
+        groups = rule.get('groups', set())
+        if groups and group.upper() not in groups:
+            return False
+        if not any(needle in weapon.upper() for needle in rule.get('contains', [])):
+            return False
+        is_custom = self.is_custom_weapon(weapon, group)
+        is_official = weapon.upper() in self.settings.official_weapons
+        if rule.get('custom_only') and not is_custom:
+            return False
+        if rule.get('official_only') and not is_official:
+            return False
+        return True
+
+    @staticmethod
+    def _numeric_field_base(block: WeaponBlock, profile: dict[str, Any], key: str) -> float | None:
+        value = profile.get(key)
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            value = read_field_value(block.text, key)
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return float(value)
+        return None
+
+    def apply_custom_weapon_multipliers(
+        self,
+        weapon: str,
+        group: str,
+        block: WeaponBlock,
+        profile: dict[str, Any],
+    ) -> dict[str, Any]:
+        if not self.is_custom_weapon(weapon, group):
+            return profile
+
+        multipliers = dict(self.settings.custom_field_multipliers)
+        multipliers.update(self.settings.custom_group_field_multipliers.get(group, {}))
+        if not multipliers:
+            return profile
+
+        result = deepcopy(profile)
+        for key, multiplier in multipliers.items():
+            base = self._numeric_field_base(block, result, key)
+            if base is not None:
+                result[key] = base * float(multiplier)
+        return result
+
+    def apply_family_rules(
+        self,
+        weapon: str,
+        group: str,
+        block: WeaponBlock,
+        profile: dict[str, Any],
+    ) -> dict[str, Any]:
+        result = deepcopy(profile)
+        for rule in self.settings.family_rules:
+            if not self.family_rule_matches(rule, weapon, group):
+                continue
+            for key, multiplier in rule.get('field_multipliers', {}).items():
+                base = self._numeric_field_base(block, result, key)
+                if base is not None:
+                    result[key] = base * float(multiplier)
+            result.update(deepcopy(rule.get('fields', {})))
+        return result
 
     def collect_meta_overrides(self, weapon: str, group: str, block: WeaponBlock) -> dict[str, Any]:
         result: dict[str, Any] = {}

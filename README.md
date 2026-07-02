@@ -1,6 +1,23 @@
-# Weapon Rebalancer META V4
+# Weapon Rebalancer META V5
 
 Requiere **Python 3.10 o superior**.
+
+## Perfil recomendado V5: default original + custom 15%
+
+Para volver a los valores anteriores y aplicar solamente una ventaja moderada a las armas custom:
+
+```powershell
+python run_rebalance.py `
+  --root "C:\TxData\rebelion\resources\[Streaming]\[PackArmas]" `
+  --profile "profiles\vanilla_normal_custom_plus15_revolver_onetap.json" `
+  --write `
+  --report "reports\vanilla_custom_plus15_apply.json"
+```
+
+También puedes usar `preview_vanilla_custom_plus15.bat` y luego `apply_vanilla_custom_plus15.bat`.
+
+El perfil usa `weapons.meta.bak` como fuente original. Si un archivo no tiene backup, mantiene su contenido actual como base y lo muestra en las advertencias del reporte. Las armas oficiales se reconocen con el catálogo de modelos de Cfx.re; únicamente las armas no incluidas en ese catálogo y pertenecientes a grupos de fuego reciben el `+15%`.
+
 
 La V4 separa correctamente las dos capas que intervienen en un headshot de FiveM:
 
@@ -180,4 +197,4 @@ python -m unittest discover -s tests -v
 python -m compileall -q .
 ```
 
-La V4 incluye **23 pruebas automáticas**.
+La V5 incluye **28 pruebas automáticas**.
