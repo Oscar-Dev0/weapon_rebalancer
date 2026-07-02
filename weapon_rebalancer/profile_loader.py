@@ -283,6 +283,13 @@ def _parse_weapon_classification(settings: Any, data: dict[str, Any]) -> None:
         for group, values in group_maps.items()
     }
 
+    base_mode = custom.get('multiplier_base', 'weapon')
+    if not isinstance(base_mode, str) or base_mode not in {'weapon', 'group_reference'}:
+        raise ProfileError(
+            'weapon_classification.custom.multiplier_base debe ser "weapon" o "group_reference".'
+        )
+    settings.custom_multiplier_base = base_mode
+
 
 
 def _parse_baseline_repair(settings: Any, data: dict[str, Any]) -> None:

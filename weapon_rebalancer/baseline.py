@@ -15,6 +15,8 @@ DAMAGE_REPAIR_FIELDS = (
     'hit_limbs',
     'network_hit_limbs',
     'lightly_armoured',
+    'vehicle_damage_modifier',
+    'penetration',
     'weapon_range',
     'falloff_min',
     'falloff_max',

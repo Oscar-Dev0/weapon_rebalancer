@@ -115,7 +115,7 @@ RegisterCommand(Config.DebugCommand or 'osweaponstatus', function()
     ))
 end, false)
 '''
-    fxmanifest = """fx_version 'cerulean'\ngame 'gta5'\nlua54 'yes'\n\nauthor 'OscarDev'\ndescription 'Guard de daño absoluto generado por weapon_rebalancer V6'\nversion '6.0.0'\n\nshared_script 'config.lua'\nclient_script 'client.lua'\n"""
+    fxmanifest = """fx_version 'cerulean'\ngame 'gta5'\nlua54 'yes'\n\nauthor 'OscarDev'\ndescription 'Guard de daño normalizado generado por weapon_rebalancer V6.1'\nversion '6.1.0'\n\nshared_script 'config.lua'\nclient_script 'client.lua'\n"""
     readme = """# os_weapon_damage_guard\n\nColoca este recurso después de todos los recursos de armas y daño en `server.cfg`:\n\n```cfg\nensure tus_armas\nensure os_weapon_damage_guard\n```\n\nComando cliente: `/osweaponstatus`\n\nMuestra daño cargado, daño esperado y multiplicador aplicado para el arma actual.\n"""
     (destination / 'config.lua').write_text(config, encoding='utf-8')
     (destination / 'client.lua').write_text(client, encoding='utf-8')

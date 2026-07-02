@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.1.0 - 2026-07-02
+
+- Custom normalizadas contra una referencia vanilla por grupo antes del +15%.
+- Ya no se multiplica el daño inflado incluido por el pack custom.
+- Normalización de modificadores de red, extremidades, armadura, vehículo, falloff y headshot.
+- 34 pruebas automáticas.
+
 ## 6.0.0 - 2026-07-02
 
 - Reparación absoluta basada en paquete META de referencia.

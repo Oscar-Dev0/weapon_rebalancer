@@ -390,6 +390,8 @@ class RebalanceEngine:
             'hit_limbs',
             'network_hit_limbs',
             'lightly_armoured',
+            'vehicle_damage_modifier',
+            'penetration',
             'weapon_range',
             'falloff_min',
             'falloff_max',
@@ -489,6 +491,31 @@ class RebalanceEngine:
             return float(value)
         return None
 
+    def _custom_group_reference_base(self, group: str, key: str) -> float | None:
+        """Return the normalized vanilla-like base for a custom weapon field.
+
+        V6 originally multiplied the value already authored by the custom pack. That made
+        pre-buffed weapons even stronger (for example, 80 * 1.15 = 92). In
+        ``group_reference`` mode the target is instead calculated from the configured
+        vanilla-like fallback for the weapon group.
+        """
+        group_fallbacks = self.settings.baseline_repair.get('group_fallbacks', {})
+        fallback = group_fallbacks.get(group.upper(), {})
+        if not isinstance(fallback, dict):
+            return None
+
+        value = fallback.get(key)
+        # Headshot distance follows the normalized weapon range when an explicit
+        # group value is not present.
+        if value is None and key in {'max_headshot_player', 'max_headshot_ai'}:
+            value = fallback.get('weapon_range')
+        if value is None and key in {'min_headshot_player', 'min_headshot_ai'}:
+            value = 0.0
+
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            return float(value)
+        return None
+
     def apply_custom_weapon_multipliers(
         self,
         weapon: str,
@@ -505,8 +532,11 @@ class RebalanceEngine:
             return profile
 
         result = deepcopy(profile)
+        use_group_reference = self.settings.custom_multiplier_base == 'group_reference'
         for key, multiplier in multipliers.items():
-            base = self._numeric_field_base(block, result, key)
+            base = self._custom_group_reference_base(group, key) if use_group_reference else None
+            if base is None:
+                base = self._numeric_field_base(block, result, key)
             if base is not None:
                 result[key] = base * float(multiplier)
         return result

@@ -3,7 +3,7 @@
   "profiles": [
     {
       "file": "vanilla_repair_custom_plus15_absolute_v6.json",
-      "summary": "V6 recomendado: restaura desde paquete META original, repara daño cero/ausente, custom +15%, headshot normal y revólver letal al torso."
+      "summary": "V6.1 recomendado: oficiales vanilla; custom normalizadas por grupo y luego +15%, sin multiplicar valores inflados; headshot normal y revólver letal al torso."
     },
     {
       "file": "vanilla_normal_custom_plus15_revolver_onetap.json",

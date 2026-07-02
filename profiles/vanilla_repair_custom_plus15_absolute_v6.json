@@ -1,7 +1,7 @@
 {
-  "name": "V6 reparación absoluta vanilla + custom 15% + revólver torso",
-  "schema_version": 6,
-  "description": "Repara daños cero/ausentes con valores absolutos, restaura el núcleo vanilla conocido, conserva valores válidos del resto, aplica +15% a custom y deja revólver letal al torso.",
+  "name": "V6.1 vanilla normal + custom normalizada 15% + revólver torso",
+  "schema_version": 7,
+  "description": "Restaura armas oficiales a valores vanilla y normaliza cada custom contra la referencia equilibrada de su grupo antes de aplicar +15%; nunca multiplica el daño inflado que traiga el pack.",
   "base_preset": "rp_balanced",
   "modules": {
     "recoil": "original",
@@ -33,13 +33,27 @@
       ],
       "field_multipliers": {
         "damage": 1.15,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0,
+        "hit_limbs": 1.0,
+        "network_hit_limbs": 1.0,
+        "lightly_armoured": 1.0,
+        "vehicle_damage_modifier": 1.0,
         "weapon_range": 1.15,
         "falloff_min": 1.15,
         "falloff_max": 1.15,
+        "falloff_modifier": 1.0,
+        "headshot_player": 1.0,
+        "network_headshot": 1.0,
+        "headshot_ai": 1.0,
+        "min_headshot_player": 1.0,
         "max_headshot_player": 1.15,
-        "max_headshot_ai": 1.15
+        "min_headshot_ai": 1.0,
+        "max_headshot_ai": 1.15,
+        "penetration": 1.0
       },
-      "group_field_multipliers": {}
+      "group_field_multipliers": {},
+      "multiplier_base": "group_reference"
     }
   },
   "baseline_repair": {
@@ -192,59 +206,104 @@
         "falloff_min": 45.0,
         "falloff_max": 90.0,
         "falloff_modifier": 0.75,
+        "hit_limbs": 0.75,
+        "network_hit_limbs": 0.75,
+        "lightly_armoured": 0.75,
+        "vehicle_damage_modifier": 0.35,
         "headshot_player": 18.0,
         "network_headshot": 1.0,
         "headshot_ai": 1000.0,
         "network_player_damage_modifier": 1.0,
-        "network_ped_damage_modifier": 1.0
+        "network_ped_damage_modifier": 1.0,
+        "min_headshot_player": 0.0,
+        "min_headshot_ai": 0.0,
+        "max_headshot_player": 120.0,
+        "max_headshot_ai": 120.0,
+        "penetration": 0.01
       },
       "GROUP_SMG": {
-        "damage": 23.0,
+        "damage": 22.0,
         "weapon_range": 140.0,
         "falloff_min": 55.0,
         "falloff_max": 110.0,
         "falloff_modifier": 0.75,
+        "hit_limbs": 0.75,
+        "network_hit_limbs": 0.75,
+        "lightly_armoured": 0.75,
+        "vehicle_damage_modifier": 0.35,
         "headshot_player": 18.0,
         "network_headshot": 1.0,
         "headshot_ai": 1000.0,
         "network_player_damage_modifier": 1.0,
-        "network_ped_damage_modifier": 1.0
+        "network_ped_damage_modifier": 1.0,
+        "min_headshot_player": 0.0,
+        "min_headshot_ai": 0.0,
+        "max_headshot_player": 140.0,
+        "max_headshot_ai": 140.0,
+        "penetration": 0.01
       },
       "GROUP_RIFLE": {
-        "damage": 32.0,
+        "damage": 30.0,
         "weapon_range": 300.0,
         "falloff_min": 120.0,
         "falloff_max": 250.0,
         "falloff_modifier": 0.75,
+        "hit_limbs": 0.75,
+        "network_hit_limbs": 0.75,
+        "lightly_armoured": 0.75,
+        "vehicle_damage_modifier": 0.35,
         "headshot_player": 18.0,
         "network_headshot": 1.0,
         "headshot_ai": 1000.0,
         "network_player_damage_modifier": 1.0,
-        "network_ped_damage_modifier": 1.0
+        "network_ped_damage_modifier": 1.0,
+        "min_headshot_player": 0.0,
+        "min_headshot_ai": 0.0,
+        "max_headshot_player": 300.0,
+        "max_headshot_ai": 300.0,
+        "penetration": 0.01
       },
       "GROUP_MG": {
-        "damage": 32.0,
+        "damage": 31.0,
         "weapon_range": 300.0,
         "falloff_min": 120.0,
         "falloff_max": 250.0,
         "falloff_modifier": 0.75,
+        "hit_limbs": 0.75,
+        "network_hit_limbs": 0.75,
+        "lightly_armoured": 0.75,
+        "vehicle_damage_modifier": 0.35,
         "headshot_player": 18.0,
         "network_headshot": 1.0,
         "headshot_ai": 1000.0,
         "network_player_damage_modifier": 1.0,
-        "network_ped_damage_modifier": 1.0
+        "network_ped_damage_modifier": 1.0,
+        "min_headshot_player": 0.0,
+        "min_headshot_ai": 0.0,
+        "max_headshot_player": 300.0,
+        "max_headshot_ai": 300.0,
+        "penetration": 0.01
       },
       "GROUP_SHOTGUN": {
-        "damage": 32.0,
+        "damage": 29.0,
         "weapon_range": 45.0,
         "falloff_min": 15.0,
         "falloff_max": 38.0,
         "falloff_modifier": 0.65,
+        "hit_limbs": 0.75,
+        "network_hit_limbs": 0.75,
+        "lightly_armoured": 0.75,
+        "vehicle_damage_modifier": 0.25,
         "headshot_player": 18.0,
         "network_headshot": 1.0,
         "headshot_ai": 1000.0,
         "network_player_damage_modifier": 1.0,
-        "network_ped_damage_modifier": 1.0
+        "network_ped_damage_modifier": 1.0,
+        "min_headshot_player": 0.0,
+        "min_headshot_ai": 0.0,
+        "max_headshot_player": 45.0,
+        "max_headshot_ai": 45.0,
+        "penetration": 0.01
       },
       "GROUP_SNIPER": {
         "damage": 101.0,
@@ -252,11 +311,20 @@
         "falloff_min": 800.0,
         "falloff_max": 1400.0,
         "falloff_modifier": 0.85,
+        "hit_limbs": 0.75,
+        "network_hit_limbs": 0.75,
+        "lightly_armoured": 0.75,
+        "vehicle_damage_modifier": 0.35,
         "headshot_player": 18.0,
         "network_headshot": 1.0,
         "headshot_ai": 1000.0,
         "network_player_damage_modifier": 1.0,
-        "network_ped_damage_modifier": 1.0
+        "network_ped_damage_modifier": 1.0,
+        "min_headshot_player": 0.0,
+        "min_headshot_ai": 0.0,
+        "max_headshot_player": 1500.0,
+        "max_headshot_ai": 1500.0,
+        "penetration": 0.01
       }
     }
   },
@@ -301,7 +369,9 @@
     "why_v6": "No multiplica cero ni depende solamente de .bak. Primero repara una base absoluta válida y después aplica +15% a custom.",
     "runtime": "Genera os_weapon_damage_guard para comprobar GetWeaponDamage y neutralizar modificadores runtime por arma/jugador.",
     "official": "El núcleo vanilla de mayor uso tiene daño absoluto. Las demás oficiales conservan valores válidos y solo usan fallback si están en cero o ausentes.",
-    "custom": "Una custom válida conserva su identidad y recibe x1.15. Si viene en cero, usa el fallback de su grupo y luego x1.15.",
-    "headshot": "No usa el multiplicador global 1500. Conserva headshot válido y solo repara tags ausentes/cero con valores vanilla-like."
+    "custom": "Todas las custom del mismo grupo parten de una referencia vanilla equilibrada. Ejemplo: pistola custom Damage=80 se normaliza a 27 y queda en 31.05, no en 92.",
+    "headshot": "Mantiene headshot válido y normalizado. Solo el revólver conserva la regla especial de muerte al torso.",
+    "why_v6_1": "Corrige el error de V6.0: una custom ya inflada no usa su propio Damage como base. Se normaliza por grupo y luego recibe solamente +15%.",
+    "network_modifiers": "Los modificadores NetworkPlayer/NetworkPed, extremidades, armadura, vehículo y headshot también se normalizan para evitar boosts ocultos."
   }
 }

@@ -364,6 +364,7 @@ class Settings:
     custom_weapon_groups: set[str]
     custom_field_multipliers: dict[str, float]
     custom_group_field_multipliers: dict[str, dict[str, float]]
+    custom_multiplier_base: str
     family_rules: list[dict[str, Any]]
     baseline_repair: dict[str, Any]
     scan: ScanConfig
@@ -421,6 +422,7 @@ class Settings:
             custom_weapon_groups=set(),
             custom_field_multipliers={},
             custom_group_field_multipliers={},
+            custom_multiplier_base='weapon',
             family_rules=[],
             baseline_repair={
                 'enabled': False,

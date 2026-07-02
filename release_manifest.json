@@ -1,6 +1,6 @@
 {
-  "name": "weapon_rebalancer_meta_v6",
-  "version": "6.0.0",
+  "name": "weapon_rebalancer_meta_v6_1",
+  "version": "6.1.0",
   "python_min": "3.10",
   "entrypoint": "run_rebalance.py",
   "recommended_profile": "profiles/vanilla_repair_custom_plus15_absolute_v6.json",
@@ -47,9 +47,11 @@
     "preview_vanilla_repair_v6.bat"
   ],
   "release_notes": [
+    "RELEASE_NOTES_6.1.0.md",
+    "CHANGELOG_2026-07-02_V6_1.md",
     "CHANGELOG.md",
     "CHANGELOG_2026-07-02_V6.md",
     "RELEASE_NOTES_6.0.0.md"
   ],
-  "test_count": 32
+  "test_count": 34
 }

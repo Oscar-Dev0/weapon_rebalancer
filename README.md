@@ -1,10 +1,20 @@
-# Weapon Rebalancer META V6
+# Weapon Rebalancer META V6.1
 
 Requiere **Python 3.10 o superior**.
 
-## Perfil recomendado: reparación absoluta + custom 15%
+## Perfil recomendado: vanilla normal + custom normalizada 15%
 
-La V6 corrige el problema principal de la V5: ya no depende únicamente de un `.meta.bak` que podría estar modificado. Puede cargar un paquete original de `weapons.meta`, copiar los valores absolutos de las armas oficiales, reparar armas custom con daño/rango en cero y luego aplicar el `+15%`.
+V6.1 corrige el exceso de daño de V6.0. Las armas custom ya **no toman su propio `Damage` y lo multiplican por 1.15**. Primero se normalizan contra una referencia equilibrada del mismo grupo y después reciben solamente el `+15%`.
+
+Ejemplo real:
+
+```text
+Custom de pistola que llega con Damage=80
+V6.0: 80 × 1.15 = 92       (demasiado fuerte)
+V6.1: 27 × 1.15 = 31.05    (solo 15% sobre la referencia de pistola)
+```
+
+También se normalizan los modificadores ocultos que podían volver a inflar el resultado: daño de red, extremidades, armadura ligera, vehículo, falloff y headshot.
 
 ### Uso rápido
 
@@ -26,7 +36,7 @@ También puedes indicar rutas manualmente:
 apply_vanilla_repair_v6.bat "C:\TxData\rebelion\resources\[Streaming]\[PackArmas]" "C:\TxData\rebelion\resources\[OscarDev]\os_weapon_damage_guard"
 ```
 
-3. Agrega el guard al **final** del bloque de recursos de armas/combate:
+3. Agrega el guard al final del bloque de recursos de armas/combate:
 
 ```cfg
 ensure os_weapon_damage_guard
@@ -38,58 +48,39 @@ ensure os_weapon_damage_guard
 /osweaponstatus
 ```
 
-El comando muestra el hash/nombre actual, el daño que FiveM reporta como cargado, el daño absoluto esperado y el multiplicador aplicado.
+## Valores normalizados para custom
 
-## Qué repara V6
+| Grupo | Base vanilla equilibrada | Custom +15% |
+|---|---:|---:|
+| Pistola | 27.00 | 31.05 |
+| SMG | 22.00 | 25.30 |
+| Rifle | 30.00 | 34.50 |
+| MG | 31.00 | 35.65 |
+| Escopeta | 29.00 | 33.35 |
+| Sniper | 101.00 | 116.15 |
 
-- restaura armas oficiales desde `--reference-root` cuando hay un paquete original disponible;
-- usa una tabla de daños vanilla del núcleo como respaldo;
-- repara `Damage=0`, tags ausentes y modificadores de red en cero;
-- repara alcance, falloff y headshot deshabilitado accidentalmente;
-- aplica `×1.15` únicamente a armas custom de grupos de fuego;
-- deja el headshot normal/original, sin el multiplicador global `1500`;
-- aplica `350` al torso de revólveres y reduce extremidades a `0.25`;
-- detecta componentes con multiplicadores de daño distintos de `1.0`;
-- marca armas `PROJECTILE`, porque pueden depender de `AmmoInfo`/explosión y no solamente de `<Damage>`;
-- genera `os_weapon_damage_guard` para neutralizar modificadores runtime por arma/jugador.
-
-## Paquete de referencia
-
-El descargador usa el proyecto público `CyCoSnag/snag_weapon_metas`, que incluye META originales de GTAV y DLC. Para instalarlo manualmente:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\references\download_original_gtav_metas.ps1
-```
-
-Después:
-
-```powershell
-python run_rebalance.py `
-  --root "C:\TxData\rebelion\resources\[Streaming]\[PackArmas]" `
-  --profile "profiles\vanilla_repair_custom_plus15_absolute_v6.json" `
-  --reference-root "references\snags_original\metas" `
-  --write `
-  --generate-damage-guard "C:\TxData\rebelion\resources\[OscarDev]\os_weapon_damage_guard" `
-  --force-install
-```
+El revólver mantiene su regla especial posterior: `350` al torso y `0.25` en extremidades.
 
 ## Orden de cálculo
 
 ```text
-paquete original / referencia
-          ↓
-reparación de valores cero o ausentes
-          ↓
-+15% solamente para custom
-          ↓
-reglas de familia (revólver)
-          ↓
-validación, auditorías y guard runtime
+referencia META vanilla para armas oficiales
+                    ↓
+reparación de tags cero o ausentes
+                    ↓
+custom normalizada contra referencia de su grupo
+                    ↓
++15% solamente sobre esa referencia normalizada
+                    ↓
+reglas especiales de familia (revólver)
+                    ↓
+validación, auditoría y guard runtime
 ```
 
-La V6 incluye **32 pruebas automáticas**.
+V6.1 incluye **34 pruebas automáticas**.
 
 ---
+
 
 ## Documentación histórica V5/V4
 
