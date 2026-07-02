@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Any
 
 from .config import Settings
+from .baseline import apply_baseline_repair, build_reference_index
+from .component_audit import scan_component_damage_modifiers, scan_projectile_weapons
 from .fields import FIELDS
 from .headshot import apply_policy as apply_headshot_profile, audit_block as audit_headshot_block, resolve_headshot_policy
 from .meta_utils import (
@@ -34,6 +36,7 @@ class RebalanceEngine:
         self.settings = settings
         self._active_headshot_policy: dict[str, Any] = {}
         self._restore_warnings: set[str] = set()
+        self._reference_values: dict[str, dict[str, float]] = {}
 
     def run(self) -> RebalanceReport:
         report = RebalanceReport(
@@ -44,10 +47,25 @@ class RebalanceEngine:
         )
 
         paths = discover_meta_paths(self.settings.root, self.settings.scan, self.settings.skip_basenames)
+        reference_roots = [Path(v) for v in self.settings.baseline_repair.get('reference_roots', [])]
+        self._reference_values = build_reference_index(reference_roots, self.settings.scan)
+        report.reference_weapons_loaded = len(self._reference_values)
+        if reference_roots and not self._reference_values:
+            report.warnings.append('No se cargó ninguna arma desde --reference-root; revisa que la ruta contenga weapons.meta válidos.')
         package_configs = find_package_configs(self.settings.root, self.settings.scan)
         report.package_configs_found = [str(p.path) for p in package_configs]
         report.fxmanifest_data_files = discover_fxmanifest_data_files(self.settings.root)
         report.files_scanned = len(paths)
+        report.component_damage_modifiers = scan_component_damage_modifiers(self.settings.root)
+        report.projectile_weapons = scan_projectile_weapons(self.settings.root, self.settings.scan, self.settings.skip_basenames)
+        if report.component_damage_modifiers:
+            report.warnings.append(
+                f'{len(report.component_damage_modifiers)} archivos de componentes contienen modificadores de daño distintos de 1.0; revisa el reporte porque pueden alterar el resultado final.'
+            )
+        if report.projectile_weapons:
+            report.warnings.append(
+                f'{len(report.projectile_weapons)} armas usan FireType=PROJECTILE; su resultado puede depender de AmmoInfo/explosión y no solo de CWeaponInfo.Damage.'
+            )
 
         pack_audit = build_pack_audit(paths, self.settings.scan, package_configs, self.settings.root)
         if self.settings.validation_options.get('warn_duplicates', True):
@@ -216,6 +234,25 @@ class RebalanceEngine:
         self.settings.current_group = group
         profile = self.apply_weapon_range_multiplier(weapon, group, profile)
         profile = apply_modular_profiles(profile, self.settings)
+
+        baseline_config = deepcopy(self.settings.baseline_repair)
+        if weapon in self._reference_values:
+            official_values = dict(baseline_config.get('official_values', {}))
+            official_values[weapon] = self._reference_values[weapon]
+            baseline_config['official_values'] = official_values
+
+        baseline = apply_baseline_repair(
+            weapon=weapon,
+            group=group,
+            block=block,
+            profile=profile,
+            is_official=weapon in self.settings.official_weapons,
+            is_custom=self.is_custom_weapon(weapon, group),
+            config=baseline_config,
+        )
+        profile = baseline.profile
+        change.changed_fields.extend(baseline.notes)
+
         profile = self.apply_custom_weapon_multipliers(weapon, group, block, profile)
         profile = self.apply_family_rules(weapon, group, block, profile)
         policy = resolve_headshot_policy(self.settings, weapon, group, block)
@@ -345,6 +382,27 @@ class RebalanceEngine:
                 'create_missing_network_player_modifier_tag',
                 getattr(self.settings.headshot, 'create_missing_network_player_modifier_tag', True),
             ))
+
+        if self.settings.baseline_repair.get('enabled', False) and key in {
+            'damage',
+            'network_player_damage_modifier',
+            'network_ped_damage_modifier',
+            'hit_limbs',
+            'network_hit_limbs',
+            'lightly_armoured',
+            'weapon_range',
+            'falloff_min',
+            'falloff_max',
+            'falloff_modifier',
+            'headshot_player',
+            'network_headshot',
+            'headshot_ai',
+            'min_headshot_player',
+            'max_headshot_player',
+            'min_headshot_ai',
+            'max_headshot_ai',
+        }:
+            return True
 
         if key == 'damage':
             return bool(policy.get('mode') == 'onetap' and policy.get('auto_minimum_base_damage', True))

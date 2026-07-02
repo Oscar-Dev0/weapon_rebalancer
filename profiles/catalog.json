@@ -1,6 +1,10 @@
 {
-  "recommended": "vanilla_normal_custom_plus15_revolver_onetap.json",
+  "recommended": "vanilla_repair_custom_plus15_absolute_v6.json",
   "profiles": [
+    {
+      "file": "vanilla_repair_custom_plus15_absolute_v6.json",
+      "summary": "V6 recomendado: restaura desde paquete META original, repara daño cero/ausente, custom +15%, headshot normal y revólver letal al torso."
+    },
     {
       "file": "vanilla_normal_custom_plus15_revolver_onetap.json",
       "summary": "Restaura desde .meta.bak, deja oficiales originales, custom +15% y revólver letal al torso."

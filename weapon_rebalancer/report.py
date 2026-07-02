@@ -41,6 +41,9 @@ class RebalanceReport:
     only_found: dict[str, str] = field(default_factory=dict)
     duplicate_weapons: dict[str, list[str]] = field(default_factory=dict)
     unregistered_meta_files: list[str] = field(default_factory=list)
+    component_damage_modifiers: dict[str, list[str]] = field(default_factory=dict)
+    reference_weapons_loaded: int = 0
+    projectile_weapons: dict[str, str] = field(default_factory=dict)
     onetap_audit_total: int = 0
     onetap_audit_passed: int = 0
     onetap_audit_failed: int = 0
@@ -97,6 +100,16 @@ class RebalanceReport:
             print(f'\nMETA sin registro visible en manifest: {len(self.unregistered_meta_files)}')
             for path in self.unregistered_meta_files[:20]:
                 print(f'  ! {path}')
+        if self.reference_weapons_loaded:
+            print(f'\nArmas cargadas desde paquete de referencia: {self.reference_weapons_loaded}')
+        if self.projectile_weapons:
+            print(f'\nArmas PROJECTILE (revisar AmmoInfo/explosión): {len(self.projectile_weapons)}')
+            for weapon, detail in list(self.projectile_weapons.items())[:20]:
+                print(f'  ! {weapon}: {detail}')
+        if self.component_damage_modifiers:
+            print(f'\nComponentes con modificadores de daño: {len(self.component_damage_modifiers)}')
+            for path, entries in list(self.component_damage_modifiers.items())[:20]:
+                print(f'  ! {path}: {", ".join(entries)}')
         if self.onetap_audit_total:
             print(f'\nAuditoría one-tap: ok={self.onetap_audit_passed} | fallos={self.onetap_audit_failed} | total={self.onetap_audit_total}')
         if self.warnings:

@@ -92,7 +92,7 @@ FIELDS: dict[str, MetaField] = {
     'damage_time_in_vehicle': F('damage_time_in_vehicle', 'DamageTimeInVehicle', section='damage'),
     'damage_time_in_vehicle_headshot': F('damage_time_in_vehicle_headshot', 'DamageTimeInVehicleHeadShot', section='damage'),
     'network_player_damage_modifier': F('network_player_damage_modifier', 'NetworkPlayerDamageModifier', insert=True, section='damage'),
-    'network_ped_damage_modifier': F('network_ped_damage_modifier', 'NetworkPedDamageModifier', section='damage'),
+    'network_ped_damage_modifier': F('network_ped_damage_modifier', 'NetworkPedDamageModifier', insert=True, section='damage'),
     'hit_limbs': F('hit_limbs', 'HitLimbsDamageModifier', insert=True, section='damage'),
     'network_hit_limbs': F('network_hit_limbs', 'NetworkHitLimbsDamageModifier', insert=True, section='damage'),
     'lightly_armoured': F('lightly_armoured', 'LightlyArmouredDamageModifier', insert=True, section='damage'),

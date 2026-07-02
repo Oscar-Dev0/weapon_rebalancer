@@ -284,6 +284,64 @@ def _parse_weapon_classification(settings: Any, data: dict[str, Any]) -> None:
     }
 
 
+
+def _parse_baseline_repair(settings: Any, data: dict[str, Any]) -> None:
+    raw = data.get('baseline_repair')
+    if raw is None:
+        return
+    if not isinstance(raw, dict):
+        raise ProfileError('baseline_repair debe ser un objeto JSON.')
+
+    result = dict(settings.baseline_repair)
+    bool_keys = (
+        'enabled',
+        'repair_zero_or_missing',
+        'repair_invalid_network_modifiers',
+        'repair_disabled_headshots',
+        'repair_invalid_ranges',
+    )
+    for key in bool_keys:
+        if key in raw:
+            if not isinstance(raw[key], bool):
+                raise ProfileError(f'baseline_repair.{key} debe ser booleano.')
+            result[key] = raw[key]
+
+    if 'minimum_valid_damage' in raw:
+        value = raw['minimum_valid_damage']
+        if not isinstance(value, (int, float)) or isinstance(value, bool) or float(value) < 0.0:
+            raise ProfileError('baseline_repair.minimum_valid_damage debe ser numérico >= 0.')
+        result['minimum_valid_damage'] = float(value)
+
+    excluded = raw.get('excluded_weapons', result.get('excluded_weapons', []))
+    if not isinstance(excluded, list):
+        raise ProfileError('baseline_repair.excluded_weapons debe ser una lista.')
+    result['excluded_weapons'] = [str(v).upper() for v in excluded]
+
+    reference_roots = raw.get('reference_roots', result.get('reference_roots', []))
+    if not isinstance(reference_roots, list):
+        raise ProfileError('baseline_repair.reference_roots debe ser una lista.')
+    result['reference_roots'] = [str(v) for v in reference_roots]
+
+    for section in ('official_values', 'group_fallbacks'):
+        value = raw.get(section, result.get(section, {}))
+        if not isinstance(value, dict):
+            raise ProfileError(f'baseline_repair.{section} debe ser un objeto JSON.')
+        normalized: dict[str, dict[str, float]] = {}
+        for name, fields in value.items():
+            if not isinstance(fields, dict):
+                raise ProfileError(f'baseline_repair.{section}.{name} debe ser un objeto JSON.')
+            parsed: dict[str, float] = {}
+            for field_name, field_value in fields.items():
+                if str(field_name) not in FIELDS:
+                    raise ProfileError(f'baseline_repair.{section}.{name}.{field_name} no es un campo estándar válido.')
+                if not isinstance(field_value, (int, float)) or isinstance(field_value, bool):
+                    raise ProfileError(f'baseline_repair.{section}.{name}.{field_name} debe ser numérico.')
+                parsed[str(field_name)] = float(field_value)
+            normalized[str(name).upper()] = parsed
+        result[section] = normalized
+
+    settings.baseline_repair = result
+
 def _parse_family_rules(settings: Any, data: dict[str, Any]) -> None:
     rules = data.get('family_rules', [])
     if not isinstance(rules, list):
@@ -364,6 +422,7 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
 
     _parse_restore(settings, data)
     _parse_weapon_classification(settings, data)
+    _parse_baseline_repair(settings, data)
     _parse_family_rules(settings, data)
 
     headshot = data.get('headshot', {})

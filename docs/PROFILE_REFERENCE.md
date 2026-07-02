@@ -148,3 +148,39 @@ Los multiplicadores usan el valor encontrado en el bloque original. Un arma ofic
 ```
 
 Una regla puede incluir `fields`, `field_multipliers`, `official_only` o `custom_only`. Los valores absolutos de `fields` se aplican después de los multiplicadores.
+
+## V6: `baseline_repair`
+
+```json
+{
+  "baseline_repair": {
+    "enabled": true,
+    "reference_roots": [],
+    "repair_zero_or_missing": true,
+    "repair_invalid_network_modifiers": true,
+    "repair_disabled_headshots": true,
+    "repair_invalid_ranges": true,
+    "minimum_valid_damage": 0.01,
+    "excluded_weapons": ["WEAPON_STUNGUN"],
+    "official_values": {
+      "WEAPON_PISTOL": {"damage": 26.0}
+    },
+    "group_fallbacks": {
+      "GROUP_PISTOL": {
+        "damage": 27.0,
+        "weapon_range": 120.0,
+        "headshot_player": 18.0,
+        "network_headshot": 1.0
+      }
+    }
+  }
+}
+```
+
+La prioridad es: referencia exacta para oficial → valor válido del META → fallback de grupo únicamente cuando el valor está roto. El multiplicador custom se ejecuta después.
+
+También puedes pasar una o más rutas por CLI:
+
+```powershell
+python run_rebalance.py --reference-root "references\snags_original\metas" ...
+```

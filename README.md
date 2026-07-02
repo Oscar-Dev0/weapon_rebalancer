@@ -1,4 +1,97 @@
-# Weapon Rebalancer META V5
+# Weapon Rebalancer META V6
+
+Requiere **Python 3.10 o superior**.
+
+## Perfil recomendado: reparación absoluta + custom 15%
+
+La V6 corrige el problema principal de la V5: ya no depende únicamente de un `.meta.bak` que podría estar modificado. Puede cargar un paquete original de `weapons.meta`, copiar los valores absolutos de las armas oficiales, reparar armas custom con daño/rango en cero y luego aplicar el `+15%`.
+
+### Uso rápido
+
+1. Previsualiza:
+
+```bat
+preview_vanilla_repair_v6.bat
+```
+
+2. Aplica y genera el guard runtime:
+
+```bat
+apply_vanilla_repair_v6.bat
+```
+
+También puedes indicar rutas manualmente:
+
+```bat
+apply_vanilla_repair_v6.bat "C:\TxData\rebelion\resources\[Streaming]\[PackArmas]" "C:\TxData\rebelion\resources\[OscarDev]\os_weapon_damage_guard"
+```
+
+3. Agrega el guard al **final** del bloque de recursos de armas/combate:
+
+```cfg
+ensure os_weapon_damage_guard
+```
+
+4. Dentro del juego ejecuta:
+
+```text
+/osweaponstatus
+```
+
+El comando muestra el hash/nombre actual, el daño que FiveM reporta como cargado, el daño absoluto esperado y el multiplicador aplicado.
+
+## Qué repara V6
+
+- restaura armas oficiales desde `--reference-root` cuando hay un paquete original disponible;
+- usa una tabla de daños vanilla del núcleo como respaldo;
+- repara `Damage=0`, tags ausentes y modificadores de red en cero;
+- repara alcance, falloff y headshot deshabilitado accidentalmente;
+- aplica `×1.15` únicamente a armas custom de grupos de fuego;
+- deja el headshot normal/original, sin el multiplicador global `1500`;
+- aplica `350` al torso de revólveres y reduce extremidades a `0.25`;
+- detecta componentes con multiplicadores de daño distintos de `1.0`;
+- marca armas `PROJECTILE`, porque pueden depender de `AmmoInfo`/explosión y no solamente de `<Damage>`;
+- genera `os_weapon_damage_guard` para neutralizar modificadores runtime por arma/jugador.
+
+## Paquete de referencia
+
+El descargador usa el proyecto público `CyCoSnag/snag_weapon_metas`, que incluye META originales de GTAV y DLC. Para instalarlo manualmente:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\references\download_original_gtav_metas.ps1
+```
+
+Después:
+
+```powershell
+python run_rebalance.py `
+  --root "C:\TxData\rebelion\resources\[Streaming]\[PackArmas]" `
+  --profile "profiles\vanilla_repair_custom_plus15_absolute_v6.json" `
+  --reference-root "references\snags_original\metas" `
+  --write `
+  --generate-damage-guard "C:\TxData\rebelion\resources\[OscarDev]\os_weapon_damage_guard" `
+  --force-install
+```
+
+## Orden de cálculo
+
+```text
+paquete original / referencia
+          ↓
+reparación de valores cero o ausentes
+          ↓
++15% solamente para custom
+          ↓
+reglas de familia (revólver)
+          ↓
+validación, auditorías y guard runtime
+```
+
+La V6 incluye **32 pruebas automáticas**.
+
+---
+
+## Documentación histórica V5/V4
 
 Requiere **Python 3.10 o superior**.
 

@@ -1,0 +1,307 @@
+{
+  "name": "V6 reparación absoluta vanilla + custom 15% + revólver torso",
+  "schema_version": 6,
+  "description": "Repara daños cero/ausentes con valores absolutos, restaura el núcleo vanilla conocido, conserva valores válidos del resto, aplica +15% a custom y deja revólver letal al torso.",
+  "base_preset": "rp_balanced",
+  "modules": {
+    "recoil": "original",
+    "accuracy": "original",
+    "damage": "original",
+    "armour": "original",
+    "range": "original",
+    "fire_rate": "original",
+    "reload": "original",
+    "headshot": "original"
+  },
+  "restore": {
+    "from_backup": true,
+    "backup_suffix": ".bak"
+  },
+  "weapon_classification": {
+    "official_catalog": "cfx_weapon_models_2026_07_02",
+    "official_additions": [],
+    "official_removals": [],
+    "custom_when_not_official": true,
+    "custom": {
+      "groups": [
+        "GROUP_PISTOL",
+        "GROUP_SMG",
+        "GROUP_RIFLE",
+        "GROUP_MG",
+        "GROUP_SHOTGUN",
+        "GROUP_SNIPER"
+      ],
+      "field_multipliers": {
+        "damage": 1.15,
+        "weapon_range": 1.15,
+        "falloff_min": 1.15,
+        "falloff_max": 1.15,
+        "max_headshot_player": 1.15,
+        "max_headshot_ai": 1.15
+      },
+      "group_field_multipliers": {}
+    }
+  },
+  "baseline_repair": {
+    "enabled": true,
+    "repair_zero_or_missing": true,
+    "repair_invalid_network_modifiers": true,
+    "repair_disabled_headshots": true,
+    "repair_invalid_ranges": true,
+    "minimum_valid_damage": 0.01,
+    "excluded_weapons": [
+      "WEAPON_STUNGUN",
+      "WEAPON_STUNGUN_MP",
+      "WEAPON_FLAREGUN",
+      "WEAPON_FIREEXTINGUISHER",
+      "WEAPON_SNOWBALL",
+      "WEAPON_BALL",
+      "WEAPON_PETROLCAN",
+      "WEAPON_HAZARDCAN",
+      "WEAPON_FERTILIZERCAN",
+      "WEAPON_GRENADE",
+      "WEAPON_STICKYBOMB",
+      "WEAPON_SMOKEGRENADE",
+      "WEAPON_BZGAS",
+      "WEAPON_MOLOTOV",
+      "WEAPON_PROXMINE",
+      "WEAPON_PIPEBOMB",
+      "WEAPON_ACIDPACKAGE"
+    ],
+    "official_values": {
+      "WEAPON_PISTOL": {
+        "damage": 26.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_COMBATPISTOL": {
+        "damage": 27.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_APPISTOL": {
+        "damage": 25.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_PISTOL50": {
+        "damage": 51.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_SNSPISTOL": {
+        "damage": 25.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_HEAVYPISTOL": {
+        "damage": 40.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_VINTAGEPISTOL": {
+        "damage": 35.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_MARKSMANPISTOL": {
+        "damage": 150.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_REVOLVER": {
+        "damage": 160.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_MICROSMG": {
+        "damage": 21.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_SMG": {
+        "damage": 22.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_ASSAULTSMG": {
+        "damage": 23.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_ASSAULTRIFLE": {
+        "damage": 30.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_CARBINERIFLE": {
+        "damage": 30.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_ADVANCEDRIFLE": {
+        "damage": 34.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_MG": {
+        "damage": 30.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_COMBATMG": {
+        "damage": 32.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_PUMPSHOTGUN": {
+        "damage": 29.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_SAWNOFFSHOTGUN": {
+        "damage": 40.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_ASSAULTSHOTGUN": {
+        "damage": 32.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_BULLPUPSHOTGUN": {
+        "damage": 32.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_SNIPERRIFLE": {
+        "damage": 101.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "WEAPON_HEAVYSNIPER": {
+        "damage": 216.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      }
+    },
+    "group_fallbacks": {
+      "GROUP_PISTOL": {
+        "damage": 27.0,
+        "weapon_range": 120.0,
+        "falloff_min": 45.0,
+        "falloff_max": 90.0,
+        "falloff_modifier": 0.75,
+        "headshot_player": 18.0,
+        "network_headshot": 1.0,
+        "headshot_ai": 1000.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "GROUP_SMG": {
+        "damage": 23.0,
+        "weapon_range": 140.0,
+        "falloff_min": 55.0,
+        "falloff_max": 110.0,
+        "falloff_modifier": 0.75,
+        "headshot_player": 18.0,
+        "network_headshot": 1.0,
+        "headshot_ai": 1000.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "GROUP_RIFLE": {
+        "damage": 32.0,
+        "weapon_range": 300.0,
+        "falloff_min": 120.0,
+        "falloff_max": 250.0,
+        "falloff_modifier": 0.75,
+        "headshot_player": 18.0,
+        "network_headshot": 1.0,
+        "headshot_ai": 1000.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "GROUP_MG": {
+        "damage": 32.0,
+        "weapon_range": 300.0,
+        "falloff_min": 120.0,
+        "falloff_max": 250.0,
+        "falloff_modifier": 0.75,
+        "headshot_player": 18.0,
+        "network_headshot": 1.0,
+        "headshot_ai": 1000.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "GROUP_SHOTGUN": {
+        "damage": 32.0,
+        "weapon_range": 45.0,
+        "falloff_min": 15.0,
+        "falloff_max": 38.0,
+        "falloff_modifier": 0.65,
+        "headshot_player": 18.0,
+        "network_headshot": 1.0,
+        "headshot_ai": 1000.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      },
+      "GROUP_SNIPER": {
+        "damage": 101.0,
+        "weapon_range": 1500.0,
+        "falloff_min": 800.0,
+        "falloff_max": 1400.0,
+        "falloff_modifier": 0.85,
+        "headshot_player": 18.0,
+        "network_headshot": 1.0,
+        "headshot_ai": 1000.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0
+      }
+    }
+  },
+  "family_rules": [
+    {
+      "name": "revolver_one_shot_torso",
+      "contains": [
+        "REVOLVER",
+        "DOUBLEACTION"
+      ],
+      "groups": [
+        "GROUP_PISTOL"
+      ],
+      "fields": {
+        "damage": 350.0,
+        "network_player_damage_modifier": 1.0,
+        "network_ped_damage_modifier": 1.0,
+        "hit_limbs": 0.25,
+        "network_hit_limbs": 0.25,
+        "lightly_armoured": 1.0,
+        "falloff_modifier": 1.0
+      }
+    }
+  ],
+  "allow_damage_weapons": [
+    "WEAPON_SNOWBALL",
+    "WEAPON_BALL"
+  ],
+  "allow_ignored_weapons": [
+    "WEAPON_RPG",
+    "WEAPON_RAILGUN",
+    "WEAPON_MINIGUN",
+    "WEAPON_GRENADELAUNCHER"
+  ],
+  "validation": {
+    "strict_unknown_fields": true,
+    "warn_duplicates": true,
+    "warn_unregistered_meta": true,
+    "fail_on_onetap_audit": false
+  },
+  "_documentation": {
+    "why_v6": "No multiplica cero ni depende solamente de .bak. Primero repara una base absoluta válida y después aplica +15% a custom.",
+    "runtime": "Genera os_weapon_damage_guard para comprobar GetWeaponDamage y neutralizar modificadores runtime por arma/jugador.",
+    "official": "El núcleo vanilla de mayor uso tiene daño absoluto. Las demás oficiales conservan valores válidos y solo usan fallback si están en cero o ausentes.",
+    "custom": "Una custom válida conserva su identidad y recibe x1.15. Si viene en cero, usa el fallback de su grupo y luego x1.15.",
+    "headshot": "No usa el multiplicador global 1500. Conserva headshot válido y solo repara tags ausentes/cero con valores vanilla-like."
+  }
+}

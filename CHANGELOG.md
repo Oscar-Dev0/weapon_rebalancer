@@ -1,5 +1,12 @@
 # Changelog
 
+## 6.0.0 - 2026-07-02
+
+- Reparación absoluta basada en paquete META de referencia.
+- Custom +15% sin multiplicar valores cero.
+- Guard runtime de daño y auditoría de componentes.
+- 32 pruebas automáticas.
+
 ## 5.0.0 — 2026-07-02
 
 ### Vanilla y custom automáticos

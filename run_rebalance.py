@@ -13,6 +13,7 @@ from weapon_rebalancer.weapon_flags import print_weapon_flags
 from weapon_rebalancer.rebalance import RebalanceEngine
 from weapon_rebalancer.profile_loader import ProfileError, apply_external_profile, load_profile
 from weapon_rebalancer.runtime_audit import scan_runtime_conflicts
+from weapon_rebalancer.runtime_guard import collect_expected_damage, generate_damage_guard
 
 
 def parse_args() -> argparse.Namespace:
@@ -26,6 +27,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--write', action='store_true', help='Escribe cambios reales. Sin esto corre en dry-run.')
     parser.add_argument('--preset', default=None, help='Preset interno base.')
     parser.add_argument('--profile', type=Path, default=None, help='Perfil JSON externo. Permite configurar todo sin editar Python.')
+    parser.add_argument('--reference-root', type=Path, action='append', default=None, help='Paquete META vanilla/de referencia usado como fuente absoluta. Se puede repetir.')
     parser.add_argument('--recoil', choices=('original', 'configured', 'none', 'low', 'normal', 'high'), default=None, help='Perfil independiente de recoil.')
     parser.add_argument('--accuracy', choices=('original', 'configured', 'laser', 'high', 'normal', 'low'), default=None, help='Perfil independiente de precisión/dispersión.')
     parser.add_argument('--damage', choices=('original', 'configured', 'none', 'head_only', 'low', 'normal', 'high', 'lethal'), default=None, help='Perfil de daño. none=0 total; head_only=daño corporal mínimo para permitir headshot por META.')
@@ -67,7 +69,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--runtime-only', action='store_true', help='Ejecuta únicamente la auditoría runtime y sale.')
     parser.add_argument('--strict-runtime-audit', action='store_true', help='Devuelve error cuando encuentra bloqueos runtime duros.')
     parser.add_argument('--install-headshot-guard', type=Path, default=None, help='Copia el recurso mínimo os_headshot_guard en la ruta indicada.')
-    parser.add_argument('--force-install', action='store_true', help='Permite reemplazar una instalación existente de os_headshot_guard.')
+    parser.add_argument('--generate-damage-guard', type=Path, default=None, help='Genera os_weapon_damage_guard con el daño absoluto esperado de los META resultantes.')
+    parser.add_argument('--force-install', action='store_true', help='Permite reemplazar una instalación existente de los guards.')
     return parser.parse_args()
 
 
@@ -160,6 +163,8 @@ def main() -> None:
 
     if args.root is not None:
         settings.root = args.root
+    if args.reference_root:
+        settings.baseline_repair['reference_roots'] = [str(path) for path in args.reference_root]
 
     runtime_audit = None
     runtime_root = args.runtime_root or (args.root if args.root is not None else settings.root)
@@ -281,6 +286,18 @@ def main() -> None:
     engine = RebalanceEngine(settings)
     report = engine.run()
     report.print_summary()
+
+    if args.generate_damage_guard is not None:
+        if settings.dry_run:
+            print('[GUARD NO GENERADO] Usa --write para que el guard se construya desde los META ya reparados.')
+        else:
+            expected = collect_expected_damage(settings.root, settings.scan, settings.skip_basenames)
+            try:
+                destination = generate_damage_guard(args.generate_damage_guard, expected, force=args.force_install)
+            except FileExistsError as exc:
+                raise SystemExit(f'{exc}. Usa --force-install para reemplazarla.') from exc
+            print(f'[DAMAGE GUARD GENERADO] armas={len(expected)} -> {destination}')
+
     strict_audit = args.strict_onetap_audit or bool(settings.validation_options.get('fail_on_onetap_audit', False))
     if strict_audit and report.onetap_audit_failed:
         raise SystemExit(f'Auditoría one-tap fallida en {report.onetap_audit_failed} arma(s).')

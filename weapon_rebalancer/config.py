@@ -41,19 +41,19 @@ SKIP_BASENAMES = {
 SAFE_BOUNDS: dict[str, tuple[float, float]] = {
     # Los perfiles externos incluidos usan 100+ de daño; no deben recortarse silenciosamente.
     'damage': (0.0, 1000.0),
-    'weapon_range': (0.1, 650.0),
-    'falloff_min': (0.0, 650.0),
-    'falloff_max': (0.1, 650.0),
+    'weapon_range': (0.1, 5000.0),
+    'falloff_min': (0.0, 5000.0),
+    'falloff_max': (0.1, 5000.0),
     'falloff_modifier': (0.0, 2.0),
     'headshot_player': (0.0, 1500.0),
     'network_headshot': (0.0, 1500.0),
     'headshot_ai': (0.0, 1500.0),
     'network_player_damage_modifier': (0.0, 10.0),
     'network_ped_damage_modifier': (0.0, 10.0),
-    'min_headshot_player': (0.0, 650.0),
-    'max_headshot_player': (0.0, 650.0),
-    'min_headshot_ai': (0.0, 650.0),
-    'max_headshot_ai': (0.0, 650.0),
+    'min_headshot_player': (0.0, 5000.0),
+    'max_headshot_player': (0.0, 5000.0),
+    'min_headshot_ai': (0.0, 5000.0),
+    'max_headshot_ai': (0.0, 5000.0),
     'hit_limbs': (0.0, 2.0),
     'network_hit_limbs': (0.0, 2.0),
     # Este campo es un float real del CWeaponInfo. El límite anterior de 2.0
@@ -365,6 +365,7 @@ class Settings:
     custom_field_multipliers: dict[str, float]
     custom_group_field_multipliers: dict[str, dict[str, float]]
     family_rules: list[dict[str, Any]]
+    baseline_repair: dict[str, Any]
     scan: ScanConfig
 
     @classmethod
@@ -421,5 +422,17 @@ class Settings:
             custom_field_multipliers={},
             custom_group_field_multipliers={},
             family_rules=[],
+            baseline_repair={
+                'enabled': False,
+                'repair_zero_or_missing': True,
+                'repair_invalid_network_modifiers': True,
+                'repair_disabled_headshots': True,
+                'repair_invalid_ranges': True,
+                'minimum_valid_damage': 0.01,
+                'official_values': {},
+                'group_fallbacks': {},
+                'excluded_weapons': [],
+                'reference_roots': [],
+            },
             scan=SCAN,
         )

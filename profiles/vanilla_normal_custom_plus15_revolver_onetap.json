@@ -1,7 +1,7 @@
 {
   "name": "Vanilla normal + custom 15% + revolver torso one-shot",
   "schema_version": 5,
-  "description": "Restaura cada weapons.meta desde su .meta.bak cuando existe, conserva todas las armas oficiales con sus valores originales, aumenta un 15% el daño y las distancias de las armas custom, y hace letales al torso los revólveres.",
+  "description": "Restaura cada weapons.meta desde su .meta.bak cuando existe, conserva las armas oficiales, aumenta un 15% el daño y las distancias de las custom, preserva headshots originales y hace letales al torso los revólveres.",
   "base_preset": "rp_balanced",
   "modules": {
     "recoil": "original",
@@ -11,7 +11,7 @@
     "range": "original",
     "fire_rate": "original",
     "reload": "original",
-    "headshot": "onetap"
+    "headshot": "original"
   },
   "restore": {
     "from_backup": true,
