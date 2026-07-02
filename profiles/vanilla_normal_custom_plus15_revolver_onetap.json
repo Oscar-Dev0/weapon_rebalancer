@@ -11,7 +11,7 @@
     "range": "original",
     "fire_rate": "original",
     "reload": "original",
-    "headshot": "original"
+    "headshot": "onetap"
   },
   "restore": {
     "from_backup": true,
