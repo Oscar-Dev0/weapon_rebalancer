@@ -11,6 +11,83 @@ from .fields import FIELDS
 from .scanner import ScanConfig, discover_meta_paths, extract_group as scan_extract_group, extract_name as scan_extract_name
 
 
+_XML_TAG_TOKEN_RE = re.compile(
+    r'<!--.*?-->|<\?.*?\?>|<!\[CDATA\[.*?\]\]>|<![^>]*>|</?\s*[A-Za-z_][\w:.-]*\b[^>]*>',
+    re.DOTALL,
+)
+_XML_TAG_NAME_RE = re.compile(r'</?\s*([A-Za-z_][\w:.-]*)', re.IGNORECASE)
+
+
+def _direct_child_spans(content: str, tag_names: set[str] | None = None) -> list[tuple[str, int, int]]:
+    """Return direct-child element spans for a standalone CWeaponInfo <Item> block.
+
+    Real weapons.meta blocks contain nested containers (OverrideForces, Fx, AttachPoints)
+    that may repeat scalar tag names.  Regex-first reads/replacements can accidentally
+    touch a nested tag instead of the weapon's actual top-level field.  This lightweight
+    tokenizer tracks XML depth without reserializing the META.
+    """
+    wanted = {name.lower() for name in tag_names} if tag_names else None
+    stack: list[tuple[str, int]] = []
+    result: list[tuple[str, int, int]] = []
+
+    for token_match in _XML_TAG_TOKEN_RE.finditer(content):
+        token = token_match.group(0)
+        if token.startswith(('<!--', '<?', '<!')):
+            continue
+        name_match = _XML_TAG_NAME_RE.match(token)
+        if not name_match:
+            continue
+        name = name_match.group(1)
+        lower = name.lower()
+        is_close = bool(re.match(r'<\s*/', token))
+        is_self_closing = token.rstrip().endswith('/>')
+
+        if is_close:
+            if not stack:
+                continue
+            # Normal META XML is balanced.  If a custom file is slightly malformed,
+            # unwind to the matching tag instead of crashing and let regex fallback work.
+            match_index = None
+            for i in range(len(stack) - 1, -1, -1):
+                if stack[i][0].lower() == lower:
+                    match_index = i
+                    break
+            if match_index is None:
+                continue
+            child_name, child_start = stack[match_index]
+            was_direct_child = match_index == 1
+            del stack[match_index:]
+            if was_direct_child and (wanted is None or lower in wanted):
+                result.append((child_name, child_start, token_match.end()))
+            continue
+
+        depth_before = len(stack)
+        if is_self_closing:
+            if depth_before == 1 and (wanted is None or lower in wanted):
+                result.append((name, token_match.start(), token_match.end()))
+            continue
+
+        stack.append((name, token_match.start()))
+
+    return result
+
+
+def _direct_field_matches(content: str, key: str) -> list[tuple[re.Match[str], tuple[int, int]]]:
+    """Find every direct-child occurrence of a catalog field."""
+    field = FIELDS[key]
+    result: list[tuple[re.Match[str], tuple[int, int]]] = []
+    for _tag, start, end in _direct_child_spans(content, set(field.all_tags)):
+        local = field.pattern.search(content[start:end])
+        if local:
+            result.append((local, (start, end)))
+    return result
+
+
+def _direct_field_match(content: str, key: str) -> tuple[re.Match[str] | None, tuple[int, int] | None]:
+    matches = _direct_field_matches(content, key)
+    return matches[0] if matches else (None, None)
+
+
 def read_text(path: Path) -> str:
     return path.read_text(encoding='utf-8', errors='ignore')
 
@@ -35,17 +112,29 @@ def extract_group(content: str) -> str | None:
 
 def replace_field(content: str, key: str, value: str) -> tuple[str, bool]:
     field = FIELDS[key]
+    direct_matches = _direct_field_matches(content, key)
+    if direct_matches:
+        updated = content
+        changed = False
+        # Replace from the end so offsets remain valid. All direct duplicates are
+        # normalized; nested decoys inside OverrideForces/Fx remain untouched.
+        for _match, (start, end) in reversed(direct_matches):
+            segment = updated[start:end]
+            replaced_segment, count = field.pattern.subn(
+                lambda m: f'{m.group(1)}{value}{m.group(3)}', segment, count=1
+            )
+            if count:
+                changed = changed or replaced_segment != segment
+                updated = updated[:start] + replaced_segment + updated[end:]
+        return updated, True
+
+    # Fallback for whole-file fallback blocks or malformed custom META.
     new_content, count = field.pattern.subn(lambda m: f'{m.group(1)}{value}{m.group(3)}', content, count=1)
     return new_content, count > 0
 
 
-def read_field_value(content: str, key: str, default: Any = None) -> Any:
-    """Lee el primer valor de un campo catalogado sin modificar el XML."""
-    field = FIELDS[key]
-    match = field.pattern.search(content)
-    if not match:
-        return default
-    raw = match.group(2).strip()
+def _coerce_field_raw(field: Any, raw: str) -> Any:
+    raw = raw.strip()
     if field.kind in {'value_attr'}:
         lowered = raw.lower()
         if lowered in {'true', 'false'}:
@@ -59,9 +148,39 @@ def read_field_value(content: str, key: str, default: Any = None) -> Any:
     return raw
 
 
+def read_field_values(content: str, key: str) -> list[Any]:
+    """Read all direct CWeaponInfo copies of a field, ignoring nested duplicates."""
+    field = FIELDS[key]
+    values: list[Any] = []
+    for _match, (start, end) in _direct_field_matches(content, key):
+        local = field.pattern.search(content[start:end])
+        if local:
+            values.append(_coerce_field_raw(field, local.group(2)))
+    if values:
+        return values
+    # Fallback for malformed/whole-file blocks.
+    match = field.pattern.search(content)
+    return [_coerce_field_raw(field, match.group(2))] if match else []
+
+
+def read_field_value(content: str, key: str, default: Any = None) -> Any:
+    """Read a catalog field, preferring the first direct CWeaponInfo child."""
+    values = read_field_values(content, key)
+    return values[0] if values else default
+
+
 def read_weapon_flags(content: str) -> list[str]:
-    value = read_field_value(content, 'weapon_flags', '')
-    return parse_weapon_flags(str(value)) if value is not None else []
+    # Union every direct WeaponFlags node. A single Automatic in any direct copy is
+    # enough to classify the weapon as rapid/non-normal.
+    result: list[str] = []
+    seen: set[str] = set()
+    for value in read_field_values(content, 'weapon_flags'):
+        for token in parse_weapon_flags(str(value)):
+            lowered = token.lower()
+            if lowered not in seen:
+                result.append(token)
+                seen.add(lowered)
+    return result
 
 
 def iter_weapon_meta_files(root: Path, skip_basenames: set[str]) -> list[Path]:
@@ -226,7 +345,15 @@ def update_weapon_flags(
     create_if_missing: bool = False,
 ) -> tuple[str, bool, bool]:
     field = FIELDS['weapon_flags']
-    match = field.pattern.search(content)
+    direct_match, direct_span = _direct_field_match(content, 'weapon_flags')
+    if direct_match is not None and direct_span is not None:
+        span_start, span_end = direct_span
+        segment = content[span_start:span_end]
+        match = field.pattern.search(segment)
+        match_offset = span_start
+    else:
+        match = field.pattern.search(content)
+        match_offset = 0
     add_list = [str(v).strip() for v in add if str(v).strip()]
     remove_set = {str(v).strip().lower() for v in remove if str(v).strip()}
 
@@ -252,7 +379,9 @@ def update_weapon_flags(
         new_value = separator.join(result)
         if new_value == original.strip():
             return content, False, True
-        updated = content[:match.start()] + f'{match.group(1)}{new_value}{match.group(3)}' + content[match.end():]
+        absolute_start = match_offset + match.start()
+        absolute_end = match_offset + match.end()
+        updated = content[:absolute_start] + f'{match.group(1)}{new_value}{match.group(3)}' + content[absolute_end:]
         return updated, True, True
 
     if not create_if_missing or not add_list:

@@ -219,6 +219,8 @@ Permite decidir si un arma es de cadencia normal o rápida usando varias señale
 - flag `Automatic` de `WeaponFlags`.
 - `FiringPattern` como `FIRING_PATTERN_FULL_AUTO` o patrones burst.
 - grupos que pueden marcarse siempre como no normales, por ejemplo `GROUP_SMG` y `GROUP_MG`.
+- señales secundarias como `APPISTOL`, `NmShotTuningSet=BurstFire`, recoil FPS de SMG y múltiples balas por loop/batch.
+- campos duplicados: usa la interpretación más agresiva (menor `TimeBetweenShots`, mayor `AnimFireRateModifier` y cualquier `Automatic`).
 
 Cuando `disable_onetap_for_non_normal=true`, una arma clasificada como rápida baja automáticamente de `onetap` a headshot `normal`. El motor también sustituye los multiplicadores heredados de one-tap por los multiplicadores normales; no basta con cambiar únicamente el nombre del modo.
 
@@ -232,6 +234,12 @@ Cuando `disable_onetap_for_non_normal=true`, una arma clasificada como rápida b
   "anim_modifier_affects_cadence": true,
   "rapid_pattern_tokens": ["FULL_AUTO", "AUTOMATIC", "BURST"],
   "always_non_normal_groups": ["GROUP_SMG", "GROUP_MG"],
+  "unknown_cadence_forces_non_normal": true,
+  "secondary_rapid_signals": true,
+  "enforce_onetap_allowlist": true,
+  "onetap_allowed_weapons": ["WEAPON_COMBATPISTOL", "WEAPON_GLIZZYG17"],
+  "onetap_allowed_weapon_groups": ["GROUP_PISTOL"],
+  "onetap_allowed_groups": ["GROUP_SNIPER"],
   "disable_onetap_for_non_normal": true,
   "non_normal_headshot_mode": "normal",
   "non_normal_damage_caps": {
@@ -242,3 +250,7 @@ Cuando `disable_onetap_for_non_normal=true`, una arma clasificada como rápida b
 ```
 
 Con `normal_min_time_between_shots=0.18`, cualquier cadencia efectiva inferior a 0.18 s (~333 RPM) se considera no normal. Las clases internas son `quick`, `fast`, `very_fast` y `extreme_fast`.
+
+Con `enforce_onetap_allowlist=true`, ningún override global, por carpeta o por arma puede habilitar one-tap fuera de `onetap_allowed_weapons`/`onetap_allowed_groups`. Si `onetap_allowed_weapon_groups` está definido, un nombre permitido también debe pertenecer a uno de esos grupos.
+
+El scanner no usa un regex no-greedy para cerrar `CWeaponInfo`: cuenta los `<Item>` anidados. Esto evita que `OverrideForces` o `AttachPoints` oculten campos situados al final del arma, especialmente `TimeBetweenShots` y `WeaponFlags`.

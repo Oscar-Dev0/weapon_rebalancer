@@ -8,10 +8,8 @@ from typing import Any
 
 from .fields import EXTRACT_GROUP_RE, EXTRACT_NAME_RE
 
-WEAPON_ITEM_RE = re.compile(
-    r'(?P<block><Item\s+type="CWeaponInfo"[^>]*>.*?</Item>)',
-    re.IGNORECASE | re.DOTALL,
-)
+ITEM_TOKEN_RE = re.compile(r'<\s*/\s*Item\s*>|<\s*Item\b[^>]*>', re.IGNORECASE | re.DOTALL)
+CWEAPONINFO_TYPE_RE = re.compile(r"\btype\s*=\s*[\'\"]CWeaponInfo[\'\"]", re.IGNORECASE)
 DATA_FILE_RE = re.compile(r"data_file\s+['\"](?P<kind>[^'\"]+)['\"]\s+['\"](?P<path>[^'\"]+)['\"]", re.IGNORECASE)
 
 @dataclass
@@ -161,19 +159,49 @@ def discover_fxmanifest_data_files(root: Path) -> dict[str, list[str]]:
     return result
 
 
+def _iter_cweaponinfo_spans(text: str):
+    """Yield balanced <Item type="CWeaponInfo"> blocks, including nested <Item> nodes.
+
+    A non-greedy regex cannot parse real weapons.meta because OverrideForces and
+    AttachPoints contain their own <Item> elements.  The old scanner stopped at the
+    first nested </Item>, which meant fields near the bottom of the weapon (notably
+    TimeBetweenShots and the real top-level WeaponFlags) were invisible.
+    """
+    start: int | None = None
+    depth = 0
+    for match in ITEM_TOKEN_RE.finditer(text):
+        token = match.group(0)
+        is_close = bool(re.match(r'<\s*/', token))
+        is_self_closing = token.rstrip().endswith('/>')
+
+        if start is None:
+            if not is_close and not is_self_closing and CWEAPONINFO_TYPE_RE.search(token):
+                start = match.start()
+                depth = 1
+            continue
+
+        if is_close:
+            depth -= 1
+            if depth == 0:
+                yield start, match.end()
+                start = None
+        elif not is_self_closing:
+            depth += 1
+
+
 def extract_weapon_blocks(path: Path, text: str, cfg: ScanConfig, package_configs: list[PackageConfig]) -> list[WeaponBlock]:
     config_stack = configs_for_path(path, package_configs)
     blocks: list[WeaponBlock] = []
-    matches = list(WEAPON_ITEM_RE.finditer(text))
+    spans = list(_iter_cweaponinfo_spans(text))
 
-    if matches:
-        for match in matches:
-            block = match.group('block')
+    if spans:
+        for start, end in spans:
+            block = text[start:end]
             weapon = extract_name(block)
             if not weapon:
                 continue
             group = infer_group(path, weapon, block, cfg) or 'UNKNOWN'
-            blocks.append(WeaponBlock(path, match.start('block'), match.end('block'), block, weapon, group, config_stack))
+            blocks.append(WeaponBlock(path, start, end, block, weapon, group, config_stack))
         return blocks
 
     # Fallback para metas raros que no envuelven con <Item type="CWeaponInfo"> pero sí traen Name/Group.

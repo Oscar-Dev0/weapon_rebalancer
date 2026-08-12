@@ -12,6 +12,7 @@ from .headshot import apply_policy as apply_headshot_profile, audit_block as aud
 from .meta_utils import (
     insert_field_if_missing,
     read_field_value,
+    read_field_values,
     read_weapon_flags,
     read_text,
     replace_dynamic_field,
@@ -263,6 +264,8 @@ class RebalanceEngine:
             rpm = fire_rate_classification.get('rpm')
             suffix = f":{rpm:.0f}rpm" if isinstance(rpm, (int, float)) else ''
             change.changed_fields.append(f"fire_rate_class:{fire_rate_classification.get('class')}{suffix}")
+        if fire_rate_classification.get('onetap_allowlist_blocked'):
+            change.changed_fields.append('headshot:onetap_blocked_by_allowlist')
         if fire_rate_classification.get('non_normal') and policy.get('mode') != 'onetap':
             change.changed_fields.append('headshot:onetap_disabled_by_fire_rate')
         self._active_headshot_policy = policy
@@ -554,13 +557,15 @@ class RebalanceEngine:
 
 
     def classify_fire_rate(self, weapon: str, group: str, block: WeaponBlock) -> dict[str, Any]:
-        """Classify source META cadence using multiple independent signals.
+        """Classify source META cadence using redundant, fail-safe signals.
 
-        TimeBetweenShots is authoritative when present, but custom packs can also expose
-        rapid fire through Automatic flags, FiringPattern, or AnimFireRateModifier.
-        The result never changes cadence; it only informs damage/headshot balancing.
+        The classifier reads only direct CWeaponInfo fields.  This matters because real
+        weapons.meta files often repeat WeaponFlags/Penetration/etc. inside nested
+        OverrideForces/AttachPoints.  A nested flag must never hide the actual weapon
+        flags near the end of CWeaponInfo.
         """
         cfg = self.settings.fire_rate_classifier or {}
+        weapon_name = weapon.upper()
         group_name = group.upper()
         enabled_groups = cfg.get('groups', set())
         if not cfg.get('enabled', False) or (enabled_groups and group_name not in enabled_groups):
@@ -568,19 +573,29 @@ class RebalanceEngine:
                 'class': 'unclassified', 'non_normal': False, 'reasons': [],
                 'time_between_shots': None, 'effective_time_between_shots': None, 'rpm': None,
                 'automatic': False, 'firing_pattern': '', 'anim_fire_rate_modifier': 1.0,
+                'onetap_allowlist_blocked': False,
             }
 
-        tbs_raw = read_field_value(block.text, 'time_between_shots')
-        tbs = float(tbs_raw) if isinstance(tbs_raw, (int, float)) and float(tbs_raw) > 0.0 else None
-        anim_raw = read_field_value(block.text, 'anim_fire_rate_modifier', 1.0)
-        anim_modifier = float(anim_raw) if isinstance(anim_raw, (int, float)) and float(anim_raw) > 0.0 else 1.0
+        tbs_candidates = [
+            float(v) for v in read_field_values(block.text, 'time_between_shots')
+            if isinstance(v, (int, float)) and float(v) > 0.0
+        ]
+        # Fail-safe: if a META repeats TimeBetweenShots, the fastest authored value wins.
+        tbs = min(tbs_candidates) if tbs_candidates else None
+        anim_candidates = [
+            float(v) for v in read_field_values(block.text, 'anim_fire_rate_modifier')
+            if isinstance(v, (int, float)) and float(v) > 0.0
+        ]
+        # A larger fire-rate modifier is the more aggressive interpretation.
+        anim_modifier = max(anim_candidates) if anim_candidates else 1.0
         effective_tbs = tbs
         if tbs is not None and cfg.get('anim_modifier_affects_cadence', True) and anim_modifier > 1.0:
             effective_tbs = tbs / anim_modifier
 
         flags = {str(v).upper() for v in read_weapon_flags(block.text)}
         automatic = 'AUTOMATIC' in flags
-        firing_pattern = str(read_field_value(block.text, 'firing_pattern', '') or '').upper()
+        firing_patterns = [str(v or '').upper() for v in read_field_values(block.text, 'firing_pattern')]
+        firing_pattern = ' | '.join(v for v in firing_patterns if v)
         pattern_tokens = cfg.get('rapid_pattern_tokens', set())
         rapid_pattern = any(token and token in firing_pattern for token in pattern_tokens)
 
@@ -588,15 +603,45 @@ class RebalanceEngine:
         reasons: list[str] = []
         if effective_tbs is not None and effective_tbs < threshold:
             reasons.append('cadence_below_normal_threshold')
+        if tbs is None and cfg.get('unknown_cadence_forces_non_normal', False):
+            reasons.append('unknown_cadence_fail_closed')
         if automatic and cfg.get('automatic_forces_non_normal', True):
             reasons.append('automatic_flag')
         if rapid_pattern and cfg.get('pattern_forces_non_normal', True):
             reasons.append('rapid_firing_pattern')
         if group_name in cfg.get('always_non_normal_groups', set()):
             reasons.append('group_forced_non_normal')
-        if tbs is None and cfg.get('unknown_cadence_is_non_normal', False):
-            reasons.append('cadence_unknown_fail_safe')
 
+        # Secondary evidence catches custom packs that encode a machine-pistol/burst
+        # weapon through identity/animation fields while leaving TimeBetweenShots at a
+        # deceptively normal value.
+        if cfg.get('secondary_rapid_signals', True):
+            loop_values = [float(v) for v in read_field_values(block.text, 'bullets_per_anim_loop') if isinstance(v, (int, float))]
+            batch_values = [float(v) for v in read_field_values(block.text, 'bullets_in_batch') if isinstance(v, (int, float))]
+            if loop_values and max(loop_values) > 1.0:
+                reasons.append('multi_bullet_anim_loop')
+            if batch_values and max(batch_values) > 1.0:
+                reasons.append('multi_bullet_batch')
+
+            def joined_field(key: str) -> str:
+                return ' | '.join(str(v or '').upper() for v in read_field_values(block.text, key))
+
+            audio = joined_field('audio')
+            stat_name = joined_field('stat_name')
+            tuning = joined_field('nm_shot_tuning_set')
+            recoil_fp = joined_field('recoil_shake_hash_fp')
+            pickup = joined_field('pickup_hash')
+            mp_pickup = joined_field('mp_pickup_hash')
+
+            if 'APPISTOL' in audio or 'APPISTOL' in stat_name or 'APPISTOL' in pickup or 'APPISTOL' in mp_pickup:
+                reasons.append('appistol_identity_signal')
+            if 'BURST' in tuning or 'AUTOMATIC' in tuning or 'FULLAUTO' in tuning or 'FULL_AUTO' in tuning:
+                reasons.append('rapid_tuning_signal')
+            if group_name == 'GROUP_PISTOL' and ('SMG' in recoil_fp or 'MACHINE' in recoil_fp):
+                reasons.append('machine_pistol_recoil_signal')
+
+        # Deduplicate while keeping deterministic reason order.
+        reasons = list(dict.fromkeys(reasons))
         non_normal = bool(reasons)
         cadence_class = 'normal'
         if effective_tbs is not None:
@@ -626,32 +671,16 @@ class RebalanceEngine:
             'automatic': automatic,
             'firing_pattern': firing_pattern,
             'anim_fire_rate_modifier': anim_modifier,
+            'onetap_allowlist_blocked': False,
         }
 
-    def apply_fire_rate_headshot_policy(
-        self,
-        weapon: str,
-        group: str,
-        block: WeaponBlock,
-        policy: dict[str, Any],
-    ) -> tuple[dict[str, Any], dict[str, Any]]:
-        """Downgrade one-tap for any weapon classified as non-normal cadence."""
-        classification = self.classify_fire_rate(weapon, group, block)
+    def _downgrade_onetap_policy(self, policy: dict[str, Any]) -> dict[str, Any]:
+        """Convert one-tap to the configured safe headshot mode and clear 1500x values."""
         cfg = self.settings.fire_rate_classifier or {}
-        if not (
-            cfg.get('enabled', False)
-            and cfg.get('disable_onetap_for_non_normal', True)
-            and classification.get('non_normal', False)
-            and policy.get('mode') == 'onetap'
-        ):
-            return policy, classification
-
         result = deepcopy(policy)
         mode = str(cfg.get('non_normal_headshot_mode', 'normal')).lower()
         result['mode'] = mode
         if mode == 'normal':
-            # Important: changing only mode is not enough because the resolved policy may
-            # still carry the 1500x one-tap multipliers from the global profile.
             result['player_multiplier'] = float(self.settings.headshot.enabled_player_modifier)
             result['network_multiplier'] = float(self.settings.headshot.enabled_network_modifier)
             result['ai_multiplier'] = float(self.settings.headshot.enabled_ai_modifier)
@@ -661,6 +690,44 @@ class RebalanceEngine:
             result['no_falloff'] = False
             result['sync_weapon_range'] = False
             result['sync_lock_on_range'] = False
+        return result
+
+    def apply_fire_rate_headshot_policy(
+        self,
+        weapon: str,
+        group: str,
+        block: WeaponBlock,
+        policy: dict[str, Any],
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Enforce strict one-tap allowlist, then remove it from rapid/non-normal weapons."""
+        classification = self.classify_fire_rate(weapon, group, block)
+        cfg = self.settings.fire_rate_classifier or {}
+        if not cfg.get('enabled', False):
+            return policy, classification
+
+        result = policy
+        if policy.get('mode') == 'onetap' and cfg.get('enforce_onetap_allowlist', False):
+            allowed_weapons = cfg.get('onetap_allowed_weapons', set())
+            allowed_weapon_groups = cfg.get('onetap_allowed_weapon_groups', set())
+            allowed_groups = cfg.get('onetap_allowed_groups', set())
+            weapon_allowed = weapon.upper() in allowed_weapons
+            if allowed_weapon_groups:
+                weapon_allowed = weapon_allowed and group.upper() in allowed_weapon_groups
+            allowed = weapon_allowed or group.upper() in allowed_groups
+            if not allowed:
+                result = self._downgrade_onetap_policy(result)
+                classification['onetap_allowlist_blocked'] = True
+                classification['reasons'] = list(dict.fromkeys([
+                    *classification.get('reasons', []), 'not_in_onetap_allowlist'
+                ]))
+
+        if (
+            cfg.get('disable_onetap_for_non_normal', True)
+            and classification.get('non_normal', False)
+            and result.get('mode') == 'onetap'
+        ):
+            result = self._downgrade_onetap_policy(result)
+
         return result, classification
 
     def apply_fire_rate_damage_rules(

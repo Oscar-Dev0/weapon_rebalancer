@@ -1,5 +1,17 @@
 # Changelog
 
+## 6.3.0 - 2026-08-11
+
+- Flow Caribe ahora usa una allowlist estricta: one-tap solo en las 25 pistolas declaradas y `GROUP_SNIPER`.
+- Las 25 pistolas son solo elegibles: si el META indica `Automatic`, burst, cadencia rápida o señales de machine-pistol, pierden one-tap.
+- Scanner `CWeaponInfo` corregido: extracción balanceada de `<Item>` para no truncar armas con `OverrideForces`/`AttachPoints` anidados.
+- Lectura y escritura de campos al nivel directo de `CWeaponInfo`, ignorando duplicados anidados que antes podían ocultar `WeaponFlags` reales.
+- Duplicados directos de campos se normalizan todos; un segundo `NetworkHeadShotPlayerDamageModifier` ya no puede dejar un multiplicador viejo.
+- Clasificador fail-safe: usa el menor `TimeBetweenShots`, mayor `AnimFireRateModifier`, cualquier flag `Automatic`, patrones burst/full-auto y señales secundarias `APPISTOL`/SMG.
+- `unknown_cadence_forces_non_normal` activado en Flow Caribe: si una pistola elegible no declara cadencia, pierde one-tap por seguridad.
+- Regresión añadida con estructura META realista anidada y override externo intentando forzar one-tap.
+- 38 pruebas automáticas aprobadas.
+
 ## 6.2.0 - 2026-08-11
 
 - Nuevo perfil `profiles/flow_caribe.json` para PvP Flow Caribe.

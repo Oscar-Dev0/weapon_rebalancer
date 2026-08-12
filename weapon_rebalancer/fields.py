@@ -226,7 +226,7 @@ FIELDS: dict[str, MetaField] = {
     'movement_mode_conditional_idle': F('movement_mode_conditional_idle', 'MovementModeConditionalIdle', 'text', section='animation'),
     'stat_name': F('stat_name', 'StatName', 'text', section='identity'),
     'nm_shot_tuning_set': F('nm_shot_tuning_set', 'NmShotTuningSet', 'text', section='animation'),
-    'firing_pattern': F('firing_pattern', 'FiringPattern', 'ref_attr', section='fire_rate'),
+    'firing_pattern': F('firing_pattern', 'FiringPattern', 'ref_attr', aliases=('FiringPatternAliases',), section='fire_rate'),
     'weapon_flags': F('weapon_flags', 'WeaponFlags', 'text', insert=True, section='flags'),
     'ammo_diminishing_rate': F('ammo_diminishing_rate', 'AmmoDiminishingRate', section='ammo'),
     'aiming_breathing_weight': F('aiming_breathing_weight', 'AimingBreathingAdditiveWeight', section='animation'),

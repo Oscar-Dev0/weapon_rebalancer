@@ -1,6 +1,6 @@
 {
   "name": "Flow Caribe PvP Adaptive Fire-Rate Low Damage Near-Zero Recoil",
-  "description": "Perfil Flow Caribe con detección robusta de cadencia. Solo armas de cadencia normal conservan one-tap; rápidas/automáticas/burst bajan daño y usan headshot normal. PISTOL50 mantiene daño triple, no excepción de cadencia.",
+  "description": "Flow Caribe: daño corporal bajo, recoil casi nulo, one-tap SOLO en las 25 pistolas permitidas (si son de cadencia normal) y snipers; cualquier automática/rápida pierde one-tap.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
@@ -21,8 +21,8 @@
     "require_runtime_critical_hits": true
   },
   "headshot": {
-    "mode": "onetap",
-    "multiplier": 1500.0,
+    "mode": "normal",
+    "multiplier": 4.0,
     "distance": 400.0,
     "no_falloff": false,
     "sync_weapon_range": false,
@@ -208,7 +208,8 @@
         "ik_recoil_scale_vertical": 0.001
       },
       "headshot": {
-        "mode": "onetap",
+        "mode": "normal",
+        "multiplier": 4.0,
         "distance": 150.0
       }
     },
@@ -239,7 +240,8 @@
         "ik_recoil_scale_vertical": 0.001
       },
       "headshot": {
-        "mode": "onetap",
+        "mode": "normal",
+        "multiplier": 4.0,
         "distance": 190.0
       }
     },
@@ -270,7 +272,8 @@
         "ik_recoil_scale_vertical": 0.001
       },
       "headshot": {
-        "mode": "onetap",
+        "mode": "normal",
+        "multiplier": 4.0,
         "distance": 380.0
       }
     },
@@ -301,7 +304,8 @@
         "ik_recoil_scale_vertical": 0.001
       },
       "headshot": {
-        "mode": "onetap",
+        "mode": "normal",
+        "multiplier": 4.0,
         "distance": 340.0
       }
     },
@@ -332,7 +336,8 @@
         "ik_recoil_scale_vertical": 0.001
       },
       "headshot": {
-        "mode": "onetap",
+        "mode": "normal",
+        "multiplier": 4.0,
         "distance": 55.0
       }
     },
@@ -364,6 +369,7 @@
       },
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 1200.0
       }
     }
@@ -373,6 +379,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -380,6 +387,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -387,6 +395,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -394,6 +403,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -401,6 +411,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -408,6 +419,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -415,6 +427,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -422,6 +435,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -429,6 +443,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -436,6 +451,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -443,6 +459,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -450,6 +467,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -457,6 +475,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -464,6 +483,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -471,6 +491,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -478,6 +499,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -485,6 +507,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -492,6 +515,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -519,6 +543,7 @@
       },
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 220.0
       }
     },
@@ -526,6 +551,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -533,6 +559,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -540,6 +567,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -547,6 +575,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -554,6 +583,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     },
@@ -561,6 +591,7 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
+        "multiplier": 1500.0,
         "distance": 150.0
       }
     }
@@ -607,6 +638,41 @@
       "GROUP_SHOTGUN": 9.0,
       "GROUP_SNIPER": 9.0
     },
-    "unknown_cadence_is_non_normal": true
+    "unknown_cadence_forces_non_normal": true,
+    "secondary_rapid_signals": true,
+    "enforce_onetap_allowlist": true,
+    "onetap_allowed_weapons": [
+      "WEAPON_CERAMICPISTOL",
+      "WEAPON_COMBATPISTOL",
+      "WEAPON_COMBATPISTOLNAVIDAD",
+      "WEAPON_DARKSIDEGLOCK",
+      "WEAPON_FN57",
+      "WEAPON_GADGETPISTOL",
+      "WEAPON_GLIZZYG17",
+      "WEAPON_GLIZZYG17L",
+      "WEAPON_GLIZZYG19",
+      "WEAPON_GLIZZYG21B",
+      "WEAPON_GLIZZYG30",
+      "WEAPON_GLIZZYG40",
+      "WEAPON_ILLGLOCK17",
+      "WEAPON_MGGLOCK",
+      "WEAPON_ODGLOCK",
+      "WEAPON_P210",
+      "WEAPON_P30L",
+      "WEAPON_PISTOL",
+      "WEAPON_PISTOL50",
+      "WEAPON_PISTOLGIRL",
+      "WEAPON_PISTOLXM3",
+      "WEAPON_PISTOL_MK2",
+      "WEAPON_SKYGLOCK",
+      "WEAPON_SR40",
+      "WEAPON_VINTAGEPISTOL"
+    ],
+    "onetap_allowed_groups": [
+      "GROUP_SNIPER"
+    ],
+    "onetap_allowed_weapon_groups": [
+      "GROUP_PISTOL"
+    ]
   }
 }

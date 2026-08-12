@@ -429,6 +429,24 @@ def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
     if not isinstance(pattern_tokens, list):
         raise ProfileError('fire_rate_classifier.rapid_pattern_tokens debe ser una lista.')
 
+    allowed_weapons = raw.get('onetap_allowed_weapons', [])
+    if isinstance(allowed_weapons, str):
+        allowed_weapons = [allowed_weapons]
+    if not isinstance(allowed_weapons, list):
+        raise ProfileError('fire_rate_classifier.onetap_allowed_weapons debe ser una lista.')
+
+    allowed_groups = raw.get('onetap_allowed_groups', [])
+    if isinstance(allowed_groups, str):
+        allowed_groups = [allowed_groups]
+    if not isinstance(allowed_groups, list):
+        raise ProfileError('fire_rate_classifier.onetap_allowed_groups debe ser una lista.')
+
+    allowed_weapon_groups = raw.get('onetap_allowed_weapon_groups', [])
+    if isinstance(allowed_weapon_groups, str):
+        allowed_weapon_groups = [allowed_weapon_groups]
+    if not isinstance(allowed_weapon_groups, list):
+        raise ProfileError('fire_rate_classifier.onetap_allowed_weapon_groups debe ser una lista.')
+
     normal_min = raw.get('normal_min_time_between_shots', 0.18)
     if not isinstance(normal_min, (int, float)) or isinstance(normal_min, bool) or float(normal_min) <= 0.0:
         raise ProfileError('fire_rate_classifier.normal_min_time_between_shots debe ser numérico > 0.')
@@ -455,9 +473,14 @@ def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
         'automatic_forces_non_normal': bool(raw.get('automatic_forces_non_normal', True)),
         'pattern_forces_non_normal': bool(raw.get('pattern_forces_non_normal', True)),
         'anim_modifier_affects_cadence': bool(raw.get('anim_modifier_affects_cadence', True)),
-        'unknown_cadence_is_non_normal': bool(raw.get('unknown_cadence_is_non_normal', False)),
         'rapid_pattern_tokens': {str(v).upper() for v in pattern_tokens if str(v).strip()},
         'always_non_normal_groups': {str(v).upper() for v in always_groups},
+        'unknown_cadence_forces_non_normal': bool(raw.get('unknown_cadence_forces_non_normal', False)),
+        'secondary_rapid_signals': bool(raw.get('secondary_rapid_signals', True)),
+        'enforce_onetap_allowlist': bool(raw.get('enforce_onetap_allowlist', False)),
+        'onetap_allowed_weapons': {str(v).upper() for v in allowed_weapons},
+        'onetap_allowed_weapon_groups': {str(v).upper() for v in allowed_weapon_groups},
+        'onetap_allowed_groups': {str(v).upper() for v in allowed_groups},
         'disable_onetap_for_non_normal': bool(raw.get('disable_onetap_for_non_normal', True)),
         'non_normal_headshot_mode': headshot_mode,
         'non_normal_damage_caps': damage_caps,
