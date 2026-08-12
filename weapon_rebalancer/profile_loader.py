@@ -397,6 +397,73 @@ def _parse_fire_rate_damage_rules(settings: Any, data: dict[str, Any]) -> None:
 
     settings.fire_rate_damage_rules = parsed
 
+def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
+    """Parse robust cadence classification used for balance and headshot policy.
+
+    This classifier is intentionally independent from damage rules: it can downgrade
+    one-tap when a META is rapid because of TimeBetweenShots, Automatic flags,
+    FiringPattern, or an animation fire-rate modifier.
+    """
+    raw = data.get('fire_rate_classifier', {})
+    if raw is None:
+        raw = {}
+    if not isinstance(raw, dict):
+        raise ProfileError('fire_rate_classifier debe ser un objeto JSON.')
+
+    enabled = bool(raw.get('enabled', False))
+    groups = raw.get('groups', [])
+    if isinstance(groups, str):
+        groups = [groups]
+    if not isinstance(groups, list):
+        raise ProfileError('fire_rate_classifier.groups debe ser una lista.')
+
+    always_groups = raw.get('always_non_normal_groups', [])
+    if isinstance(always_groups, str):
+        always_groups = [always_groups]
+    if not isinstance(always_groups, list):
+        raise ProfileError('fire_rate_classifier.always_non_normal_groups debe ser una lista.')
+
+    pattern_tokens = raw.get('rapid_pattern_tokens', ['FULL_AUTO', 'AUTOMATIC', 'BURST'])
+    if isinstance(pattern_tokens, str):
+        pattern_tokens = [pattern_tokens]
+    if not isinstance(pattern_tokens, list):
+        raise ProfileError('fire_rate_classifier.rapid_pattern_tokens debe ser una lista.')
+
+    normal_min = raw.get('normal_min_time_between_shots', 0.18)
+    if not isinstance(normal_min, (int, float)) or isinstance(normal_min, bool) or float(normal_min) <= 0.0:
+        raise ProfileError('fire_rate_classifier.normal_min_time_between_shots debe ser numérico > 0.')
+
+    headshot_mode = str(raw.get('non_normal_headshot_mode', 'normal')).lower()
+    if headshot_mode not in {'off', 'normal'}:
+        raise ProfileError('fire_rate_classifier.non_normal_headshot_mode debe ser off o normal.')
+
+    raw_caps = raw.get('non_normal_damage_caps', {})
+    if raw_caps is None:
+        raw_caps = {}
+    if not isinstance(raw_caps, dict):
+        raise ProfileError('fire_rate_classifier.non_normal_damage_caps debe ser un objeto JSON.')
+    damage_caps: dict[str, float] = {}
+    for cap_group, cap_value in raw_caps.items():
+        if not isinstance(cap_value, (int, float)) or isinstance(cap_value, bool) or float(cap_value) < 0.0:
+            raise ProfileError(f'fire_rate_classifier.non_normal_damage_caps.{cap_group} debe ser numérico >= 0.')
+        damage_caps[str(cap_group).upper()] = float(cap_value)
+
+    settings.fire_rate_classifier = {
+        'enabled': enabled,
+        'groups': {str(v).upper() for v in groups},
+        'normal_min_time_between_shots': float(normal_min),
+        'automatic_forces_non_normal': bool(raw.get('automatic_forces_non_normal', True)),
+        'pattern_forces_non_normal': bool(raw.get('pattern_forces_non_normal', True)),
+        'anim_modifier_affects_cadence': bool(raw.get('anim_modifier_affects_cadence', True)),
+        'unknown_cadence_is_non_normal': bool(raw.get('unknown_cadence_is_non_normal', False)),
+        'rapid_pattern_tokens': {str(v).upper() for v in pattern_tokens if str(v).strip()},
+        'always_non_normal_groups': {str(v).upper() for v in always_groups},
+        'disable_onetap_for_non_normal': bool(raw.get('disable_onetap_for_non_normal', True)),
+        'non_normal_headshot_mode': headshot_mode,
+        'non_normal_damage_caps': damage_caps,
+    }
+
+
 def _parse_family_rules(settings: Any, data: dict[str, Any]) -> None:
     rules = data.get('family_rules', [])
     if not isinstance(rules, list):
@@ -479,6 +546,7 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
     _parse_weapon_classification(settings, data)
     _parse_baseline_repair(settings, data)
     _parse_fire_rate_damage_rules(settings, data)
+    _parse_fire_rate_classifier(settings, data)
     _parse_family_rules(settings, data)
 
     headshot = data.get('headshot', {})

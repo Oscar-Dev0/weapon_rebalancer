@@ -12,6 +12,7 @@ from .headshot import apply_policy as apply_headshot_profile, audit_block as aud
 from .meta_utils import (
     insert_field_if_missing,
     read_field_value,
+    read_weapon_flags,
     read_text,
     replace_dynamic_field,
     replace_field,
@@ -257,6 +258,13 @@ class RebalanceEngine:
         profile = self.apply_fire_rate_damage_rules(weapon, group, block, profile)
         profile = self.apply_family_rules(weapon, group, block, profile)
         policy = resolve_headshot_policy(self.settings, weapon, group, block)
+        policy, fire_rate_classification = self.apply_fire_rate_headshot_policy(weapon, group, block, policy)
+        if fire_rate_classification.get('class') not in {'unclassified', 'normal', 'unknown_normal'}:
+            rpm = fire_rate_classification.get('rpm')
+            suffix = f":{rpm:.0f}rpm" if isinstance(rpm, (int, float)) else ''
+            change.changed_fields.append(f"fire_rate_class:{fire_rate_classification.get('class')}{suffix}")
+        if fire_rate_classification.get('non_normal') and policy.get('mode') != 'onetap':
+            change.changed_fields.append('headshot:onetap_disabled_by_fire_rate')
         self._active_headshot_policy = policy
         policy_metrics: dict[str, Any] = {}
         if self.settings.headshot_profile != 'original':
@@ -545,6 +553,116 @@ class RebalanceEngine:
         return result
 
 
+    def classify_fire_rate(self, weapon: str, group: str, block: WeaponBlock) -> dict[str, Any]:
+        """Classify source META cadence using multiple independent signals.
+
+        TimeBetweenShots is authoritative when present, but custom packs can also expose
+        rapid fire through Automatic flags, FiringPattern, or AnimFireRateModifier.
+        The result never changes cadence; it only informs damage/headshot balancing.
+        """
+        cfg = self.settings.fire_rate_classifier or {}
+        group_name = group.upper()
+        enabled_groups = cfg.get('groups', set())
+        if not cfg.get('enabled', False) or (enabled_groups and group_name not in enabled_groups):
+            return {
+                'class': 'unclassified', 'non_normal': False, 'reasons': [],
+                'time_between_shots': None, 'effective_time_between_shots': None, 'rpm': None,
+                'automatic': False, 'firing_pattern': '', 'anim_fire_rate_modifier': 1.0,
+            }
+
+        tbs_raw = read_field_value(block.text, 'time_between_shots')
+        tbs = float(tbs_raw) if isinstance(tbs_raw, (int, float)) and float(tbs_raw) > 0.0 else None
+        anim_raw = read_field_value(block.text, 'anim_fire_rate_modifier', 1.0)
+        anim_modifier = float(anim_raw) if isinstance(anim_raw, (int, float)) and float(anim_raw) > 0.0 else 1.0
+        effective_tbs = tbs
+        if tbs is not None and cfg.get('anim_modifier_affects_cadence', True) and anim_modifier > 1.0:
+            effective_tbs = tbs / anim_modifier
+
+        flags = {str(v).upper() for v in read_weapon_flags(block.text)}
+        automatic = 'AUTOMATIC' in flags
+        firing_pattern = str(read_field_value(block.text, 'firing_pattern', '') or '').upper()
+        pattern_tokens = cfg.get('rapid_pattern_tokens', set())
+        rapid_pattern = any(token and token in firing_pattern for token in pattern_tokens)
+
+        threshold = float(cfg.get('normal_min_time_between_shots', 0.18))
+        reasons: list[str] = []
+        if effective_tbs is not None and effective_tbs < threshold:
+            reasons.append('cadence_below_normal_threshold')
+        if automatic and cfg.get('automatic_forces_non_normal', True):
+            reasons.append('automatic_flag')
+        if rapid_pattern and cfg.get('pattern_forces_non_normal', True):
+            reasons.append('rapid_firing_pattern')
+        if group_name in cfg.get('always_non_normal_groups', set()):
+            reasons.append('group_forced_non_normal')
+        if tbs is None and cfg.get('unknown_cadence_is_non_normal', False):
+            reasons.append('cadence_unknown_fail_safe')
+
+        non_normal = bool(reasons)
+        cadence_class = 'normal'
+        if effective_tbs is not None:
+            if effective_tbs <= 0.09:
+                cadence_class = 'extreme_fast'
+            elif effective_tbs <= 0.115:
+                cadence_class = 'very_fast'
+            elif effective_tbs <= 0.145:
+                cadence_class = 'fast'
+            elif effective_tbs < threshold:
+                cadence_class = 'quick'
+            elif non_normal:
+                cadence_class = 'automatic_or_pattern'
+        elif non_normal:
+            cadence_class = 'automatic_or_pattern'
+        else:
+            cadence_class = 'unknown_normal'
+
+        rpm = (60.0 / effective_tbs) if effective_tbs else None
+        return {
+            'class': cadence_class,
+            'non_normal': non_normal,
+            'reasons': reasons,
+            'time_between_shots': tbs,
+            'effective_time_between_shots': effective_tbs,
+            'rpm': rpm,
+            'automatic': automatic,
+            'firing_pattern': firing_pattern,
+            'anim_fire_rate_modifier': anim_modifier,
+        }
+
+    def apply_fire_rate_headshot_policy(
+        self,
+        weapon: str,
+        group: str,
+        block: WeaponBlock,
+        policy: dict[str, Any],
+    ) -> tuple[dict[str, Any], dict[str, Any]]:
+        """Downgrade one-tap for any weapon classified as non-normal cadence."""
+        classification = self.classify_fire_rate(weapon, group, block)
+        cfg = self.settings.fire_rate_classifier or {}
+        if not (
+            cfg.get('enabled', False)
+            and cfg.get('disable_onetap_for_non_normal', True)
+            and classification.get('non_normal', False)
+            and policy.get('mode') == 'onetap'
+        ):
+            return policy, classification
+
+        result = deepcopy(policy)
+        mode = str(cfg.get('non_normal_headshot_mode', 'normal')).lower()
+        result['mode'] = mode
+        if mode == 'normal':
+            # Important: changing only mode is not enough because the resolved policy may
+            # still carry the 1500x one-tap multipliers from the global profile.
+            result['player_multiplier'] = float(self.settings.headshot.enabled_player_modifier)
+            result['network_multiplier'] = float(self.settings.headshot.enabled_network_modifier)
+            result['ai_multiplier'] = float(self.settings.headshot.enabled_ai_modifier)
+            configured = self.settings.headshot.enabled_default_max_distance
+            if configured is not None:
+                result['distance'] = float(configured)
+            result['no_falloff'] = False
+            result['sync_weapon_range'] = False
+            result['sync_lock_on_range'] = False
+        return result, classification
+
     def apply_fire_rate_damage_rules(
         self,
         weapon: str,
@@ -552,38 +670,51 @@ class RebalanceEngine:
         block: WeaponBlock,
         profile: dict[str, Any],
     ) -> dict[str, Any]:
-        """Adjust damage from the source META cadence without changing the cadence itself.
+        """Adjust damage from effective cadence without changing fire rate.
 
-        The first matching rule wins. A per-weapon `damage` override has precedence so
-        special weapons such as .50 pistols can stay intentionally stronger.
+        Effective cadence uses the same robust classifier as headshot protection, so an
+        AnimFireRateModifier can no longer hide a rapid weapon behind a normal raw
+        TimeBetweenShots value. Automatic/pattern-only detections also receive a safe
+        per-group damage cap. Exact weapon damage overrides (e.g. PISTOL50) stay intact.
         """
-        if not self.settings.fire_rate_damage_rules:
+        if not self.settings.fire_rate_damage_rules and not self.settings.fire_rate_classifier:
             return profile
         explicit = self.settings.explicit_overrides.get(weapon, {})
         if isinstance(explicit, dict) and 'damage' in explicit:
             return profile
 
-        time_between_shots = read_field_value(block.text, 'time_between_shots')
-        if not isinstance(time_between_shots, (int, float)):
-            return profile
-        cadence = float(time_between_shots)
-        if cadence <= 0.0:
-            return profile
+        classification = self.classify_fire_rate(weapon, group, block)
+        effective = classification.get('effective_time_between_shots')
+        if not isinstance(effective, (int, float)) or float(effective) <= 0.0:
+            raw = read_field_value(block.text, 'time_between_shots')
+            effective = float(raw) if isinstance(raw, (int, float)) and float(raw) > 0.0 else None
 
         result = deepcopy(profile)
         group_name = group.upper()
-        for rule in self.settings.fire_rate_damage_rules:
-            groups = rule.get('groups', set())
-            if groups and group_name not in groups:
-                continue
-            minimum = rule.get('min_time_between_shots')
-            maximum = rule.get('max_time_between_shots')
-            if minimum is not None and cadence < float(minimum):
-                continue
-            if maximum is not None and cadence > float(maximum):
-                continue
-            result['damage'] = float(rule['damage'])
-            break
+        if effective is not None:
+            cadence = float(effective)
+            for rule in self.settings.fire_rate_damage_rules:
+                groups = rule.get('groups', set())
+                if groups and group_name not in groups:
+                    continue
+                minimum = rule.get('min_time_between_shots')
+                maximum = rule.get('max_time_between_shots')
+                if minimum is not None and cadence < float(minimum):
+                    continue
+                if maximum is not None and cadence > float(maximum):
+                    continue
+                result['damage'] = float(rule['damage'])
+                break
+
+        # If the META is clearly non-normal because of Automatic/FiringPattern/group,
+        # cap damage even when its authored TimeBetweenShots looks artificially slow.
+        if classification.get('non_normal', False):
+            caps = (self.settings.fire_rate_classifier or {}).get('non_normal_damage_caps', {})
+            cap = caps.get(group_name)
+            if isinstance(cap, (int, float)):
+                current = self._numeric_field_base(block, result, 'damage')
+                if current is not None:
+                    result['damage'] = min(float(current), float(cap))
         return result
 
     def apply_family_rules(
@@ -683,7 +814,9 @@ class RebalanceEngine:
     def is_one_tap_active_for_weapon(self, weapon: str, group: str, block: WeaponBlock) -> bool:
         if self.settings.headshot_profile == 'original':
             return False
-        return resolve_headshot_policy(self.settings, weapon, group, block).get('mode') == 'onetap'
+        policy = resolve_headshot_policy(self.settings, weapon, group, block)
+        policy, _ = self.apply_fire_rate_headshot_policy(weapon, group, block, policy)
+        return policy.get('mode') == 'onetap'
 
     def weapon_matches_types(self, weapon: str, group: str) -> bool:
         """Comprueba filtros de --weapontype por grupo o familia de nombre."""
@@ -776,6 +909,7 @@ class RebalanceEngine:
         if block is None:
             return profile
         policy = resolve_headshot_policy(self.settings, weapon, block.group, block)
+        policy, _ = self.apply_fire_rate_headshot_policy(weapon, block.group, block, policy)
         result, _ = apply_headshot_profile(
             profile,
             block.text,

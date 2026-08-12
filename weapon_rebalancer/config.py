@@ -367,6 +367,7 @@ class Settings:
     custom_multiplier_base: str
     family_rules: list[dict[str, Any]]
     fire_rate_damage_rules: list[dict[str, Any]]
+    fire_rate_classifier: dict[str, Any]
     baseline_repair: dict[str, Any]
     scan: ScanConfig
 
@@ -426,6 +427,20 @@ class Settings:
             custom_multiplier_base='weapon',
             family_rules=[],
             fire_rate_damage_rules=[],
+            fire_rate_classifier={
+                'enabled': False,
+                'groups': set(),
+                'normal_min_time_between_shots': 0.18,
+                'automatic_forces_non_normal': True,
+                'pattern_forces_non_normal': True,
+                'anim_modifier_affects_cadence': True,
+                'unknown_cadence_is_non_normal': False,
+                'rapid_pattern_tokens': {'FULL_AUTO', 'AUTOMATIC', 'BURST'},
+                'always_non_normal_groups': set(),
+                'disable_onetap_for_non_normal': True,
+                'non_normal_headshot_mode': 'normal',
+                'non_normal_damage_caps': {},
+            },
             baseline_repair={
                 'enabled': False,
                 'repair_zero_or_missing': True,

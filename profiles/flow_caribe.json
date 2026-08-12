@@ -1,6 +1,6 @@
 {
-  "name": "Flow Caribe PvP Low Damage Near-Zero Recoil One-Tap",
-  "description": "Perfil PvP Flow Caribe de daño corporal bajo, PISTOL50 triple, recoil casi nulo (incluido desplazamiento IK), precisión alta y one-tap únicamente en cabeza.",
+  "name": "Flow Caribe PvP Adaptive Fire-Rate Low Damage Near-Zero Recoil",
+  "description": "Perfil Flow Caribe con detección robusta de cadencia. Solo armas de cadencia normal conservan one-tap; rápidas/automáticas/burst bajan daño y usan headshot normal. PISTOL50 mantiene daño triple, no excepción de cadencia.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
@@ -80,8 +80,104 @@
       "groups": [
         "GROUP_PISTOL"
       ],
-      "max_time_between_shots": 0.17,
+      "max_time_between_shots": 0.179999,
       "damage": 5.5
+    },
+    {
+      "name": "smg_extreme_fast",
+      "groups": [
+        "GROUP_SMG"
+      ],
+      "max_time_between_shots": 0.075,
+      "damage": 4.0
+    },
+    {
+      "name": "smg_very_fast",
+      "groups": [
+        "GROUP_SMG"
+      ],
+      "max_time_between_shots": 0.095,
+      "damage": 4.25
+    },
+    {
+      "name": "smg_fast",
+      "groups": [
+        "GROUP_SMG"
+      ],
+      "max_time_between_shots": 0.12,
+      "damage": 4.5
+    },
+    {
+      "name": "smg_quick",
+      "groups": [
+        "GROUP_SMG"
+      ],
+      "max_time_between_shots": 0.179999,
+      "damage": 5.0
+    },
+    {
+      "name": "rifle_extreme_fast",
+      "groups": [
+        "GROUP_RIFLE"
+      ],
+      "max_time_between_shots": 0.075,
+      "damage": 5.5
+    },
+    {
+      "name": "rifle_very_fast",
+      "groups": [
+        "GROUP_RIFLE"
+      ],
+      "max_time_between_shots": 0.095,
+      "damage": 6.0
+    },
+    {
+      "name": "rifle_fast",
+      "groups": [
+        "GROUP_RIFLE"
+      ],
+      "max_time_between_shots": 0.12,
+      "damage": 6.5
+    },
+    {
+      "name": "rifle_quick",
+      "groups": [
+        "GROUP_RIFLE"
+      ],
+      "max_time_between_shots": 0.179999,
+      "damage": 7.0
+    },
+    {
+      "name": "mg_extreme_fast",
+      "groups": [
+        "GROUP_MG"
+      ],
+      "max_time_between_shots": 0.075,
+      "damage": 5.5
+    },
+    {
+      "name": "mg_very_fast",
+      "groups": [
+        "GROUP_MG"
+      ],
+      "max_time_between_shots": 0.095,
+      "damage": 6.0
+    },
+    {
+      "name": "mg_fast",
+      "groups": [
+        "GROUP_MG"
+      ],
+      "max_time_between_shots": 0.12,
+      "damage": 6.5
+    },
+    {
+      "name": "mg_quick",
+      "groups": [
+        "GROUP_MG"
+      ],
+      "max_time_between_shots": 0.179999,
+      "damage": 7.0
     }
   ],
   "groups": {
@@ -477,5 +573,40 @@
     "WEAPON_SNOWBALL",
     "WEAPON_BALL"
   ],
-  "allow_damage_weapons": []
+  "allow_damage_weapons": [],
+  "fire_rate_classifier": {
+    "enabled": true,
+    "groups": [
+      "GROUP_PISTOL",
+      "GROUP_SMG",
+      "GROUP_RIFLE",
+      "GROUP_MG",
+      "GROUP_SHOTGUN",
+      "GROUP_SNIPER"
+    ],
+    "normal_min_time_between_shots": 0.18,
+    "automatic_forces_non_normal": true,
+    "pattern_forces_non_normal": true,
+    "anim_modifier_affects_cadence": true,
+    "rapid_pattern_tokens": [
+      "FULL_AUTO",
+      "AUTOMATIC",
+      "BURST"
+    ],
+    "always_non_normal_groups": [
+      "GROUP_SMG",
+      "GROUP_MG"
+    ],
+    "disable_onetap_for_non_normal": true,
+    "non_normal_headshot_mode": "normal",
+    "non_normal_damage_caps": {
+      "GROUP_PISTOL": 5.5,
+      "GROUP_SMG": 5.0,
+      "GROUP_RIFLE": 7.0,
+      "GROUP_MG": 7.0,
+      "GROUP_SHOTGUN": 9.0,
+      "GROUP_SNIPER": 9.0
+    },
+    "unknown_cadence_is_non_normal": true
+  }
 }

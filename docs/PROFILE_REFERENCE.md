@@ -209,3 +209,36 @@ También puedes pasar una o más rutas por CLI:
 ```powershell
 python run_rebalance.py --reference-root "references\snags_original\metas" ...
 ```
+
+## Clasificador robusto de cadencia (`fire_rate_classifier`)
+
+Permite decidir si un arma es de cadencia normal o rápida usando varias señales del META. No depende únicamente de `TimeBetweenShots`:
+
+- `TimeBetweenShots` y RPM efectiva.
+- `AnimFireRateModifier` para detectar cadencia efectiva superior a la declarada.
+- flag `Automatic` de `WeaponFlags`.
+- `FiringPattern` como `FIRING_PATTERN_FULL_AUTO` o patrones burst.
+- grupos que pueden marcarse siempre como no normales, por ejemplo `GROUP_SMG` y `GROUP_MG`.
+
+Cuando `disable_onetap_for_non_normal=true`, una arma clasificada como rápida baja automáticamente de `onetap` a headshot `normal`. El motor también sustituye los multiplicadores heredados de one-tap por los multiplicadores normales; no basta con cambiar únicamente el nombre del modo.
+
+```json
+"fire_rate_classifier": {
+  "enabled": true,
+  "groups": ["GROUP_PISTOL", "GROUP_SMG", "GROUP_RIFLE", "GROUP_MG"],
+  "normal_min_time_between_shots": 0.18,
+  "automatic_forces_non_normal": true,
+  "pattern_forces_non_normal": true,
+  "anim_modifier_affects_cadence": true,
+  "rapid_pattern_tokens": ["FULL_AUTO", "AUTOMATIC", "BURST"],
+  "always_non_normal_groups": ["GROUP_SMG", "GROUP_MG"],
+  "disable_onetap_for_non_normal": true,
+  "non_normal_headshot_mode": "normal",
+  "non_normal_damage_caps": {
+    "GROUP_PISTOL": 5.5,
+    "GROUP_RIFLE": 7.0
+  }
+}
+```
+
+Con `normal_min_time_between_shots=0.18`, cualquier cadencia efectiva inferior a 0.18 s (~333 RPM) se considera no normal. Las clases internas son `quick`, `fast`, `very_fast` y `extreme_fast`.
