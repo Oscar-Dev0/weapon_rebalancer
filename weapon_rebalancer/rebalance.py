@@ -257,6 +257,7 @@ class RebalanceEngine:
 
         profile = self.apply_custom_weapon_multipliers(weapon, group, block, profile)
         profile = self.apply_fire_rate_damage_rules(weapon, group, block, profile)
+        profile = self.apply_weapon_field_multipliers(weapon, block, profile)
         profile = self.apply_family_rules(weapon, group, block, profile)
         policy = resolve_headshot_policy(self.settings, weapon, group, block)
         policy, fire_rate_classification = self.apply_fire_rate_headshot_policy(weapon, group, block, policy)
@@ -874,6 +875,24 @@ class RebalanceEngine:
                 current = self._numeric_field_base(block, result, 'damage')
                 if current is not None:
                     result['damage'] = min(float(current), float(cap))
+        return result
+
+
+    def apply_weapon_field_multipliers(
+        self,
+        weapon: str,
+        block: WeaponBlock,
+        profile: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Apply exact per-weapon multipliers after base/cadence damage is resolved."""
+        multipliers = self.settings.weapon_field_multipliers.get(weapon.upper(), {})
+        if not multipliers:
+            return profile
+        result = deepcopy(profile)
+        for key, multiplier in multipliers.items():
+            base = self._numeric_field_base(block, result, key)
+            if base is not None:
+                result[key] = base * float(multiplier)
         return result
 
     def apply_family_rules(

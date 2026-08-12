@@ -335,6 +335,7 @@ class Settings:
     only_weapons: set[str]
     weapon_types: set[str]
     explicit_overrides: dict[str, dict[str, Any]]
+    weapon_field_multipliers: dict[str, dict[str, float]]
     weapon_range_multipliers: dict[str, float]
     weapon_family_range_multipliers: dict[str, float]
     base_weapon_overrides: dict[str, dict[str, Any]]
@@ -390,6 +391,7 @@ class Settings:
             only_weapons={w.upper() for w in ONLY_WEAPONS},
             weapon_types=set(),
             explicit_overrides={k.upper(): v for k, v in EXPLICIT_OVERRIDES.items()},
+            weapon_field_multipliers={},
             weapon_range_multipliers={k.upper(): float(v) for k, v in WEAPON_RANGE_MULTIPLIERS.items()},
             weapon_family_range_multipliers={k.upper(): float(v) for k, v in WEAPON_FAMILY_RANGE_MULTIPLIERS.items()},
             base_weapon_overrides=BASE_WEAPON_OVERRIDES,

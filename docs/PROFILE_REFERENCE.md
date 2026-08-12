@@ -254,3 +254,16 @@ Con `normal_min_time_between_shots=0.18`, cualquier cadencia efectiva inferior a
 Con `enforce_onetap_allowlist=true`, ningún override global, por carpeta o por arma puede habilitar one-tap fuera de `onetap_allowed_weapons`/`onetap_allowed_groups`. Si `onetap_allowed_weapon_groups` está definido, un nombre permitido también debe pertenecer a uno de esos grupos.
 
 El scanner no usa un regex no-greedy para cerrar `CWeaponInfo`: cuenta los `<Item>` anidados. Esto evita que `OverrideForces` o `AttachPoints` oculten campos situados al final del arma, especialmente `TimeBetweenShots` y `WeaponFlags`.
+
+## Multiplicadores exactos por arma (`weapon_field_multipliers`)
+
+Permite multiplicar campos después de resolver el perfil base y las reglas de cadencia, usando coincidencia exacta del nombre del arma:
+
+```json
+"weapon_field_multipliers": {
+  "WEAPON_REVOLVER": {"damage": 6.0},
+  "WEAPON_GADGETPISTOL": {"damage": 7.0}
+}
+```
+
+Si `WEAPON_REVOLVER` tiene base `damage=10`, el resultado es `60`. Una variante con otro nombre no hereda el multiplicador.

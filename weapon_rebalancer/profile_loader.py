@@ -532,6 +532,27 @@ def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
     }
 
 
+
+def _parse_weapon_field_multipliers(settings: Any, data: dict[str, Any]) -> None:
+    """Parse exact per-weapon field multipliers.
+
+    Unlike family_rules.contains, this mapping is exact by weapon name and is useful
+    for special weapons that must scale from an explicit base value without affecting
+    similarly named variants.
+    """
+    raw = data.get('weapon_field_multipliers', {})
+    if raw is None:
+        raw = {}
+    if not isinstance(raw, dict):
+        raise ProfileError('weapon_field_multipliers debe ser un objeto JSON.')
+    parsed: dict[str, dict[str, float]] = {}
+    for weapon, multipliers in raw.items():
+        weapon_name = str(weapon).upper()
+        parsed[weapon_name] = _field_multipliers(
+            multipliers, f'weapon_field_multipliers.{weapon_name}'
+        )
+    settings.weapon_field_multipliers = parsed
+
 def _parse_family_rules(settings: Any, data: dict[str, Any]) -> None:
     rules = data.get('family_rules', [])
     if not isinstance(rules, list):
@@ -615,6 +636,7 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
     _parse_baseline_repair(settings, data)
     _parse_fire_rate_damage_rules(settings, data)
     _parse_fire_rate_classifier(settings, data)
+    _parse_weapon_field_multipliers(settings, data)
     _parse_family_rules(settings, data)
 
     headshot = data.get('headshot', {})

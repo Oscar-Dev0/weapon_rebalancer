@@ -333,3 +333,81 @@ class FlowCaribeProfileTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+# v6.11 regression tests are attached dynamically to keep compatibility with the
+# existing unittest module layout in older releases.
+def _test_v611_exact_damage_multipliers_keep_onetap_recoil(self) -> None:
+    temp, output, report = self._run(
+        block('WEAPON_PISTOL50', 'GROUP_PISTOL', 80.0, 0.20),
+        block('WEAPON_GADGETPISTOL', 'GROUP_PISTOL', 80.0, 0.20),
+        block('WEAPON_REVOLVER', 'GROUP_PISTOL', 80.0, 0.50),
+        block('WEAPON_REVOLVER_MK2_TEST', 'GROUP_PISTOL', 80.0, 0.50),
+    )
+    try:
+        # Gadget keeps the heavy .50 base/handling and multiplies its 30 damage by x7.
+        for tag in (
+            'WeaponRange', 'DamageFallOffRangeMin', 'DamageFallOffRangeMax',
+            'DamageFallOffModifier', 'AccuracySpread',
+        ):
+            self.assertAlmostEqual(
+                value(output, 'WEAPON_GADGETPISTOL', tag),
+                value(output, 'WEAPON_PISTOL50', tag),
+                places=6,
+                msg=f'GadgetPistol no conserva el perfil pesado de PISTOL50 en {tag}',
+            )
+        self.assertAlmostEqual(value(output, 'WEAPON_PISTOL50', 'Damage'), 30.0)
+        self.assertAlmostEqual(value(output, 'WEAPON_GADGETPISTOL', 'Damage'), 210.0)
+        self.assertAlmostEqual(
+            value(output, 'WEAPON_GADGETPISTOL', 'Damage') / value(output, 'WEAPON_PISTOL50', 'Damage'),
+            7.0,
+        )
+        self.assertAlmostEqual(value(output, 'WEAPON_GADGETPISTOL', 'WeaponRange'), 220.0)
+        self.assertGreaterEqual(
+            value(output, 'WEAPON_GADGETPISTOL', 'Damage') * value(output, 'WEAPON_GADGETPISTOL', 'HeadShotDamageModifierPlayer'),
+            100.0,
+        )
+        self.assertAlmostEqual(value(output, 'WEAPON_GADGETPISTOL', 'RecoilAccuracyMax'), 0.30)
+        self.assertAlmostEqual(value(output, 'WEAPON_GADGETPISTOL', 'RecoilShakeAmplitude'), 0.28)
+
+        # Revolver stays fixed one-tap and multiplies the normal pistol base 10 by x6 (=60).
+        self.assertAlmostEqual(value(output, 'WEAPON_REVOLVER', 'Damage'), 60.0)
+        self.assertGreaterEqual(
+            value(output, 'WEAPON_REVOLVER', 'Damage') * value(output, 'WEAPON_REVOLVER', 'HeadShotDamageModifierPlayer'),
+            100.0,
+        )
+        # Exact match: similarly named variants do not inherit REVOLVER x6.
+        self.assertAlmostEqual(value(output, 'WEAPON_REVOLVER_MK2_TEST', 'Damage'), 10.0)
+        self.assertAlmostEqual(value(output, 'WEAPON_REVOLVER', 'RecoilAccuracyMax'), 0.30)
+        self.assertAlmostEqual(value(output, 'WEAPON_REVOLVER', 'RecoilShakeAmplitude'), 0.28)
+        self.assertEqual(report.onetap_audit_failed, 0)
+    finally:
+        temp.cleanup()
+
+FlowCaribeProfileTests.test_v611_exact_damage_multipliers_keep_onetap_recoil = _test_v611_exact_damage_multipliers_keep_onetap_recoil
+
+
+# v6.12 regression: REVOLVER_MK2 is an explicit x6 + fixed one-tap weapon,
+# while similarly named custom variants still do not inherit it.
+def _test_v612_revolver_mk2_exact_x6_and_onetap_recoil(self) -> None:
+    temp, output, report = self._run(
+        block('WEAPON_REVOLVER', 'GROUP_PISTOL', 80.0, 0.50),
+        block('WEAPON_REVOLVER_MK2', 'GROUP_PISTOL', 80.0, 0.50),
+        block('WEAPON_REVOLVER_MK2_TEST', 'GROUP_PISTOL', 80.0, 0.50),
+    )
+    try:
+        self.assertAlmostEqual(value(output, 'WEAPON_REVOLVER', 'Damage'), 60.0)
+        self.assertAlmostEqual(value(output, 'WEAPON_REVOLVER_MK2', 'Damage'), 60.0)
+        self.assertAlmostEqual(value(output, 'WEAPON_REVOLVER_MK2_TEST', 'Damage'), 10.0)
+
+        for weapon in ('WEAPON_REVOLVER', 'WEAPON_REVOLVER_MK2'):
+            self.assertGreaterEqual(
+                value(output, weapon, 'Damage') * value(output, weapon, 'HeadShotDamageModifierPlayer'),
+                100.0,
+            )
+            self.assertAlmostEqual(value(output, weapon, 'RecoilAccuracyMax'), 0.30)
+            self.assertAlmostEqual(value(output, weapon, 'RecoilShakeAmplitude'), 0.28)
+        self.assertEqual(report.onetap_audit_failed, 0)
+    finally:
+        temp.cleanup()
+
+FlowCaribeProfileTests.test_v612_revolver_mk2_exact_x6_and_onetap_recoil = _test_v612_revolver_mk2_exact_x6_and_onetap_recoil

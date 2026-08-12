@@ -1,6 +1,6 @@
 {
-  "name": "Flow Caribe PvP v6.8 - Normal-Max + Fixed One-Tap + Single-Shot Recoil",
-  "description": "Flow Caribe: daño normal como techo (pistolas 10->6, SMG 14->10, rifles 15->11, MG 14->10, snipers 40->25). Las 25 pistolas fijadas y GROUP_SNIPER conservan one-tap dinámico. Las armas one-tap de tiro-a-tiro reciben recoil visible; las automáticas/burst mantienen recoil casi nulo. El resto usa headshot 1.5x.",
+  "name": "Flow Caribe PvP v6.11 - Exact Weapon Damage Multipliers",
+  "description": "Flow Caribe: daño normal como techo (pistolas 10->6, SMG 14->10, rifles 15->11, MG 14->10, snipers 40->25). Las pistolas fijadas, WEAPON_REVOLVER y GROUP_SNIPER conservan one-tap dinámico. Las armas one-tap de tiro-a-tiro reciben recoil visible; las automáticas/burst mantienen recoil casi nulo. WEAPON_PISTOL50 conserva 30 de daño. WEAPON_REVOLVER y WEAPON_REVOLVER_MK2 usan multiplicador exacto x6 sobre base 10 (=60), y WEAPON_GADGETPISTOL conserva la base pesada de PISTOL50 (30) y usa multiplicador exacto x7 (=210). El resto usa headshot 1.5x.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
@@ -496,11 +496,31 @@
       }
     },
     "WEAPON_GADGETPISTOL": {
-      "fields": {},
+      "fields": {
+        "damage": 30.0,
+        "weapon_range": 220.0,
+        "falloff_min": 165.0,
+        "falloff_max": 220.0,
+        "falloff_modifier": 0.86,
+        "hit_limbs": 0.72,
+        "network_hit_limbs": 0.72,
+        "accuracy_spread": 0.04,
+        "recoil_accuracy_max": 0.003,
+        "recoil_error_time": 0.003,
+        "recoil_recovery_rate": 20.0,
+        "recoil_shake_amplitude": 0.001,
+        "explosion_shake_amplitude": 0.0,
+        "ik_recoil_displacement": 0.001,
+        "ik_recoil_displacement_scope": 0.001,
+        "ik_recoil_scale_backward": 0.001,
+        "ik_recoil_scale_vertical": 0.001,
+        "run_and_gun_accuracy_modifier": 0.09,
+        "accurate_mode_accuracy_modifier": 0.025
+      },
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 220.0,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -834,6 +854,24 @@
         "sync_weapon_range": false,
         "sync_lock_on_range": false
       }
+    },
+    "WEAPON_REVOLVER": {
+      "fields": {
+        "damage": 10.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
+      }
     }
   },
   "ignore_weapons": [
@@ -901,6 +939,8 @@
       "WEAPON_P30L",
       "WEAPON_PISTOL",
       "WEAPON_PISTOL50",
+      "WEAPON_REVOLVER",
+      "WEAPON_REVOLVER_MK2",
       "WEAPON_PISTOLGIRL",
       "WEAPON_PISTOLXM3",
       "WEAPON_PISTOL_MK2",
@@ -945,6 +985,17 @@
         "ik_recoil_scale_backward": 0.055,
         "ik_recoil_scale_vertical": 0.075
       }
+    }
+  },
+  "weapon_field_multipliers": {
+    "WEAPON_REVOLVER": {
+      "damage": 6.0
+    },
+    "WEAPON_GADGETPISTOL": {
+      "damage": 7.0
+    },
+    "WEAPON_REVOLVER_MK2": {
+      "damage": 6.0
     }
   }
 }

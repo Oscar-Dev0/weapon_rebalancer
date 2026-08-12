@@ -1,4 +1,25 @@
+# 6.12.0
+
+- `WEAPON_REVOLVER_MK2` now receives the same exact damage multiplier as `WEAPON_REVOLVER`: base pistol damage 10 × 6 = **60**.
+- `WEAPON_REVOLVER_MK2` is explicitly added to Flow Caribe's fixed one-tap allowlist, so its single-shot recoil behavior matches the standard Revolver.
+- Exact matching remains strict: names such as `WEAPON_REVOLVER_MK2_TEST` do not inherit the ×6 multiplier or fixed allowlist behavior.
+
+# 6.11.0
+
+- Added exact `weapon_field_multipliers` profile support. Multipliers match the full weapon name instead of substring families.
+- `WEAPON_REVOLVER`: base pistol damage 10 × 6 = **60**.
+- `WEAPON_GADGETPISTOL`: heavy PISTOL50-style base damage 30 × 7 = **210**.
+- Multipliers run after base/cadence resolution and before family rules, while explicit base damage keeps these two special weapons deterministic.
+
 # Changelog
+
+## 6.9.0 - Flow Caribe heavy Gadget + revolver one-tap recoil
+- `WEAPON_GADGETPISTOL` now mirrors the complete `WEAPON_PISTOL50` heavy profile: 30 body damage, 220 range, 165-220 falloff window and the same accuracy/range tuning.
+- `WEAPON_GADGETPISTOL` remains fixed one-tap and, when truly single-shot, receives the visible pistol one-tap recoil profile.
+- `WEAPON_REVOLVER` is added to the fixed one-tap allowlist.
+- `WEAPON_REVOLVER` keeps the normal pistol body-damage scale but receives visible recoil when it is truly tiro-a-tiro.
+- Automatic/burst versions of either weapon still keep near-zero recoil; only mechanical single-shot behavior receives the special recoil.
+- Added regression coverage for Gadget=.50 parity and Revolver one-tap recoil.
 
 ## 6.8.0 - Flow Caribe one-tap single-shot recoil
 - One-tap weapons that truly fire one shot per trigger now receive visible recoil.
