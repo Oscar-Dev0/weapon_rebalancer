@@ -836,7 +836,7 @@
       "GROUP_SMG",
       "GROUP_MG"
     ],
-    "disable_onetap_for_non_normal": false,
+    "disable_onetap_for_non_normal": true,
     "non_normal_headshot_mode": "normal",
     "non_normal_damage_caps": {
       "GROUP_PISTOL": 5.5,
