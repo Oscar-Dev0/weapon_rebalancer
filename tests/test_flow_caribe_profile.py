@@ -132,11 +132,39 @@ class FlowCaribeProfileTests(unittest.TestCase):
             self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'Damage'), 40.0)
             self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'HeadShotDamageModifierPlayer'), 2.717391, places=5)
 
-            # Near-zero recoil still applies.
-            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'RecoilAccuracyMax'), 0.003)
-            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'RecoilShakeAmplitude'), 0.001)
+            # Fixed one-tap + tiro-a-tiro now receives visible recoil.
+            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'RecoilAccuracyMax'), 0.30)
+            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'RecoilShakeAmplitude'), 0.28)
+            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'RecoilAccuracyMax'), 0.75)
+            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'RecoilShakeAmplitude'), 0.65)
             self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'AccuracySpread'), 0.05)
             self.assertEqual(report.onetap_audit_failed, 0)
+        finally:
+            temp.cleanup()
+
+
+    def test_onetap_single_shot_gets_recoil_but_automatic_onetap_stays_near_zero(self) -> None:
+        temp, output, report = self._run(
+            block('WEAPON_COMBATPISTOL', 'GROUP_PISTOL', 80.0, 0.20),
+            block('WEAPON_GLIZZYG17', 'GROUP_PISTOL', 80.0, 0.20, flags='Gun UsableOnFoot Automatic'),
+            block('WEAPON_PISTOL_MK2', 'GROUP_PISTOL', 80.0, 0.10),
+            block('WEAPON_TEST_SNIPER', 'GROUP_SNIPER', 80.0, 1.00),
+        )
+        try:
+            # Semi-auto one-tap gets visible recoil even if cadence is fast.
+            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'RecoilAccuracyMax'), 0.30)
+            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'RecoilShakeAmplitude'), 0.28)
+            self.assertAlmostEqual(value(output, 'WEAPON_PISTOL_MK2', 'RecoilAccuracyMax'), 0.30)
+            self.assertAlmostEqual(value(output, 'WEAPON_PISTOL_MK2', 'RecoilShakeAmplitude'), 0.28)
+
+            # Automatic one-tap allowlist weapon remains near-zero recoil.
+            self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'RecoilAccuracyMax'), 0.003)
+            self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'RecoilShakeAmplitude'), 0.001)
+
+            # Sniper one-tap gets heavier single-shot recoil.
+            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'RecoilAccuracyMax'), 0.75)
+            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'RecoilShakeAmplitude'), 0.65)
+            self.assertTrue(any('recoil:onetap_single_shot' in f for c in report.changes for f in c.changed_fields))
         finally:
             temp.cleanup()
 

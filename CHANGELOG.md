@@ -1,5 +1,13 @@
 # Changelog
 
+## 6.8.0 - Flow Caribe one-tap single-shot recoil
+- One-tap weapons that truly fire one shot per trigger now receive visible recoil.
+- Fixed one-tap pistols: recoil 0.30 / shake 0.28 with faster recovery.
+- GROUP_SNIPER one-tap: heavier recoil 0.75 / shake 0.65.
+- Automatic, burst, multi-bullet and rapid-tuning one-tap weapons keep the near-zero recoil profile.
+- Cadence alone does not remove recoil from a semi-auto one-tap weapon; tiro-a-tiro remains recoil-enabled even at fast TBS.
+- Added regression tests for semi-auto, automatic allowlist, fast semi-auto and sniper recoil behavior.
+
 ## 6.7.0 - Flow Caribe normal-max damage scale
 - Pistols: normal 10; rapid tiers 9/8/7/6.
 - SMGs: normal 14; rapid tiers 13/12/11/10.

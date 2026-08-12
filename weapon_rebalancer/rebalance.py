@@ -260,6 +260,11 @@ class RebalanceEngine:
         profile = self.apply_family_rules(weapon, group, block, profile)
         policy = resolve_headshot_policy(self.settings, weapon, group, block)
         policy, fire_rate_classification = self.apply_fire_rate_headshot_policy(weapon, group, block, policy)
+        profile = self.apply_onetap_single_shot_recoil(
+            weapon, group, block, profile, policy, fire_rate_classification
+        )
+        if fire_rate_classification.get('onetap_single_shot_recoil_applied'):
+            change.changed_fields.append('recoil:onetap_single_shot')
         if fire_rate_classification.get('class') not in {'unclassified', 'normal', 'unknown_normal'}:
             rpm = fire_rate_classification.get('rpm')
             suffix = f":{rpm:.0f}rpm" if isinstance(rpm, (int, float)) else ''
@@ -770,6 +775,52 @@ class RebalanceEngine:
                 classification['headshot_multiplier_cap'] = cap
 
         return result, classification
+
+    def apply_onetap_single_shot_recoil(
+        self,
+        weapon: str,
+        group: str,
+        block: WeaponBlock,
+        profile: dict[str, Any],
+        policy: dict[str, Any],
+        classification: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Give visible recoil only to one-tap weapons that truly fire one shot per trigger.
+
+        Cadence alone does not disqualify a semi-auto weapon: a fast trigger finger is
+        still tiro-a-tiro. Mechanical automatic/burst/multi-bullet signals do. This
+        keeps automatic one-tap allowlist weapons near-zero recoil while fixed
+        semi-auto pistols and snipers feel heavier.
+        """
+        cfg = self.settings.fire_rate_classifier or {}
+        if not cfg.get('onetap_single_shot_recoil_enabled', False):
+            return profile
+        if policy.get('mode') != 'onetap':
+            return profile
+
+        disqualifying_reasons = {
+            'automatic_flag',
+            'rapid_firing_pattern',
+            'multi_bullet_anim_loop',
+            'multi_bullet_batch',
+            'rapid_tuning_signal',
+        }
+        reasons = set(classification.get('reasons', []))
+        if classification.get('automatic') or reasons.intersection(disqualifying_reasons):
+            classification['onetap_single_shot_recoil_applied'] = False
+            classification['onetap_single_shot_recoil_blocked'] = True
+            return profile
+
+        recoil_profiles = cfg.get('onetap_single_shot_recoil_profiles', {})
+        recoil = recoil_profiles.get(group.upper()) or recoil_profiles.get('__DEFAULT__')
+        if not recoil:
+            return profile
+
+        result = deepcopy(profile)
+        result.update({key: float(value) for key, value in recoil.items()})
+        classification['onetap_single_shot_recoil_applied'] = True
+        classification['onetap_single_shot_recoil_blocked'] = False
+        return result
 
     def apply_fire_rate_damage_rules(
         self,

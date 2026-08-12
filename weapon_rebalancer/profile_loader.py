@@ -472,6 +472,36 @@ def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
             raise ProfileError('fire_rate_classifier.max_headshot_multiplier debe ser numérico > 0.')
         max_headshot_multiplier = float(max_headshot_multiplier)
 
+    raw_onetap_recoil = raw.get('onetap_single_shot_recoil_profiles', {})
+    if raw_onetap_recoil is None:
+        raw_onetap_recoil = {}
+    if not isinstance(raw_onetap_recoil, dict):
+        raise ProfileError('fire_rate_classifier.onetap_single_shot_recoil_profiles debe ser un objeto JSON.')
+    onetap_recoil_profiles: dict[str, dict[str, float]] = {}
+    allowed_recoil_fields = {
+        'recoil_accuracy_max', 'recoil_error_time', 'recoil_recovery_rate',
+        'recoil_shake_amplitude', 'explosion_shake_amplitude',
+        'ik_recoil_displacement', 'ik_recoil_displacement_scope',
+        'ik_recoil_scale_backward', 'ik_recoil_scale_vertical',
+    }
+    for recoil_group, recoil_fields in raw_onetap_recoil.items():
+        if not isinstance(recoil_fields, dict):
+            raise ProfileError(
+                f'fire_rate_classifier.onetap_single_shot_recoil_profiles.{recoil_group} debe ser un objeto JSON.'
+            )
+        parsed_fields: dict[str, float] = {}
+        for field, value in recoil_fields.items():
+            if field not in allowed_recoil_fields:
+                raise ProfileError(
+                    f'fire_rate_classifier.onetap_single_shot_recoil_profiles.{recoil_group}.{field} no es un campo recoil permitido.'
+                )
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or float(value) < 0.0:
+                raise ProfileError(
+                    f'fire_rate_classifier.onetap_single_shot_recoil_profiles.{recoil_group}.{field} debe ser numérico >= 0.'
+                )
+            parsed_fields[field] = float(value)
+        onetap_recoil_profiles[str(recoil_group).upper()] = parsed_fields
+
     settings.fire_rate_classifier = {
         'enabled': enabled,
         'groups': {str(v).upper() for v in groups},
@@ -497,6 +527,8 @@ def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
         'allowlisted_dynamic_onetap': bool(raw.get('allowlisted_dynamic_onetap', False)),
         'allowlisted_onetap_target_effective_health': float(raw.get('allowlisted_onetap_target_effective_health', 100.0)),
         'allowlisted_onetap_safety_margin': float(raw.get('allowlisted_onetap_safety_margin', 1.0)),
+        'onetap_single_shot_recoil_enabled': bool(raw.get('onetap_single_shot_recoil_enabled', False)),
+        'onetap_single_shot_recoil_profiles': onetap_recoil_profiles,
     }
 
 
