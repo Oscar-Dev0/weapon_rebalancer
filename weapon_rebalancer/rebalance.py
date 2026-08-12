@@ -254,6 +254,7 @@ class RebalanceEngine:
         change.changed_fields.extend(baseline.notes)
 
         profile = self.apply_custom_weapon_multipliers(weapon, group, block, profile)
+        profile = self.apply_fire_rate_damage_rules(weapon, group, block, profile)
         profile = self.apply_family_rules(weapon, group, block, profile)
         policy = resolve_headshot_policy(self.settings, weapon, group, block)
         self._active_headshot_policy = policy
@@ -447,6 +448,8 @@ class RebalanceEngine:
             return True
         if any(self.family_rule_matches(rule, weapon, group) for rule in self.settings.family_rules):
             return True
+        if self.settings.fire_rate_damage_rules:
+            return True
         if self.settings.global_meta_overrides or self.settings.global_flag_ops.get('add') or self.settings.global_flag_ops.get('remove'):
             return True
         if group in self.settings.group_meta_overrides or group in self.settings.group_flag_ops:
@@ -539,6 +542,48 @@ class RebalanceEngine:
                 base = self._numeric_field_base(block, result, key)
             if base is not None:
                 result[key] = base * float(multiplier)
+        return result
+
+
+    def apply_fire_rate_damage_rules(
+        self,
+        weapon: str,
+        group: str,
+        block: WeaponBlock,
+        profile: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Adjust damage from the source META cadence without changing the cadence itself.
+
+        The first matching rule wins. A per-weapon `damage` override has precedence so
+        special weapons such as .50 pistols can stay intentionally stronger.
+        """
+        if not self.settings.fire_rate_damage_rules:
+            return profile
+        explicit = self.settings.explicit_overrides.get(weapon, {})
+        if isinstance(explicit, dict) and 'damage' in explicit:
+            return profile
+
+        time_between_shots = read_field_value(block.text, 'time_between_shots')
+        if not isinstance(time_between_shots, (int, float)):
+            return profile
+        cadence = float(time_between_shots)
+        if cadence <= 0.0:
+            return profile
+
+        result = deepcopy(profile)
+        group_name = group.upper()
+        for rule in self.settings.fire_rate_damage_rules:
+            groups = rule.get('groups', set())
+            if groups and group_name not in groups:
+                continue
+            minimum = rule.get('min_time_between_shots')
+            maximum = rule.get('max_time_between_shots')
+            if minimum is not None and cadence < float(minimum):
+                continue
+            if maximum is not None and cadence > float(maximum):
+                continue
+            result['damage'] = float(rule['damage'])
+            break
         return result
 
     def apply_family_rules(

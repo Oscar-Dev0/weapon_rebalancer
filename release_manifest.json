@@ -1,6 +1,6 @@
 {
-  "name": "weapon_rebalancer_meta_v6_1",
-  "version": "6.1.0",
+  "name": "weapon_rebalancer_meta_v6_2",
+  "version": "6.2.0",
   "python_min": "3.10",
   "entrypoint": "run_rebalance.py",
   "recommended_profile": "profiles/vanilla_repair_custom_plus15_absolute_v6.json",
@@ -10,6 +10,7 @@
   "optional_headshot_guard": "extras/os_headshot_guard",
   "profiles": [
     "profiles/catalog.json",
+    "profiles/flow_caribe.json",
     "profiles/full_meta_template.json",
     "profiles/head_only.json",
     "profiles/headshot_focus_onetap.json",
@@ -34,7 +35,8 @@
     "tests/test_v3_onetap_audit.py",
     "tests/test_v4_runtime_audit.py",
     "tests/test_v5_custom_classifier.py",
-    "tests/test_v6_absolute_repair.py"
+    "tests/test_v6_absolute_repair.py",
+    "tests/test_flow_caribe_profile.py"
   ],
   "documentation": [
     "docs/COMMIT_GUIDE.md",
@@ -53,5 +55,5 @@
     "CHANGELOG_2026-07-02_V6.md",
     "RELEASE_NOTES_6.0.0.md"
   ],
-  "test_count": 34
+  "test_count": 35
 }

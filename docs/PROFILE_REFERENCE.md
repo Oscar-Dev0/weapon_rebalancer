@@ -131,6 +131,31 @@ Los multiplicadores usan el valor encontrado en el bloque original. Un arma ofic
 "allow_ignored_weapons": ["WEAPON_RPG", "WEAPON_RAILGUN"]
 ```
 
+
+## Daño según cadencia (`fire_rate_damage_rules`)
+
+Permite bajar el daño de armas que disparan más rápido sin modificar su `TimeBetweenShots`.
+Las reglas se evalúan en orden y gana la primera coincidencia. Un override `weapons.<WEAPON>.fields.damage`
+tiene prioridad, útil para excepciones como una pistola .50.
+
+```json
+"fire_rate_damage_rules": [
+  {
+    "name": "pistol_extreme_fast",
+    "groups": ["GROUP_PISTOL"],
+    "max_time_between_shots": 0.10,
+    "damage": 26.0
+  },
+  {
+    "name": "pistol_fast",
+    "groups": ["GROUP_PISTOL"],
+    "min_time_between_shots": 0.100001,
+    "max_time_between_shots": 0.14,
+    "damage": 29.0
+  }
+]
+```
+
 ## Reglas por familia
 
 ```json

@@ -1,5 +1,15 @@
 # Changelog
 
+## 6.2.0 - 2026-08-11
+
+- Nuevo perfil `profiles/flow_caribe.json` para PvP Flow Caribe.
+- 25 pistolas declaradas explícitamente con one-tap de cabeza.
+- Nueva regla `fire_rate_damage_rules`: reduce daño según la cadencia original sin alterar `TimeBetweenShots`.
+- `WEAPON_PISTOL50` reforzada con daño y alcance propios, con prioridad sobre la regla de cadencia.
+- Rifles, SMG, MG, escopetas y sniper reajustados; recoil casi nulo conservando algo de feedback.
+- Headshot one-tap sin forzar `DamageFallOffModifier=1.0`, preservando el falloff corporal.
+- 35 pruebas automáticas aprobadas.
+
 ## 6.1.0 - 2026-07-02
 
 - Custom normalizadas contra una referencia vanilla por grupo antes del +15%.

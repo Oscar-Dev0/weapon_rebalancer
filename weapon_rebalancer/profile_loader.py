@@ -349,6 +349,54 @@ def _parse_baseline_repair(settings: Any, data: dict[str, Any]) -> None:
 
     settings.baseline_repair = result
 
+
+def _parse_fire_rate_damage_rules(settings: Any, data: dict[str, Any]) -> None:
+    """Parse optional TTK rules that lower/raise damage from the weapon's original cadence.
+
+    Rules are evaluated in authored order and the first matching rule wins. Explicit
+    per-weapon damage overrides still have higher precedence in the rebalance engine.
+    """
+    rules = data.get('fire_rate_damage_rules', [])
+    if not isinstance(rules, list):
+        raise ProfileError('fire_rate_damage_rules debe ser una lista JSON.')
+
+    parsed: list[dict[str, Any]] = []
+    for index, raw in enumerate(rules):
+        context = f'fire_rate_damage_rules[{index}]'
+        if not isinstance(raw, dict):
+            raise ProfileError(f'{context} debe ser un objeto JSON.')
+
+        groups = raw.get('groups', [])
+        if isinstance(groups, str):
+            groups = [groups]
+        if not isinstance(groups, list):
+            raise ProfileError(f'{context}.groups debe ser una lista.')
+
+        min_tbs = raw.get('min_time_between_shots')
+        max_tbs = raw.get('max_time_between_shots')
+        for key, value in (('min_time_between_shots', min_tbs), ('max_time_between_shots', max_tbs)):
+            if value is not None and (not isinstance(value, (int, float)) or isinstance(value, bool) or float(value) <= 0.0):
+                raise ProfileError(f'{context}.{key} debe ser numérico > 0.')
+
+        if min_tbs is None and max_tbs is None:
+            raise ProfileError(f'{context} requiere min_time_between_shots y/o max_time_between_shots.')
+        if min_tbs is not None and max_tbs is not None and float(min_tbs) > float(max_tbs):
+            raise ProfileError(f'{context}: min_time_between_shots no puede ser mayor que max_time_between_shots.')
+
+        damage = raw.get('damage')
+        if not isinstance(damage, (int, float)) or isinstance(damage, bool) or float(damage) < 0.0:
+            raise ProfileError(f'{context}.damage debe ser numérico >= 0.')
+
+        parsed.append({
+            'name': str(raw.get('name') or f'cadence_rule_{index + 1}'),
+            'groups': {str(v).upper() for v in groups},
+            'min_time_between_shots': None if min_tbs is None else float(min_tbs),
+            'max_time_between_shots': None if max_tbs is None else float(max_tbs),
+            'damage': float(damage),
+        })
+
+    settings.fire_rate_damage_rules = parsed
+
 def _parse_family_rules(settings: Any, data: dict[str, Any]) -> None:
     rules = data.get('family_rules', [])
     if not isinstance(rules, list):
@@ -430,6 +478,7 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
     _parse_restore(settings, data)
     _parse_weapon_classification(settings, data)
     _parse_baseline_repair(settings, data)
+    _parse_fire_rate_damage_rules(settings, data)
     _parse_family_rules(settings, data)
 
     headshot = data.get('headshot', {})
