@@ -59,7 +59,7 @@ def _apply_overlay(policy: dict[str, Any], overlay: Any) -> None:
         'add_ignore_helmets_flag', 'add_armour_penetrating_flag',
         'create_missing_weapon_flags_tag', 'auto_minimum_base_damage',
         'repair_zero_network_modifier', 'create_missing_network_player_modifier_tag',
-        'remove_nonlethal_flags',
+        'remove_nonlethal_flags', 'dynamic_multiplier_from_damage', 'dynamic_consider_falloff',
     )
     for key in boolean_keys:
         if isinstance(overlay.get(key), bool):
@@ -231,6 +231,36 @@ def apply_policy(
         damage_floor = math.ceil(damage_floor * 1_000_000.0) / 1_000_000.0
 
         current_damage = _as_float(result.get('damage', read_field_value(block_text, 'damage', 0.0)), 0.0)
+
+        # Flow Caribe: for allowlisted one-tap weapons, calculate only the headshot
+        # multiplier required by the final body damage instead of using 300x/1500x.
+        # This keeps low body damage intact while still guaranteeing the configured
+        # one-tap threshold. Optionally include worst-case falloff in the calculation.
+        if _as_bool(policy.get('dynamic_multiplier_from_damage'), False) and current_damage > 0.0:
+            falloff = 1.0
+            if _as_bool(policy.get('dynamic_consider_falloff'), True):
+                falloff = _as_float(
+                    result.get('falloff_modifier', read_field_value(block_text, 'falloff_modifier', 1.0)),
+                    1.0,
+                )
+                falloff = max(min(falloff, 1.0), 0.001)
+            required_multiplier = (target * margin) / max(
+                current_damage * max(network_damage_modifier, 0.001) * falloff,
+                0.001,
+            )
+            # ceil to 6 decimals so XML formatting never rounds below the threshold
+            required_multiplier = math.ceil(required_multiplier * 1_000_000.0) / 1_000_000.0
+            policy = deepcopy(policy)
+            policy['player_multiplier'] = required_multiplier
+            policy['network_multiplier'] = required_multiplier
+            policy['ai_multiplier'] = required_multiplier
+            network_headshot = required_multiplier
+            calculated_floor = (target * margin) / max(network_headshot * max(network_damage_modifier, 0.001), 0.001)
+            damage_floor = max(configured_floor, calculated_floor)
+            damage_floor = math.ceil(damage_floor * 1_000_000.0) / 1_000_000.0
+            metrics['dynamic_headshot_multiplier'] = required_multiplier
+            metrics['dynamic_falloff_factor'] = falloff
+
         if _as_bool(policy.get('auto_minimum_base_damage'), True) and current_damage < damage_floor:
             result['damage'] = damage_floor
             current_damage = damage_floor

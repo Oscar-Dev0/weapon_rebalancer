@@ -1,6 +1,6 @@
 {
-  "name": "Flow Caribe PvP Adaptive Fire-Rate Low Damage Near-Zero Recoil",
-  "description": "Flow Caribe: daño corporal bajo, recoil casi nulo, one-tap SOLO en las 25 pistolas permitidas (si son de cadencia normal) y snipers; cualquier automática/rápida pierde one-tap.",
+  "name": "Flow Caribe PvP Strict Fixed One-Tap + 1.5x Others + Adaptive Fire-Rate + Near-Zero Recoil",
+  "description": "Flow Caribe: solo las 25 pistolas fijadas y GROUP_SNIPER tienen one-tap real. Su multiplicador se calcula dinámicamente desde el daño corporal final; el resto queda limitado a 1.5x. La cadencia sigue reduciendo daño corporal sin quitar one-tap a las armas fijadas.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
@@ -11,7 +11,7 @@
     "range": "configured",
     "fire_rate": "original",
     "reload": "original",
-    "headshot": "onetap"
+    "headshot": "normal"
   },
   "validation": {
     "strict_unknown_fields": true,
@@ -22,29 +22,29 @@
   },
   "headshot": {
     "mode": "normal",
-    "multiplier": 4.0,
+    "multiplier": 1.5,
     "distance": 400.0,
     "no_falloff": false,
     "sync_weapon_range": false,
     "sync_lock_on_range": false,
     "create_missing_tags": true,
-    "bypass_helmets": true,
+    "bypass_helmets": false,
     "helmet_multiplier": 1.0,
-    "force_penetration": true,
+    "force_penetration": false,
     "penetration": 1.0,
     "create_missing_armour_tag": true,
     "create_missing_penetration_tag": true,
-    "add_ignore_helmets_flag": true,
-    "add_armour_penetrating_flag": true,
+    "add_ignore_helmets_flag": false,
+    "add_armour_penetrating_flag": false,
     "create_missing_weapon_flags_tag": true,
-    "auto_minimum_base_damage": true,
-    "target_effective_health": 1000.0,
-    "safety_margin": 1.25,
+    "auto_minimum_base_damage": false,
+    "target_effective_health": 100.0,
+    "safety_margin": 1.0,
     "minimum_base_damage": 0.35,
     "repair_zero_network_modifier": true,
     "network_player_modifier_fallback": 1.0,
     "create_missing_network_player_modifier_tag": true,
-    "remove_nonlethal_flags": true,
+    "remove_nonlethal_flags": false,
     "blocking_flags": [
       "NonLethal",
       "NonViolent"
@@ -209,7 +209,7 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 4.0,
+        "multiplier": 1.5,
         "distance": 150.0
       }
     },
@@ -241,7 +241,7 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 4.0,
+        "multiplier": 1.5,
         "distance": 190.0
       }
     },
@@ -273,7 +273,7 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 4.0,
+        "multiplier": 1.5,
         "distance": 380.0
       }
     },
@@ -305,7 +305,7 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 4.0,
+        "multiplier": 1.5,
         "distance": 340.0
       }
     },
@@ -337,7 +337,7 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 4.0,
+        "multiplier": 1.5,
         "distance": 55.0
       }
     },
@@ -369,8 +369,16 @@
       },
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 1200.0
+        "multiplier": 1.5,
+        "distance": 1200.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     }
   },
@@ -379,144 +387,288 @@
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_COMBATPISTOL": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_COMBATPISTOLNAVIDAD": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_DARKSIDEGLOCK": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_FN57": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_GADGETPISTOL": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_GLIZZYG17": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_GLIZZYG17L": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_GLIZZYG19": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_GLIZZYG21B": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_GLIZZYG30": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_GLIZZYG40": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_ILLGLOCK17": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_MGGLOCK": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_ODGLOCK": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_P210": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_P30L": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_PISTOL": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_PISTOL50": {
@@ -543,56 +695,112 @@
       },
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 220.0
+        "multiplier": 1.5,
+        "distance": 220.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_PISTOLGIRL": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_PISTOLXM3": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_PISTOL_MK2": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_SKYGLOCK": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_SR40": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     },
     "WEAPON_VINTAGEPISTOL": {
       "fields": {},
       "headshot": {
         "mode": "onetap",
-        "multiplier": 1500.0,
-        "distance": 150.0
+        "multiplier": 1.5,
+        "distance": 150.0,
+        "dynamic_multiplier_from_damage": true,
+        "dynamic_consider_falloff": true,
+        "target_effective_health": 100.0,
+        "safety_margin": 1.0,
+        "auto_minimum_base_damage": false,
+        "no_falloff": false,
+        "sync_weapon_range": false,
+        "sync_lock_on_range": false
       }
     }
   },
@@ -628,7 +836,7 @@
       "GROUP_SMG",
       "GROUP_MG"
     ],
-    "disable_onetap_for_non_normal": true,
+    "disable_onetap_for_non_normal": false,
     "non_normal_headshot_mode": "normal",
     "non_normal_damage_caps": {
       "GROUP_PISTOL": 5.5,
@@ -673,6 +881,13 @@
     ],
     "onetap_allowed_weapon_groups": [
       "GROUP_PISTOL"
-    ]
+    ],
+    "force_bounded_headshot": true,
+    "max_headshot_multiplier": 1.5,
+    "bounded_headshot_exempt_onetap": true,
+    "force_onetap_for_allowlist": true,
+    "allowlisted_dynamic_onetap": true,
+    "allowlisted_onetap_target_effective_health": 100.0,
+    "allowlisted_onetap_safety_margin": 1.0
   }
 }

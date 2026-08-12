@@ -52,7 +52,7 @@ HEADSHOT_SCOPE_KEYS = {
     'mode', 'enabled', 'one_tap',
     *HEADSHOT_BOOL_MAP.keys(),
     *HEADSHOT_NUMBER_MAP.keys(),
-    'blocking_flags',
+    'blocking_flags', 'dynamic_multiplier_from_damage', 'dynamic_consider_falloff',
     'disabled_weapons', 'allowed_weapons', 'one_tap_weapons', 'no_one_tap_weapons',
 }
 
@@ -466,6 +466,12 @@ def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
             raise ProfileError(f'fire_rate_classifier.non_normal_damage_caps.{cap_group} debe ser numérico >= 0.')
         damage_caps[str(cap_group).upper()] = float(cap_value)
 
+    max_headshot_multiplier = raw.get('max_headshot_multiplier', None)
+    if max_headshot_multiplier is not None:
+        if not isinstance(max_headshot_multiplier, (int, float)) or isinstance(max_headshot_multiplier, bool) or float(max_headshot_multiplier) <= 0.0:
+            raise ProfileError('fire_rate_classifier.max_headshot_multiplier debe ser numérico > 0.')
+        max_headshot_multiplier = float(max_headshot_multiplier)
+
     settings.fire_rate_classifier = {
         'enabled': enabled,
         'groups': {str(v).upper() for v in groups},
@@ -484,6 +490,13 @@ def _parse_fire_rate_classifier(settings: Any, data: dict[str, Any]) -> None:
         'disable_onetap_for_non_normal': bool(raw.get('disable_onetap_for_non_normal', True)),
         'non_normal_headshot_mode': headshot_mode,
         'non_normal_damage_caps': damage_caps,
+        'force_bounded_headshot': bool(raw.get('force_bounded_headshot', False)),
+        'max_headshot_multiplier': max_headshot_multiplier,
+        'bounded_headshot_exempt_onetap': bool(raw.get('bounded_headshot_exempt_onetap', False)),
+        'force_onetap_for_allowlist': bool(raw.get('force_onetap_for_allowlist', False)),
+        'allowlisted_dynamic_onetap': bool(raw.get('allowlisted_dynamic_onetap', False)),
+        'allowlisted_onetap_target_effective_health': float(raw.get('allowlisted_onetap_target_effective_health', 100.0)),
+        'allowlisted_onetap_safety_margin': float(raw.get('allowlisted_onetap_safety_margin', 1.0)),
     }
 
 

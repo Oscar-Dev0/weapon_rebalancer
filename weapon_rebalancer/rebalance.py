@@ -705,28 +705,69 @@ class RebalanceEngine:
         if not cfg.get('enabled', False):
             return policy, classification
 
-        result = policy
-        if policy.get('mode') == 'onetap' and cfg.get('enforce_onetap_allowlist', False):
-            allowed_weapons = cfg.get('onetap_allowed_weapons', set())
-            allowed_weapon_groups = cfg.get('onetap_allowed_weapon_groups', set())
-            allowed_groups = cfg.get('onetap_allowed_groups', set())
-            weapon_allowed = weapon.upper() in allowed_weapons
-            if allowed_weapon_groups:
-                weapon_allowed = weapon_allowed and group.upper() in allowed_weapon_groups
-            allowed = weapon_allowed or group.upper() in allowed_groups
-            if not allowed:
-                result = self._downgrade_onetap_policy(result)
-                classification['onetap_allowlist_blocked'] = True
-                classification['reasons'] = list(dict.fromkeys([
-                    *classification.get('reasons', []), 'not_in_onetap_allowlist'
-                ]))
+        result = deepcopy(policy)
+        allowed_weapons = cfg.get('onetap_allowed_weapons', set())
+        allowed_weapon_groups = cfg.get('onetap_allowed_weapon_groups', set())
+        allowed_groups = cfg.get('onetap_allowed_groups', set())
+        weapon_allowed = weapon.upper() in allowed_weapons
+        if allowed_weapon_groups:
+            weapon_allowed = weapon_allowed and group.upper() in allowed_weapon_groups
+        allowlisted = weapon_allowed or group.upper() in allowed_groups
+        classification['onetap_allowlisted'] = bool(allowlisted)
+
+        # Strict Flow policy: exact fixed weapons + sniper group are authoritative.
+        # A package/local override cannot remove their one-tap, and a non-allowlisted
+        # weapon cannot sneak one-tap back in. Cadence still controls BODY damage.
+        if cfg.get('force_onetap_for_allowlist', False) and allowlisted:
+            result['mode'] = 'onetap'
+            classification['onetap_forced_by_allowlist'] = True
+            if cfg.get('allowlisted_dynamic_onetap', False):
+                result['dynamic_multiplier_from_damage'] = True
+                result['dynamic_consider_falloff'] = True
+                result['target_effective_health'] = float(cfg.get('allowlisted_onetap_target_effective_health', 100.0))
+                result['safety_margin'] = float(cfg.get('allowlisted_onetap_safety_margin', 1.0))
+                result['auto_minimum_base_damage'] = False
+                result['no_falloff'] = False
+                result['sync_weapon_range'] = False
+                result['sync_lock_on_range'] = False
+
+        if result.get('mode') == 'onetap' and cfg.get('enforce_onetap_allowlist', False) and not allowlisted:
+            result = self._downgrade_onetap_policy(result)
+            classification['onetap_allowlist_blocked'] = True
+            classification['reasons'] = list(dict.fromkeys([
+                *classification.get('reasons', []), 'not_in_onetap_allowlist'
+            ]))
 
         if (
             cfg.get('disable_onetap_for_non_normal', True)
             and classification.get('non_normal', False)
             and result.get('mode') == 'onetap'
+            and not (allowlisted and cfg.get('force_onetap_for_allowlist', False))
         ):
             result = self._downgrade_onetap_policy(result)
+
+        # Cap normal headshots to e.g. 1.5x, but optionally exempt the strict
+        # allowlisted one-tap weapons/snipers.
+        if cfg.get('force_bounded_headshot', False) and result.get('mode') != 'off':
+            cap = cfg.get('max_headshot_multiplier')
+            exempt = bool(
+                result.get('mode') == 'onetap'
+                and allowlisted
+                and cfg.get('bounded_headshot_exempt_onetap', False)
+            )
+            if isinstance(cap, (int, float)) and float(cap) > 0.0 and not exempt:
+                cap = float(cap)
+                if result.get('mode') == 'onetap':
+                    result = self._downgrade_onetap_policy(result)
+                    classification['bounded_headshot_downgraded_onetap'] = True
+                result['mode'] = 'normal'
+                result['player_multiplier'] = min(float(result.get('player_multiplier', cap)), cap)
+                result['network_multiplier'] = min(float(result.get('network_multiplier', cap)), cap)
+                result['ai_multiplier'] = min(float(result.get('ai_multiplier', cap)), cap)
+                result['no_falloff'] = False
+                result['sync_weapon_range'] = False
+                result['sync_lock_on_range'] = False
+                classification['headshot_multiplier_cap'] = cap
 
         return result, classification
 

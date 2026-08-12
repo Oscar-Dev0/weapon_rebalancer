@@ -94,7 +94,7 @@ class FlowCaribeProfileTests(unittest.TestCase):
         report = RebalanceEngine(settings).run()
         return temp, path.read_text(encoding='utf-8'), report
 
-    def test_adaptive_damage_and_only_normal_pistols_keep_onetap(self) -> None:
+    def test_fixed_pistols_and_snipers_keep_onetap_while_others_are_bounded(self) -> None:
         temp, output, report = self._run(
             block('WEAPON_GLIZZYG17', 'GROUP_PISTOL', 80.0, 0.08),
             block('WEAPON_COMBATPISTOL', 'GROUP_PISTOL', 80.0, 0.20),
@@ -104,30 +104,33 @@ class FlowCaribeProfileTests(unittest.TestCase):
             block('WEAPON_TEST_SNIPER', 'GROUP_SNIPER', 20.0, 1.20),
         )
         try:
-            # Rapid pistol: lower body damage, original cadence preserved, normal (4x) headshot only.
+            # Fixed rapid pistol: body damage is reduced by cadence, but its whitelist
+            # one-tap is authoritative. Dynamic multiplier accounts for 0.72 falloff.
             self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'Damage'), 4.0)
             self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'TimeBetweenShots'), 0.08)
-            self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'HeadShotDamageModifierPlayer'), 4.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'NetworkHeadShotPlayerDamageModifier'), 4.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'HeadShotDamageModifierPlayer'), 34.722223, places=5)
+            self.assertAlmostEqual(value(output, 'WEAPON_GLIZZYG17', 'NetworkHeadShotPlayerDamageModifier'), 34.722223, places=5)
 
-            # Normal pistol: keeps one-tap.
+            # Fixed normal pistol is also one-tap, using only the multiplier required
+            # by its final 6 body damage and falloff.
             self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'Damage'), 6.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'HeadShotDamageModifierPlayer'), 1500.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'HeadShotDamageModifierPlayer'), 23.148149, places=5)
 
-            # .50 remains triple body damage but cannot bypass rapid-fire anti-onetap protection.
+            # .50 remains triple body damage and fixed one-tap; because its body damage
+            # is much higher it needs a much smaller dynamic headshot multiplier.
             self.assertAlmostEqual(value(output, 'WEAPON_PISTOL50', 'Damage'), 18.0)
             self.assertAlmostEqual(value(output, 'WEAPON_PISTOL50', 'WeaponRange'), 220.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_PISTOL50', 'HeadShotDamageModifierPlayer'), 4.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_PISTOL50', 'HeadShotDamageModifierPlayer'), 6.459949, places=5)
 
-            # Fast rifle is also detected from cadence and loses one-tap.
+            # Non-whitelisted rifle and shotgun stay bounded to 1.5x.
             self.assertAlmostEqual(value(output, 'WEAPON_TEST_RIFLE', 'Damage'), 6.5)
-            self.assertAlmostEqual(value(output, 'WEAPON_TEST_RIFLE', 'HeadShotDamageModifierPlayer'), 4.0)
-
-            # Shotguns are NEVER one-tap under Flow Caribe; snipers are allowed.
+            self.assertAlmostEqual(value(output, 'WEAPON_TEST_RIFLE', 'HeadShotDamageModifierPlayer'), 1.5)
             self.assertAlmostEqual(value(output, 'WEAPON_TEST_SHOTGUN', 'Damage'), 9.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SHOTGUN', 'HeadShotDamageModifierPlayer'), 4.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SHOTGUN', 'HeadShotDamageModifierPlayer'), 1.5)
+
+            # Snipers are explicitly allowed one-tap as a group.
             self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'Damage'), 9.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'HeadShotDamageModifierPlayer'), 1500.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_TEST_SNIPER', 'HeadShotDamageModifierPlayer'), 12.077295, places=5)
 
             # Near-zero recoil still applies.
             self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'RecoilAccuracyMax'), 0.003)
@@ -152,13 +155,13 @@ class FlowCaribeProfileTests(unittest.TestCase):
         )
         try:
             self.assertAlmostEqual(value(output, 'WEAPON_AUTO_FLAG', 'Damage'), 7.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_AUTO_FLAG', 'HeadShotDamageModifierPlayer'), 4.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_AUTO_PATTERN', 'HeadShotDamageModifierPlayer'), 4.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_AUTO_FLAG', 'HeadShotDamageModifierPlayer'), 1.5)
+            self.assertAlmostEqual(value(output, 'WEAPON_AUTO_PATTERN', 'HeadShotDamageModifierPlayer'), 1.5)
             self.assertAlmostEqual(value(output, 'WEAPON_ANIM_FAST', 'Damage'), 5.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_ANIM_FAST', 'HeadShotDamageModifierPlayer'), 4.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_TRUE_NORMAL', 'HeadShotDamageModifierPlayer'), 4.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_ANIM_FAST', 'HeadShotDamageModifierPlayer'), 1.5)
+            self.assertAlmostEqual(value(output, 'WEAPON_TRUE_NORMAL', 'HeadShotDamageModifierPlayer'), 1.5)
             self.assertAlmostEqual(value(output, 'WEAPON_SMG_FAKE_SLOW', 'Damage'), 5.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_SMG_FAKE_SLOW', 'HeadShotDamageModifierPlayer'), 4.0)
+            self.assertAlmostEqual(value(output, 'WEAPON_SMG_FAKE_SLOW', 'HeadShotDamageModifierPlayer'), 1.5)
         finally:
             temp.cleanup()
 
@@ -206,8 +209,8 @@ class FlowCaribeProfileTests(unittest.TestCase):
             self.assertEqual(weapon_block.weapon, 'WEAPON_RUSOGLOCK')
             self.assertAlmostEqual(read_field_value(weapon_block.text, 'time_between_shots'), 0.18)
             self.assertIn('Automatic', read_weapon_flags(weapon_block.text))
-            self.assertAlmostEqual(read_field_value(weapon_block.text, 'headshot_player'), 4.0)
-            self.assertAlmostEqual(read_field_value(weapon_block.text, 'network_headshot'), 4.0)
+            self.assertAlmostEqual(read_field_value(weapon_block.text, 'headshot_player'), 1.5)
+            self.assertAlmostEqual(read_field_value(weapon_block.text, 'network_headshot'), 1.5)
             self.assertAlmostEqual(read_field_value(weapon_block.text, 'recoil_shake_amplitude'), 0.001)
             self.assertTrue(any('fire_rate_class:automatic_or_pattern' in f for c in report.changes for f in c.changed_fields))
         finally:
@@ -232,9 +235,46 @@ class FlowCaribeProfileTests(unittest.TestCase):
             }
             report = RebalanceEngine(settings).run()
             output = path.read_text(encoding='utf-8')
-            self.assertAlmostEqual(value(output, 'WEAPON_RANDOM_GLOCK', 'HeadShotDamageModifierPlayer'), 4.0)
-            self.assertAlmostEqual(value(output, 'WEAPON_RANDOM_GLOCK', 'NetworkHeadShotPlayerDamageModifier'), 4.0)
-            self.assertTrue(any('onetap_blocked_by_allowlist' in f for c in report.changes for f in c.changed_fields))
+            self.assertAlmostEqual(value(output, 'WEAPON_RANDOM_GLOCK', 'HeadShotDamageModifierPlayer'), 1.5)
+            self.assertAlmostEqual(value(output, 'WEAPON_RANDOM_GLOCK', 'NetworkHeadShotPlayerDamageModifier'), 1.5)
+            self.assertTrue(any('headshot_player' in f for c in report.changes for f in c.changed_fields))
+        finally:
+            temp.cleanup()
+
+    def test_headshot_is_exactly_fifty_percent_above_body_damage(self) -> None:
+        temp, output, _ = self._run(
+            block('WEAPON_DAMAGE10', 'GROUP_RIFLE', 10.0, 0.25),
+        )
+        try:
+            body = value(output, 'WEAPON_DAMAGE10', 'Damage')
+            multiplier = value(output, 'WEAPON_DAMAGE10', 'HeadShotDamageModifierPlayer')
+            network_multiplier = value(output, 'WEAPON_DAMAGE10', 'NetworkHeadShotPlayerDamageModifier')
+            self.assertAlmostEqual(multiplier, 1.5)
+            self.assertAlmostEqual(network_multiplier, 1.5)
+            self.assertAlmostEqual(body * multiplier, body * 1.5)
+        finally:
+            temp.cleanup()
+
+    def test_fixed_weapon_cannot_be_downgraded_by_external_headshot_override(self) -> None:
+        temp = tempfile.TemporaryDirectory()
+        try:
+            root = Path(temp.name)
+            path = root / 'weapons.meta'
+            path.write_text(meta(block('WEAPON_COMBATPISTOL', 'GROUP_PISTOL', 10.0, 0.25)), encoding='utf-8')
+            settings = Settings.from_config()
+            settings.root = root
+            settings.dry_run = False
+            settings.create_backup = False
+            settings.ignore_weapons.clear()
+            apply_external_profile(settings, load_profile(PROFILE_PATH))
+            settings.weapon_headshot_overrides['WEAPON_COMBATPISTOL'] = {
+                'mode': 'normal', 'multiplier': 1.0, 'distance': 150.0
+            }
+            RebalanceEngine(settings).run()
+            output = path.read_text(encoding='utf-8')
+            self.assertGreater(value(output, 'WEAPON_COMBATPISTOL', 'HeadShotDamageModifierPlayer'), 1.5)
+            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'HeadShotDamageModifierPlayer'), 23.148149, places=5)
+            self.assertAlmostEqual(value(output, 'WEAPON_COMBATPISTOL', 'NetworkHeadShotPlayerDamageModifier'), 23.148149, places=5)
         finally:
             temp.cleanup()
 

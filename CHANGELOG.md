@@ -1,5 +1,27 @@
 # Changelog
 
+## 6.5.0 - 2026-08-11
+
+- Flow Caribe vuelve a one-tap **solo** para las 25 pistolas fijadas y `GROUP_SNIPER`.
+- La allowlist es autoritativa: una pistola fijada conserva one-tap incluso si el META la marca `Automatic` o su cadencia es rápida; la cadencia sigue reduciendo únicamente el daño corporal.
+- Cualquier arma fuera de la allowlist queda limitada a headshot normal de **1.5x**, incluso si un override intenta forzar `mode=onetap`.
+- Nuevo one-tap dinámico: calcula el multiplicador mínimo necesario desde el daño corporal final y el falloff, evitando valores fijos 300x/1500x.
+- Ejemplo real: `WEAPON_RUSOGLOCK` no fijada => 5.5 cuerpo / 1.5x cabeza; el mismo META renombrado a `WEAPON_GLIZZYG17` fijada => 5.5 cuerpo / ~25.25x, suficiente para one-tap en el peor falloff configurado.
+- Overrides externos no pueden quitar one-tap a una arma fijada ni otorgárselo a una no fijada.
+- Recoil casi nulo y clasificador robusto de cadencia se conservan.
+- 40 pruebas automáticas aprobadas.
+
+## 6.4.0 - 2026-08-11
+
+- Flow Caribe cambia de multiplicadores de headshot 4x/1500x a un límite duro de **1.5x**.
+- Ejemplo contractual: daño corporal 10 => daño de cabeza 15; 6 => 9; 18 => 27.
+- Nuevo `fire_rate_classifier.force_bounded_headshot` para aplicar la protección después de overrides de paquete/grupo/arma.
+- Nuevo `fire_rate_classifier.max_headshot_multiplier` para impedir que configuraciones externas restauren multiplicadores exagerados.
+- Un override `mode=onetap, multiplier=1500` se degrada a `normal` y queda limitado a 1.5x.
+- Se desactivan en Flow Caribe los ajustes one-tap de casco/penetración que podían alterar el daño efectivo.
+- Se conserva detección robusta de cadencia y recoil casi nulo.
+- 40 pruebas automáticas aprobadas.
+
 ## 6.3.0 - 2026-08-11
 
 - Flow Caribe ahora usa una allowlist estricta: one-tap solo en las 25 pistolas declaradas y `GROUP_SNIPER`.

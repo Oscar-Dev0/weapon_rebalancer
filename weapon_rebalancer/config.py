@@ -445,6 +445,8 @@ class Settings:
                 'disable_onetap_for_non_normal': True,
                 'non_normal_headshot_mode': 'normal',
                 'non_normal_damage_caps': {},
+                'force_bounded_headshot': False,
+                'max_headshot_multiplier': None,
             },
             baseline_repair={
                 'enabled': False,
