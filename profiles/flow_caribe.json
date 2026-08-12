@@ -1,6 +1,6 @@
 {
-  "name": "Flow Caribe PvP Strict Fixed One-Tap + 1.5x Others + Adaptive Fire-Rate + Near-Zero Recoil",
-  "description": "Flow Caribe: solo las 25 pistolas fijadas y GROUP_SNIPER tienen one-tap real. Su multiplicador se calcula dinámicamente desde el daño corporal final; el resto queda limitado a 1.5x. La cadencia sigue reduciendo daño corporal sin quitar one-tap a las armas fijadas.",
+  "name": "Flow Caribe PvP v6.7 - Normal-Max Damage Scale + Fixed One-Tap + Near-Zero Recoil",
+  "description": "Flow Caribe: el daño NORMAL es el techo y baja según cadencia: pistolas 10->6, SMG 14->10, rifles 15->11, MG 14->10 y snipers 40->25. WEAPON_PISTOL50 queda en 30 (3x pistola normal). Las 25 pistolas fijadas y GROUP_SNIPER conservan one-tap dinámico; el resto usa headshot 1.5x. Recoil casi nulo.",
   "schema_version": 3,
   "base_preset": "rp_balanced",
   "modules": {
@@ -57,7 +57,7 @@
         "GROUP_PISTOL"
       ],
       "max_time_between_shots": 0.09,
-      "damage": 4.0
+      "damage": 6.0
     },
     {
       "name": "pistol_very_fast",
@@ -65,7 +65,7 @@
         "GROUP_PISTOL"
       ],
       "max_time_between_shots": 0.115,
-      "damage": 4.5
+      "damage": 7.0
     },
     {
       "name": "pistol_fast",
@@ -73,7 +73,7 @@
         "GROUP_PISTOL"
       ],
       "max_time_between_shots": 0.145,
-      "damage": 5.0
+      "damage": 8.0
     },
     {
       "name": "pistol_quick",
@@ -81,7 +81,7 @@
         "GROUP_PISTOL"
       ],
       "max_time_between_shots": 0.179999,
-      "damage": 5.5
+      "damage": 9.0
     },
     {
       "name": "smg_extreme_fast",
@@ -89,7 +89,7 @@
         "GROUP_SMG"
       ],
       "max_time_between_shots": 0.075,
-      "damage": 4.0
+      "damage": 10.0
     },
     {
       "name": "smg_very_fast",
@@ -97,7 +97,7 @@
         "GROUP_SMG"
       ],
       "max_time_between_shots": 0.095,
-      "damage": 4.25
+      "damage": 11.0
     },
     {
       "name": "smg_fast",
@@ -105,7 +105,7 @@
         "GROUP_SMG"
       ],
       "max_time_between_shots": 0.12,
-      "damage": 4.5
+      "damage": 12.0
     },
     {
       "name": "smg_quick",
@@ -113,7 +113,7 @@
         "GROUP_SMG"
       ],
       "max_time_between_shots": 0.179999,
-      "damage": 5.0
+      "damage": 13.0
     },
     {
       "name": "rifle_extreme_fast",
@@ -121,7 +121,7 @@
         "GROUP_RIFLE"
       ],
       "max_time_between_shots": 0.075,
-      "damage": 5.5
+      "damage": 11.0
     },
     {
       "name": "rifle_very_fast",
@@ -129,7 +129,7 @@
         "GROUP_RIFLE"
       ],
       "max_time_between_shots": 0.095,
-      "damage": 6.0
+      "damage": 12.0
     },
     {
       "name": "rifle_fast",
@@ -137,7 +137,7 @@
         "GROUP_RIFLE"
       ],
       "max_time_between_shots": 0.12,
-      "damage": 6.5
+      "damage": 13.0
     },
     {
       "name": "rifle_quick",
@@ -145,7 +145,7 @@
         "GROUP_RIFLE"
       ],
       "max_time_between_shots": 0.179999,
-      "damage": 7.0
+      "damage": 14.0
     },
     {
       "name": "mg_extreme_fast",
@@ -153,7 +153,7 @@
         "GROUP_MG"
       ],
       "max_time_between_shots": 0.075,
-      "damage": 5.5
+      "damage": 10.0
     },
     {
       "name": "mg_very_fast",
@@ -161,7 +161,7 @@
         "GROUP_MG"
       ],
       "max_time_between_shots": 0.095,
-      "damage": 6.0
+      "damage": 11.0
     },
     {
       "name": "mg_fast",
@@ -169,7 +169,7 @@
         "GROUP_MG"
       ],
       "max_time_between_shots": 0.12,
-      "damage": 6.5
+      "damage": 12.0
     },
     {
       "name": "mg_quick",
@@ -177,13 +177,45 @@
         "GROUP_MG"
       ],
       "max_time_between_shots": 0.179999,
-      "damage": 7.0
+      "damage": 13.0
+    },
+    {
+      "name": "sniper_extreme_fast",
+      "groups": [
+        "GROUP_SNIPER"
+      ],
+      "max_time_between_shots": 0.2,
+      "damage": 25.0
+    },
+    {
+      "name": "sniper_very_fast",
+      "groups": [
+        "GROUP_SNIPER"
+      ],
+      "max_time_between_shots": 0.35,
+      "damage": 30.0
+    },
+    {
+      "name": "sniper_fast",
+      "groups": [
+        "GROUP_SNIPER"
+      ],
+      "max_time_between_shots": 0.5,
+      "damage": 34.0
+    },
+    {
+      "name": "sniper_quick",
+      "groups": [
+        "GROUP_SNIPER"
+      ],
+      "max_time_between_shots": 0.8,
+      "damage": 37.0
     }
   ],
   "groups": {
     "GROUP_PISTOL": {
       "fields": {
-        "damage": 6.0,
+        "damage": 10.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
         "weapon_range": 150.0,
@@ -215,7 +247,7 @@
     },
     "GROUP_SMG": {
       "fields": {
-        "damage": 5.0,
+        "damage": 14.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
         "weapon_range": 190.0,
@@ -247,7 +279,7 @@
     },
     "GROUP_RIFLE": {
       "fields": {
-        "damage": 8.0,
+        "damage": 15.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
         "weapon_range": 380.0,
@@ -279,7 +311,7 @@
     },
     "GROUP_MG": {
       "fields": {
-        "damage": 7.0,
+        "damage": 14.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
         "weapon_range": 340.0,
@@ -311,7 +343,7 @@
     },
     "GROUP_SHOTGUN": {
       "fields": {
-        "damage": 9.0,
+        "damage": 15.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
         "weapon_range": 55.0,
@@ -343,7 +375,7 @@
     },
     "GROUP_SNIPER": {
       "fields": {
-        "damage": 9.0,
+        "damage": 40.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
         "weapon_range": 1200.0,
@@ -673,7 +705,7 @@
     },
     "WEAPON_PISTOL50": {
       "fields": {
-        "damage": 18.0,
+        "damage": 30.0,
         "weapon_range": 220.0,
         "falloff_min": 165.0,
         "falloff_max": 220.0,
@@ -839,12 +871,12 @@
     "disable_onetap_for_non_normal": true,
     "non_normal_headshot_mode": "normal",
     "non_normal_damage_caps": {
-      "GROUP_PISTOL": 5.5,
-      "GROUP_SMG": 5.0,
-      "GROUP_RIFLE": 7.0,
-      "GROUP_MG": 7.0,
-      "GROUP_SHOTGUN": 9.0,
-      "GROUP_SNIPER": 9.0
+      "GROUP_PISTOL": 9.0,
+      "GROUP_SMG": 13.0,
+      "GROUP_RIFLE": 14.0,
+      "GROUP_MG": 13.0,
+      "GROUP_SHOTGUN": 14.0,
+      "GROUP_SNIPER": 37.0
     },
     "unknown_cadence_forces_non_normal": true,
     "secondary_rapid_signals": true,

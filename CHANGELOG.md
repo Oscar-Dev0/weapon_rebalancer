@@ -1,5 +1,25 @@
 # Changelog
 
+## 6.7.0 - Flow Caribe normal-max damage scale
+- Pistols: normal 10; rapid tiers 9/8/7/6.
+- SMGs: normal 14; rapid tiers 13/12/11/10.
+- Rifles: normal 15; rapid tiers 14/13/12/11.
+- MGs: normal 14; rapid tiers 13/12/11/10.
+- Snipers: normal 40; faster custom snipers 37/34/30/25.
+- PISTOL50: 30 body damage (3x normal pistol).
+- Automatic/Burst detection now enforces at least a one-tier body-damage reduction even when authored cadence looks slow.
+- Fixed-pistol and sniper one-tap policy and near-zero recoil remain enabled.
+
+## 6.6.0 - Flow Caribe 10-15 damage scale
+- Pistolas adaptativas: 10/11/12/13 por cadencia; pistola normal 15.
+- SMG adaptativas: 10-14, con 14 como daño base.
+- Rifles/largas: hasta 15; cadencias extremas bajan a 12-14.
+- MG: hasta 14.
+- Escopetas y snipers: 15 de daño base.
+- WEAPON_PISTOL50: 45 de daño (3x la pistola normal de 15).
+- Se conserva one-tap dinámico solo para las 25 pistolas fijadas y GROUP_SNIPER.
+- Recoil casi nulo permanece sin cambios.
+
 ## 6.5.0 - 2026-08-11
 
 - Flow Caribe vuelve a one-tap **solo** para las 25 pistolas fijadas y `GROUP_SNIPER`.
