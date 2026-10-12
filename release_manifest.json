@@ -1,59 +1,51 @@
 {
-  "name": "weapon_rebalancer_meta_v6_12",
-  "version": "6.12.0",
+  "name": "weapon_rebalancer_v7",
+  "version": "7.1.0",
   "python_min": "3.10",
-  "entrypoint": "run_rebalance.py",
-  "recommended_profile": "profiles/vanilla_repair_custom_plus15_absolute_v6.json",
-  "reference_downloader": "references/download_original_gtav_metas.ps1",
-  "runtime_audit": "weapon_rebalancer/runtime_audit.py",
-  "runtime_damage_guard_generator": "weapon_rebalancer/runtime_guard.py",
+  "recommended_profile": "profiles/server/flow_custom.json",
+  "reference_downloader": "extras/references/download_original_gtav_metas.ps1",
+  "runtime_audit": "weapon_rebalancer/runtime/audit.py",
+  "runtime_damage_guard_generator": "weapon_rebalancer/runtime/guard.py",
   "optional_headshot_guard": "extras/os_headshot_guard",
   "profiles": [
-    "profiles/catalog.json",
-    "profiles/flow_caribe.json",
-    "profiles/full_meta_template.json",
-    "profiles/head_only.json",
-    "profiles/headshot_focus_onetap.json",
-    "profiles/headshot_focus_real_onetap_v4.json",
-    "profiles/no_body_or_head_damage.json",
-    "profiles/original_body_real_onetap.json",
-    "profiles/original_body_real_onetap_v4.json",
-    "profiles/profile_template.json",
-    "profiles/pvp_competitive_onetap.json",
-    "profiles/pvp_hardcore_onetap.json",
-    "profiles/pvp_no_tank.json",
-    "profiles/rebelion_balanced_v3.json",
-    "profiles/rebelion_real_onetap_v4.json",
-    "profiles/rebelion_server.json",
-    "profiles/rp_serious_onetap.json",
-    "profiles/vanilla_normal_custom_plus15_revolver_onetap.json",
-    "profiles/vanilla_repair_custom_plus15_absolute_v6.json"
+    "profiles/official/balanced.json",
+    "profiles/official/realistic.json",
+    "profiles/official/competitive.json",
+    "profiles/server/flow_custom.json",
+    "profiles/schemas/profile.schema.json",
+    "profiles/legacy/",
+    "profiles/migrations/2026-10-12_v8/"
   ],
   "tests": [
+    "tests/test_flow_caribe_profile.py",
     "tests/test_full_meta.py",
     "tests/test_helmet_onetap.py",
     "tests/test_v3_onetap_audit.py",
     "tests/test_v4_runtime_audit.py",
     "tests/test_v5_custom_classifier.py",
     "tests/test_v6_absolute_repair.py",
-    "tests/test_flow_caribe_profile.py"
+    "tests/test_v7_adapters.py",
+    "tests/test_v7_api.py",
+    "tests/test_v7_profiles.py",
+    "tests/test_v7_services.py",
+    "tests/test_v8_cli.py",
+    "tests/test_v8_profiles.py"
   ],
   "documentation": [
-    "docs/COMMIT_GUIDE.md",
-    "docs/ONE_TAP_TROUBLESHOOTING.md",
-    "docs/PROFILE_REFERENCE.md",
-    "references/README.md"
+    "docs/index.html",
+    "docs/pages/",
+    "docs/legacy/",
+    "extras/references/README.md"
   ],
-  "scripts": [
-    "apply_vanilla_repair_v6.bat",
-    "preview_vanilla_repair_v6.bat"
-  ],
+  "test_count": 95,
+  "entrypoints": {
+    "terminal": "wr.py (menú) / wr.py <comando>",
+    "panel": "wr.py serve",
+    "cli_original": "wr.py rebalance (o run_rebalance.py)"
+  },
+  "web": "web/index.html",
+  "docs_site": "docs/index.html",
   "release_notes": [
-    "RELEASE_NOTES_6.1.0.md",
-    "CHANGELOG_2026-07-02_V6_1.md",
-    "CHANGELOG.md",
-    "CHANGELOG_2026-07-02_V6.md",
-    "RELEASE_NOTES_6.0.0.md"
-  ],
-  "test_count": 44
+    "CHANGELOG.md"
+  ]
 }

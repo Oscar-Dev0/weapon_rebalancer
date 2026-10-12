@@ -6,14 +6,14 @@ import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from weapon_rebalancer.config import Settings
-from weapon_rebalancer.profile_loader import apply_external_profile, load_profile
-from weapon_rebalancer.rebalance import RebalanceEngine
-from weapon_rebalancer.vanilla_weapons import CATALOG_ID, OFFICIAL_WEAPONS
+from weapon_rebalancer.engine.config import Settings
+from weapon_rebalancer.engine.profile_loader import apply_external_profile, load_profile
+from weapon_rebalancer.engine.rebalance import RebalanceEngine
+from weapon_rebalancer.meta.vanilla_weapons import CATALOG_ID, OFFICIAL_WEAPONS
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-PROFILE_PATH = PROJECT_ROOT / 'profiles' / 'vanilla_normal_custom_plus15_revolver_onetap.json'
+PROFILE_PATH = PROJECT_ROOT / 'profiles' / 'legacy' / 'vanilla_normal_custom_plus15_revolver_onetap.json'
 
 
 def weapon_block(weapon: str, group: str, damage: float, weapon_range: float = 100.0) -> str:

@@ -5,9 +5,9 @@ import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from weapon_rebalancer.config import Settings
-from weapon_rebalancer.profile_loader import apply_external_profile, load_profile
-from weapon_rebalancer.rebalance import RebalanceEngine
+from weapon_rebalancer.engine.config import Settings
+from weapon_rebalancer.engine.profile_loader import apply_external_profile, load_profile
+from weapon_rebalancer.engine.rebalance import RebalanceEngine
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -65,7 +65,7 @@ class V3OneTapAuditTests(unittest.TestCase):
         settings.dry_run = False
         settings.create_backup = False
         settings.ignore_weapons.clear()
-        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / profile_name))
+        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / 'legacy' / profile_name))
         report = RebalanceEngine(settings).run()
         output = meta.read_text(encoding='utf-8')
         ET.fromstring(output)
@@ -121,7 +121,7 @@ class V3OneTapAuditTests(unittest.TestCase):
         settings.root = root
         settings.dry_run = True
         settings.ignore_weapons.clear()
-        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / 'rebelion_balanced_v3.json'))
+        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / 'legacy' / 'rebelion_balanced_v3.json'))
         report = RebalanceEngine(settings).run()
         self.assertIn('WEAPON_DUPLICATE', report.duplicate_weapons)
         self.assertEqual(len(report.duplicate_weapons['WEAPON_DUPLICATE']), 2)
@@ -138,7 +138,7 @@ class V3OneTapAuditTests(unittest.TestCase):
         settings.root = root
         settings.dry_run = True
         settings.ignore_weapons.clear()
-        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / 'rebelion_balanced_v3.json'))
+        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / 'legacy' / 'rebelion_balanced_v3.json'))
         report = RebalanceEngine(settings).run()
         self.assertIn('orphan_pack/weapons.meta', report.unregistered_meta_files)
 
@@ -162,7 +162,7 @@ class V3OneTapAuditTests(unittest.TestCase):
         settings.dry_run = False
         settings.create_backup = False
         settings.ignore_weapons.clear()
-        profile = load_profile(PROJECT_ROOT / 'profiles' / 'rebelion_balanced_v3.json')
+        profile = load_profile(PROJECT_ROOT / 'profiles' / 'legacy' / 'rebelion_balanced_v3.json')
         profile['weapons'] = {
             'WEAPON_SPECIAL': {
                 'fields': {},
@@ -193,7 +193,7 @@ class V3OneTapAuditTests(unittest.TestCase):
         settings.root = root
         settings.dry_run = True
         settings.ignore_weapons.clear()
-        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / 'rebelion_balanced_v3.json'))
+        apply_external_profile(settings, load_profile(PROJECT_ROOT / 'profiles' / 'legacy' / 'rebelion_balanced_v3.json'))
         report = RebalanceEngine(settings).run()
         self.assertIn('WEAPON_DOUBLE', report.duplicate_weapons)
         self.assertEqual(len(report.duplicate_weapons['WEAPON_DOUBLE']), 2)

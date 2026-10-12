@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Documentación de Weapon Rebalancer para FiveM: panel web, perfiles, parámetros, simulador y generador.">
+  <title>Weapon Rebalancer · Documentación</title>
+  <link rel="stylesheet" href="css/docs.css">
+  <script defer src="js/docs-data.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#doc-content">Saltar al contenido</a>
+  <header class="topbar">
+    <button id="menu-button" class="icon-button menu-button" type="button" aria-label="Abrir navegación" aria-expanded="false"><span></span><span></span><span></span></button>
+    <a class="brand" href="#inicio" aria-label="Inicio de la documentación">
+      <span class="brand__mark">WR</span>
+      <span><strong>Weapon Rebalancer</strong><small>Documentación</small></span>
+    </a>
+    <label class="search-box" for="search-input">
+      <span aria-hidden="true">⌕</span>
+      <input id="search-input" type="search" placeholder="Buscar en la documentación…" autocomplete="off" aria-controls="search-results">
+      <kbd>/</kbd>
+    </label>
+    <span class="version-badge" id="version-badge"></span>
+    <button id="theme-button" class="icon-button" type="button" aria-label="Cambiar tema">◐</button>
+  </header>
+  <div class="docs-shell">
+    <aside id="sidebar" class="sidebar" aria-label="Documentación">
+      <nav id="docs-nav" class="docs-nav"></nav>
+      <div class="sidebar__support">
+        <strong>¿Algo no aplica?</strong>
+        <p>El Diagnóstico del panel explica qué valores no tienen efecto y por qué.</p>
+        <a href="#solucion-problemas">Solución de problemas →</a>
+      </div>
+    </aside>
+    <button id="sidebar-backdrop" class="sidebar-backdrop" type="button" aria-label="Cerrar navegación"></button>
+    <main class="main-column">
+      <div id="search-results" class="search-results" hidden aria-live="polite"></div>
+      <article id="doc-content" class="doc-content" tabindex="-1"><p class="loading">Cargando documentación…</p></article>
+      <footer class="doc-footer">
+        <a id="previous-doc" class="doc-pager" href="#" hidden><span>← Anterior</span><strong></strong></a>
+        <a id="next-doc" class="doc-pager doc-pager--next" href="#" hidden><span>Siguiente →</span><strong></strong></a>
+      </footer>
+    </main>
+    <aside class="toc-panel" aria-label="En esta página">
+      <span>EN ESTA PÁGINA</span>
+      <nav id="page-toc"></nav>
+    </aside>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <noscript>Esta documentación necesita JavaScript. También puedes leer los archivos de docs/pages/.</noscript>
+</body>
+</html>

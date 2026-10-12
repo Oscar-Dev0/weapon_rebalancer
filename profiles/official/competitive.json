@@ -1,0 +1,67 @@
+{
+  "$schema": "../schemas/profile.schema.json",
+  "schema_version": 8,
+  "profile": {
+    "id": "competitive",
+    "name": "Competitive PvP",
+    "short_name": "Competitive",
+    "description": "Combate competitivo con TTK corto y medible: más daño por categoría, recoil bajo y precisión alta. Hereda de Realistic las distancias, caídas y la política de cabeza.",
+    "objective": "Enfrentamientos rápidos y predecibles donde gana quien acierta primero.",
+    "audience": "Servidores o modos PvP, arenas y eventos competitivos.",
+    "features": [
+      "Daño corporal por categoría (pistola 67, SMG 40, rifle 50, escopeta 36 por perdigón, MG 45, francotirador 100).",
+      "Recoil preset “low” y precisión preset “high”.",
+      "Cadencia fija por categoría: evita que una pistola automática domine con el mismo daño.",
+      "Cabeza one-tap dentro de 300 m (heredado de Realistic)."
+    ],
+    "warnings": [
+      "Los daños se diseñaron para 200 de vida; con la muerte en 100 de este servidor el TTK real es la mitad (ver simulador).",
+      "One-tap requiere critical hits activos."
+    ],
+    "tags": [
+      "oficial",
+      "pvp"
+    ],
+    "extends": "realistic",
+    "revision": 1,
+    "created_at": "2026-10-12T23:09:39+0000",
+    "migrated_from": "pvp_competitive_onetap",
+    "migration": "2026-10-12_v8"
+  },
+  "modules": {
+    "recoil": "low",
+    "accuracy": "high"
+  },
+  "groups": {
+    "GROUP_PISTOL": {
+      "fields": {
+        "damage": 67.0
+      }
+    },
+    "GROUP_SMG": {
+      "fields": {
+        "damage": 40.0
+      }
+    },
+    "GROUP_RIFLE": {
+      "fields": {
+        "damage": 50.0
+      }
+    },
+    "GROUP_MG": {
+      "fields": {
+        "damage": 45.0
+      }
+    },
+    "GROUP_SHOTGUN": {
+      "fields": {
+        "damage": 36.0
+      }
+    },
+    "GROUP_SNIPER": {
+      "fields": {
+        "damage": 100.0
+      }
+    }
+  }
+}

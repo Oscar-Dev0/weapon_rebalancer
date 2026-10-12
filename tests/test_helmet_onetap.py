@@ -6,9 +6,9 @@ import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-from weapon_rebalancer.config import Settings
-from weapon_rebalancer.profile_loader import apply_external_profile, load_profile
-from weapon_rebalancer.rebalance import RebalanceEngine
+from weapon_rebalancer.engine.config import Settings
+from weapon_rebalancer.engine.profile_loader import apply_external_profile, load_profile
+from weapon_rebalancer.engine.rebalance import RebalanceEngine
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -76,7 +76,7 @@ class HelmetOneTapTests(unittest.TestCase):
             return content, report
 
     def test_rebelion_profile_forces_helmet_fields_and_keeps_configured_damage(self) -> None:
-        profile = load_profile(PROJECT_ROOT / 'profiles/rebelion_server.json')
+        profile = load_profile(PROJECT_ROOT / 'profiles/legacy/rebelion_server.json')
         content, report = self._run_profile(profile)
 
         self.assertIn('<Damage value="100.000000" />', content)
@@ -87,7 +87,7 @@ class HelmetOneTapTests(unittest.TestCase):
         self.assertEqual(report.files_changed, 1)
 
     def test_existing_armour_tag_is_normalized_without_bodyshot_amplification(self) -> None:
-        profile = load_profile(PROJECT_ROOT / 'profiles/pvp_no_tank.json')
+        profile = load_profile(PROJECT_ROOT / 'profiles/legacy/pvp_no_tank.json')
         content, _ = self._run_profile(
             profile,
             armour_tag='<LightlyArmouredDamageModifier value="0.750000" />',
@@ -97,7 +97,7 @@ class HelmetOneTapTests(unittest.TestCase):
         self.assertIn('<LightlyArmouredDamageModifier value="1.000000" />', content)
 
     def test_bypass_helmets_can_be_disabled_from_json(self) -> None:
-        profile = load_profile(PROJECT_ROOT / 'profiles/rebelion_server.json')
+        profile = load_profile(PROJECT_ROOT / 'profiles/legacy/rebelion_server.json')
         profile = json.loads(json.dumps(profile))
         profile['headshot']['bypass_helmets'] = False
 
@@ -110,7 +110,7 @@ class HelmetOneTapTests(unittest.TestCase):
         self.assertNotIn('<LightlyArmouredDamageModifier value="1.000000" />', content)
 
     def test_harmless_weapon_stays_at_zero_even_with_helmet_bypass(self) -> None:
-        profile = load_profile(PROJECT_ROOT / 'profiles/rebelion_server.json')
+        profile = load_profile(PROJECT_ROOT / 'profiles/legacy/rebelion_server.json')
         content, _ = self._run_profile(
             profile,
             weapon='WEAPON_SNOWBALL',

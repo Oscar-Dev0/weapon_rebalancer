@@ -1,0 +1,175 @@
+{
+  "$schema": "../schemas/profile.schema.json",
+  "schema_version": 8,
+  "profile": {
+    "id": "realistic",
+    "name": "Realistic Combat",
+    "short_name": "Realistic",
+    "description": "Combate exigente: daño corporal moderado por categoría, retroceso alto, alcances y caídas diferenciados y disparo a la cabeza letal. Es una aproximación de diseño, no una simulación física verificada.",
+    "objective": "Que el control del arma y la colocación del disparo pesen más que la cadencia.",
+    "audience": "Servidores de roleplay serio o táctico.",
+    "features": [
+      "Daño corporal por categoría (pistola 34, SMG 25, rifle 30, escopeta 24 por perdigón, MG 28, francotirador 80).",
+      "Cabeza one-tap dentro de 300 m, también con blindaje y casco nativo.",
+      "Recoil preset “high” para todas las armas procesadas.",
+      "Cadencia fija por categoría (iguala armas de la misma categoría)."
+    ],
+    "warnings": [
+      "One-tap requiere critical hits activos (os_headshot_guard o sin scripts que los apaguen).",
+      "Hereda de config.py los presets de cuerpo a cuerpo y el alcance ×1.5 de revólveres (engine_defaults)."
+    ],
+    "tags": [
+      "oficial",
+      "rp",
+      "tactico"
+    ],
+    "extends": null,
+    "revision": 1,
+    "created_at": "2026-10-12T23:09:39+0000",
+    "migrated_from": "rp_serious_onetap",
+    "migration": "2026-10-12_v8"
+  },
+  "engine_defaults": true,
+  "base_preset": "rp_balanced",
+  "modules": {
+    "damage": "configured",
+    "armour": "normal",
+    "recoil": "high",
+    "accuracy": "normal",
+    "range": "configured",
+    "fire_rate": "configured",
+    "reload": "original",
+    "headshot": "onetap"
+  },
+  "validation": {
+    "strict_unknown_fields": true,
+    "fail_on_onetap_audit": false,
+    "warn_duplicates": true,
+    "warn_unregistered_meta": true
+  },
+  "headshot": {
+    "mode": "onetap",
+    "multiplier": 1500.0,
+    "distance": 300.0,
+    "no_falloff": true,
+    "sync_weapon_range": true,
+    "sync_lock_on_range": false,
+    "create_missing_tags": true,
+    "bypass_helmets": true,
+    "helmet_multiplier": 1.0,
+    "force_penetration": true,
+    "penetration": 1.0,
+    "create_missing_armour_tag": true,
+    "create_missing_penetration_tag": true,
+    "add_ignore_helmets_flag": true,
+    "add_armour_penetrating_flag": true,
+    "create_missing_weapon_flags_tag": true,
+    "auto_minimum_base_damage": true,
+    "target_effective_health": 1000.0,
+    "safety_margin": 1.25,
+    "minimum_base_damage": 0.35,
+    "repair_zero_network_modifier": true,
+    "network_player_modifier_fallback": 1.0,
+    "create_missing_network_player_modifier_tag": true,
+    "remove_nonlethal_flags": true,
+    "blocking_flags": [
+      "NonLethal",
+      "NonViolent"
+    ]
+  },
+  "groups": {
+    "GROUP_PISTOL": {
+      "fields": {
+        "weapon_range": 130.0,
+        "hit_limbs": 0.6,
+        "network_hit_limbs": 0.6,
+        "vehicle_damage_modifier": 0.2,
+        "time_between_shots": 0.18,
+        "damage": 34.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 130.0
+      }
+    },
+    "GROUP_SMG": {
+      "fields": {
+        "weapon_range": 160.0,
+        "hit_limbs": 0.58,
+        "network_hit_limbs": 0.58,
+        "vehicle_damage_modifier": 0.22,
+        "time_between_shots": 0.105,
+        "damage": 25.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 160.0
+      }
+    },
+    "GROUP_RIFLE": {
+      "fields": {
+        "weapon_range": 320.0,
+        "hit_limbs": 0.58,
+        "network_hit_limbs": 0.58,
+        "vehicle_damage_modifier": 0.3,
+        "time_between_shots": 0.125,
+        "damage": 30.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 320.0
+      }
+    },
+    "GROUP_MG": {
+      "fields": {
+        "weapon_range": 280.0,
+        "hit_limbs": 0.56,
+        "network_hit_limbs": 0.56,
+        "vehicle_damage_modifier": 0.32,
+        "time_between_shots": 0.115,
+        "damage": 28.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 280.0
+      }
+    },
+    "GROUP_SHOTGUN": {
+      "fields": {
+        "weapon_range": 30.0,
+        "hit_limbs": 0.7,
+        "network_hit_limbs": 0.7,
+        "vehicle_damage_modifier": 0.18,
+        "time_between_shots": 0.8,
+        "damage": 24.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 30.0
+      }
+    },
+    "GROUP_SNIPER": {
+      "fields": {
+        "weapon_range": 600.0,
+        "hit_limbs": 0.6,
+        "network_hit_limbs": 0.6,
+        "vehicle_damage_modifier": 0.35,
+        "time_between_shots": 1.25,
+        "damage": 80.0
+      },
+      "headshot": {
+        "mode": "onetap",
+        "distance": 600.0
+      }
+    }
+  },
+  "ignore_weapons": [
+    "WEAPON_STUNGUN",
+    "WEAPON_FIREEXTINGUISHER"
+  ],
+  "harmless_weapons": [
+    "WEAPON_SNOWBALL",
+    "WEAPON_BALL"
+  ],
+  "allow_damage_weapons": []
+}
