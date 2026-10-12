@@ -392,7 +392,8 @@ class ProfileRepository:
 
     # ---- historial ---------------------------------------------------------------
     def history(self, profile_id: str) -> list[dict[str, Any]]:
-        index = self.history_dir(profile_id) / 'index.jsonl'
+        # Solo lectura: no crea la carpeta de historial de un perfil que nunca se guardó.
+        index = self.guard.check(self.history_root / validate_profile_id(profile_id)) / 'index.jsonl'
         if not index.is_file():
             return []
         entries = []
