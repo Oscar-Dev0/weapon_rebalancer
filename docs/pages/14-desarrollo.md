@@ -76,10 +76,12 @@ Caché: el índice de perfiles se recalcula solo si cambian las carpetas; cada p
 
 ## API
 
-Todas las rutas requieren la cabecera `X-WR-Token`.
+Todo (API, página, JS, CSS y documentación) exige una sesión: cookie `wr_session` creada al canjear el enlace `/?token=` (un solo uso; ver `api/auth.py`). Las rutas `/api` exigen además la clave de la sesión en `X-WR-Token`; cuando rota, la respuesta trae `X-WR-Token-Next` y una cookie nueva, y `web/js/core/api.js` las adopta. Un 401/403 de sesión vacía la página.
 
 | Método | Ruta | Uso |
 | --- | --- | --- |
+| GET | `/api/session` | Caducidad de la sesión y reglas de acceso |
+| POST | `/api/session/logout` | Cierra la sesión |
 | GET | `/api/status` | Versión, workspace, resumen del catálogo |
 | GET/PUT | `/api/workspace` | Rutas y perfil activo |
 | GET | `/api/workspace/detect` | Detección automática de rutas |

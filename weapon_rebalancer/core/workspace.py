@@ -19,6 +19,20 @@ _LOCK = threading.Lock()
 class ServerOptions:
     host: str = '127.0.0.1'
     port: int = 8765
+    # Acceso al panel (api/auth.py). Se leen al arrancar `wr.py serve`.
+    token_rotate_minutes: float = 30.0
+    session_idle_minutes: float = 30.0
+    session_max_hours: float = 8.0
+    session_key_rotate_minutes: float = 10.0
+    max_failures: int = 8
+    lockout_minutes: float = 10.0
+
+
+# Límites de los ajustes de acceso: (mínimo, máximo).
+SERVER_LIMITS: dict[str, tuple[float, float]] = {
+    'token_rotate_minutes': (1, 1440), 'session_idle_minutes': (1, 720), 'session_max_hours': (0.1, 72),
+    'session_key_rotate_minutes': (1, 120), 'max_failures': (3, 100), 'lockout_minutes': (1, 1440),
+}
 
 
 @dataclass
@@ -132,6 +146,11 @@ def _from_dict(data: dict[str, Any]) -> Workspace:
             host=str(server.get('host', ws.server.host)),
             port=int(server.get('port', ws.server.port)),
         )
+        for key, (low, high) in SERVER_LIMITS.items():
+            value = server.get(key)
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                kind = int if key == 'max_failures' else float
+                setattr(ws.server, key, kind(min(max(value, low), high)))
     return ws
 
 

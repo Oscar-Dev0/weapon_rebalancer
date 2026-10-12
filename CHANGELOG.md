@@ -1,3 +1,12 @@
+# 7.1.1 — Acceso al panel endurecido
+
+- **Sin sesión no se entrega nada**: página, JS, CSS, documentación y API responden *Acceso denegado* (antes los archivos estáticos se servían sin token).
+- **Enlace de un solo uso** (`/?token=`): se canjea por una sesión, queda gastado y redirige a `/` para no dejar el token en el historial. **Cambia solo** cada 30 min; `python3 wr.py token` muestra el vigente (guardado en `data/panel_access_<puerto>.json`, permisos 600).
+- **Sesión con caducidad**: cookie HttpOnly atada a la IP; caduca tras 30 min sin uso o 8 h. Cookie y clave de la API rotan cada 10 min (`X-WR-Token-Next`, 2 min de gracia). **Cerrar sesión** en Configuración. Al caducar, la página se vacía.
+- **Bloqueo**: 8 credenciales incorrectas en 10 min bloquean nuevas entradas desde esa IP durante 10 min y cambian el enlace.
+- Tiempos configurables en `data/workspace.json` (`server.*`) o con `wr.py serve --rotate/--idle`.
+- Pruebas nuevas en `tests/test_v8_auth.py` (105 en total).
+
 # 7.1.0 — Cuatro perfiles principales y terminal profesional
 
 ## Perfiles

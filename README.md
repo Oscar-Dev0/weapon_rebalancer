@@ -12,7 +12,7 @@ python3 wr.py            # terminal interactiva (flechas, números, / para busca
 python3 wr.py serve      # panel web
 ```
 
-El panel muestra una URL con `?token=` (desde tu PC: túnel SSH o reenvío de puertos de VS Code al `8765`). La documentación completa está en el panel → **Documentación**, en `docs/index.html` o en la terminal (`wr.py docs list`).
+El panel muestra un enlace con `?token=` que sirve una sola vez; `python3 wr.py token` da el vigente (desde tu PC: túnel SSH o reenvío de puertos de VS Code al `8765`). La documentación completa está en el panel → **Documentación**, en `docs/index.html` o en la terminal (`wr.py docs list`).
 
 ## Perfiles
 
@@ -60,7 +60,7 @@ python3 -m unittest discover -s tests
 
 ## Seguridad
 
-- El panel escucha en `127.0.0.1` con token por arranque y cabecera `X-WR-Token`.
+- El panel escucha en `127.0.0.1`. Sin sesión no entrega nada; se entra con un enlace de un solo uso que cambia cada 30 min (`python3 wr.py token`), la sesión caduca y los intentos fallidos bloquean.
 - Solo escribe en los packs configurados, `qbx_recoils`, `profiles/` y `data/`. Los perfiles oficiales no se modifican.
 - Guardar un perfil valida antes, respalda la versión anterior y rechaza ediciones simultáneas en lugar de pisarlas.
 - Antes de escribir en el servidor copia cada archivo a `data/backups/`; escritura atómica y verificación.

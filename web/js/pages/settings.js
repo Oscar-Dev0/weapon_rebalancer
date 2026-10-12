@@ -1,4 +1,4 @@
-import { api } from '../core/api.js';
+import { api, endSession } from '../core/api.js';
 import { h, icon, mount, setLoading } from '../core/dom.js';
 import { date } from '../core/format.js';
 import { loadCatalog, loadStatus, store } from '../core/store.js';
@@ -52,6 +52,14 @@ export async function render({ root, setTitle, isCurrent }) {
     } catch (error) { toastError(error); }
   } }, icon('search'), 'Detectar automáticamente');
 
+  const session = await api.get('/api/session');
+  const sessionText = `Enlace de un solo uso que cambia cada ${session.access_rotate_minutes} min. Esta sesión caduca tras ${session.idle_minutes} min sin uso `
+    + `(como mucho a las ${date(session.expires_at)}); su clave rota cada ${session.key_rotate_minutes} min. `
+    + `${session.max_failures} intentos fallidos bloquean ${session.lockout_minutes} min.`;
+  const logoutBtn = h('button', { class: 'btn btn--sm', onclick: async () => {
+    try { await api.post('/api/session/logout'); } catch { /* la sesión ya no vale */ }
+    endSession('Sesión cerrada.');
+  } }, 'Cerrar sesión');
   const logsHost = h('div', {}, loading());
   mount(root,
     h('div', { class: 'grid grid--side' },
@@ -67,13 +75,15 @@ export async function render({ root, setTitle, isCurrent }) {
         h('div', { class: 'field' }, h('label', { class: 'row', style: { gap: '8px' } }, serverEditable, 'Permitir editar perfiles del servidor', ' ',
           help({ title: 'Perfiles del servidor', text: 'Si está desactivado, flow_custom (profiles/server/) queda en solo lectura, igual que los oficiales. Cada guardado deja la versión anterior en el historial.', doc: 'perfiles/niveles' })))) }),
       h('div', { class: 'stack' },
-        card({ title: 'Servidor del panel', iconName: 'shield', body: h('dl', { class: 'kv' },
+        card({ title: 'Servidor del panel', iconName: 'shield', actions: logoutBtn, body: h('dl', { class: 'kv' },
           h('dt', {}, 'Escucha'), h('dd', { class: 'mono' }, `${workspace.server.host}:${workspace.server.port}`),
           h('dt', {}, 'Versión'), h('dd', {}, store.status.version),
-          h('dt', {}, 'Sesión'), h('dd', {}, 'Token por arranque + cabecera X-WR-Token'),
+          h('dt', {}, 'Acceso'), h('dd', {}, sessionText),
           h('dt', {}, 'Datos'), h('dd', { class: 'mono small' }, 'data/ (workspace, historial, backups, logs)')) }),
         card({ title: 'Seguridad', iconName: 'shield', body: h('ul', { class: 'small', style: { margin: 0, paddingLeft: '18px', lineHeight: 1.8 } },
           h('li', {}, 'Solo escucha en 127.0.0.1 salvo que uses --host.'),
+          h('li', {}, 'Sin sesión válida el servidor no entrega nada (ni la página, ni JS, CSS o documentación).'),
+          h('li', {}, 'Si la sesión caduca o se cierra, esta página se vacía.'),
           h('li', {}, 'Escrituras limitadas a los packs, qbx_recoils, profiles/ y data/.'),
           h('li', {}, 'Escritura atómica y respaldo previo de cada archivo.'),
           h('li', {}, 'Nada se aplica al servidor sin escribir APLICAR.')) }))),

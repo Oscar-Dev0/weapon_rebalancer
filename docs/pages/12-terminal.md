@@ -316,7 +316,8 @@ Cada archivo se respalda en `data/backups/` antes de escribirse.
 | `params [sección] [--all]` | Referencia de parámetros en la terminal |
 | `docs list` / `docs show SLUG` / `docs build` | Esta documentación |
 | `settings show` / `settings set clave=valor` | Configuración del workspace (`active_profile`, `server_profiles_editable`, rutas…) |
-| `serve [--port 8765]` | Panel web |
+| `serve [--port 8765] [--rotate MIN] [--idle MIN]` | Panel web (ver [Acceso y sesión](02-instalacion.md#acceso)) |
+| `token` | Enlace de acceso vigente del panel (sirve una vez) |
 | `scan` | Reescanea ox_inventory y los packs |
 | `migrate [--write]` | Migra a v8 perfiles de usuario en formato antiguo |
 | `rebalance …` | CLI original del motor (igual que `run_rebalance.py`) |

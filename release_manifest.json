@@ -1,6 +1,6 @@
 {
   "name": "weapon_rebalancer_v7",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "python_min": "3.10",
   "recommended_profile": "profiles/server/flow_custom.json",
   "reference_downloader": "extras/references/download_original_gtav_metas.ps1",
@@ -28,6 +28,7 @@
     "tests/test_v7_api.py",
     "tests/test_v7_profiles.py",
     "tests/test_v7_services.py",
+    "tests/test_v8_auth.py",
     "tests/test_v8_cli.py",
     "tests/test_v8_profiles.py"
   ],
@@ -37,7 +38,7 @@
     "docs/legacy/",
     "extras/references/README.md"
   ],
-  "test_count": 95,
+  "test_count": 105,
   "entrypoints": {
     "terminal": "wr.py (menú) / wr.py <comando>",
     "panel": "wr.py serve",

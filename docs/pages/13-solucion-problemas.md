@@ -10,10 +10,12 @@ description: Errores frecuentes, qué significa cada aviso del Diagnóstico y c�
 
 | Síntoma | Causa | Solución |
 | --- | --- | --- |
-| *Sesión requerida* | Abriste la URL sin `?token=` o el panel se reinició | Copia la URL completa que muestra la consola |
+| *Acceso denegado* | Sin sesión: el enlace ya se usó, caducó o el panel se reinició | Pide un enlace nuevo con `python3 wr.py token` |
+| *Sesión caducada* / la página se vació | 30 min sin uso, 8 h abierta o cerraste sesión | `python3 wr.py token` y abre el enlace nuevo |
+| *Acceso bloqueado temporalmente* | Demasiados enlaces viejos o incorrectos seguidos | Espera los minutos indicados o reinicia `wr.py serve` |
 | *Host no permitido* | Entraste con un nombre de host distinto | Usa `127.0.0.1` o `localhost` con el mismo puerto |
 | No carga nada | El túnel o el reenvío de puerto no está activo | Revisa [Abrirlo desde tu PC](02-instalacion.md#acceso-remoto) |
-| *No hay conexión con el servidor local* | Se detuvo `wr.py serve` | Vuelve a arrancarlo; el token cambia |
+| *No hay conexión con el servidor local* | Se detuvo `wr.py serve` | Vuelve a arrancarlo y abre el enlace nuevo |
 
 ## Cambié un valor y en el juego no cambia nada
 

@@ -162,6 +162,9 @@ def build_parser() -> argparse.ArgumentParser:
     p = add('serve', None, 'Panel web local.')
     p.add_argument('--host')
     p.add_argument('--port', type=int)
+    p.add_argument('--rotate', type=float, metavar='MIN', help='Minutos hasta que cambia el enlace de acceso (por defecto 30).')
+    p.add_argument('--idle', type=float, metavar='MIN', help='Minutos sin uso hasta que caduca la sesión (por defecto 30).')
+    p = add('token', None, 'Enlace de acceso vigente del panel (de un solo uso).')
     p = add('scan', None, 'Reescanea ox_inventory y los packs.', True)
     p = add('migrate', None, 'Migra a v8 los perfiles de usuario en formato antiguo.')
     p.add_argument('--write', action='store_true')
@@ -173,8 +176,41 @@ def _serve(args) -> int:
     from ..api.server import serve
     from ..core.workspace import load_workspace
 
+    from ..api.auth import AuthSettings
+    from ..core.workspace import SERVER_LIMITS
+
     ws = load_workspace()
-    serve(args.host or ws.server.host, args.port or ws.server.port)
+    o = ws.server
+
+    def bounded(value, key):
+        low, high = SERVER_LIMITS[key]
+        return min(max(value, low), high)
+
+    settings = AuthSettings(
+        rotate_minutes=bounded(args.rotate, 'token_rotate_minutes') if args.rotate else o.token_rotate_minutes,
+        idle_minutes=bounded(args.idle, 'session_idle_minutes') if args.idle else o.session_idle_minutes,
+        max_hours=o.session_max_hours, key_rotate_minutes=o.session_key_rotate_minutes,
+        max_failures=o.max_failures, lockout_minutes=o.lockout_minutes)
+    serve(args.host or o.host, args.port or o.port, settings=settings)
+    return 0
+
+
+def _token(term: Term) -> int:
+    import time
+
+    from ..api.auth import read_token_file
+    from ..api.server import TOKEN_FILE
+    from ..core.paths import data_dir
+
+    found = [d for d in (read_token_file(path) for path in sorted(data_dir().glob(TOKEN_FILE.format(port='*')))) if d]
+    if not found:
+        term.write('  ' + ui.badge(term, 'warn', 'El panel no está corriendo.'))
+        term.write('     ' + term.style(f'{term.sym["arrow"]} Arráncalo con: python3 wr.py serve', 'muted'))
+        return 1
+    for data in found:
+        minutes = max(0, int((data.get('expires_at', 0) - time.time()) // 60))
+        term.write('  ' + term.style(str(data.get('url', '')), 'value'))
+        term.write('  ' + term.style(f'Sirve una sola vez; cambia en {minutes} min o al usarlo.', 'muted'))
     return 0
 
 
@@ -218,6 +254,8 @@ def main(argv: list[str] | None = None) -> int:
     term = Term(color=False if args.no_color else None, unicode=False if args.ascii else None)
     if args.command == 'serve':
         return _serve(args)
+    if args.command == 'token':
+        return _token(term)
     try:
         from ..services.app import App
 
