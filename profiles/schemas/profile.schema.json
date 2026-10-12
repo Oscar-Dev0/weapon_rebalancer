@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "weapon_rebalancer/profile.schema.json",
+  "title": "Perfil de Weapon Rebalancer (v8)",
+  "description": "Perfil de balanceo de armas. Las claves del motor son las mismas de las versiones 3–7; `profile` contiene los metadatos. En perfiles derivados, `null` elimina un valor heredado (JSON Merge Patch).",
+  "type": "object",
+  "required": ["schema_version", "profile"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema_version": {"const": 8},
+    "profile": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_\\-]{0,63}$"},
+        "name": {"type": "string", "description": "Nombre visible."},
+        "short_name": {"type": "string"},
+        "description": {"type": "string"},
+        "objective": {"type": "string", "description": "Objetivo de balanceo."},
+        "audience": {"type": "string", "description": "Público al que está dirigido."},
+        "features": {"type": "array", "items": {"type": "string"}},
+        "warnings": {"type": "array", "items": {"type": "string"}},
+        "extends": {"type": ["string", "null"], "description": "Perfil base."},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "revision": {"type": "integer"},
+        "created_at": {"type": "string"},
+        "updated_at": {"type": "string"},
+        "migrated_from": {},
+        "migration": {"type": "string"},
+        "legacy_name": {"type": "string"}
+      }
+    },
+    "engine_defaults": {"type": ["boolean", "null"], "description": "false = no heredar valores de config.py."},
+    "base_preset": {"type": ["string", "null"]},
+    "modules": {
+      "type": ["object", "null"],
+      "properties": {
+        "damage": {"enum": ["original", "configured", "none", "head_only", "low", "normal", "high", "lethal", null]},
+        "armour": {"enum": ["original", "configured", "none", "normal", "piercing", "max", null]},
+        "recoil": {"enum": ["original", "configured", "none", "low", "normal", "high", null]},
+        "accuracy": {"enum": ["original", "configured", "laser", "high", "normal", "low", null]},
+        "range": {"enum": ["original", "configured", "short", "normal", "long", "very_long", null]},
+        "fire_rate": {"enum": ["original", "configured", "slow", "normal", "fast", "very_fast", null]},
+        "reload": {"enum": ["original", "configured", "slow", "normal", "fast", "very_fast", null]},
+        "headshot": {"enum": ["original", "off", "normal", "onetap", null]}
+      },
+      "additionalProperties": false
+    },
+    "headshot": {"type": ["object", "null"]},
+    "defaults": {"$ref": "#/$defs/scope"},
+    "groups": {"type": ["object", "null"], "additionalProperties": {"$ref": "#/$defs/scope"}},
+    "weapons": {"type": ["object", "null"], "additionalProperties": {"$ref": "#/$defs/scope"}},
+    "meta": {"type": ["object", "null"]},
+    "weapon_flags": {"$ref": "#/$defs/flags"},
+    "ignore_weapons": {"$ref": "#/$defs/weaponList"},
+    "allow_ignored_weapons": {"$ref": "#/$defs/weaponList"},
+    "harmless_weapons": {"$ref": "#/$defs/weaponList"},
+    "allow_damage_weapons": {"$ref": "#/$defs/weaponList"},
+    "restore": {"type": ["object", "null"]},
+    "weapon_classification": {"type": ["object", "null"]},
+    "baseline_repair": {"type": ["object", "null"]},
+    "fire_rate_damage_rules": {"type": ["array", "null"]},
+    "fire_rate_classifier": {"type": ["object", "null"]},
+    "weapon_field_multipliers": {"type": ["object", "null"], "additionalProperties": {"type": ["object", "null"], "additionalProperties": {"type": ["number", "null"], "exclusiveMinimum": 0}}},
+    "family_rules": {"type": ["array", "null"]},
+    "validation": {"type": ["object", "null"]},
+    "resources": {
+      "type": ["object", "null"],
+      "properties": {
+        "qbx_recoils": {"type": ["object", "null"], "additionalProperties": {"oneOf": [{"type": "number", "minimum": 0, "maximum": 10}, {"const": false}, {"type": "null"}]}}
+      },
+      "additionalProperties": false
+    },
+    "_documentation": {}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "weaponList": {"type": ["array", "null"], "items": {"type": "string", "pattern": "^[A-Za-z0-9_\\-]+$"}},
+    "flags": {
+      "type": ["object", "null"],
+      "properties": {
+        "add": {"type": "array", "items": {"type": "string"}},
+        "remove": {"type": "array", "items": {"type": "string"}},
+        "create_if_missing": {"type": "boolean"}
+      }
+    },
+    "scope": {
+      "type": ["object", "null"],
+      "properties": {
+        "fields": {"type": ["object", "null"], "additionalProperties": {"type": ["number", "null"]}},
+        "headshot": {"type": ["object", "null"]},
+        "meta": {"type": ["object", "null"]},
+        "weapon_flags": {"$ref": "#/$defs/flags"}
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="wr-token" content="__WR_TOKEN__">
+  <title>Weapon Rebalancer</title>
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/main.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="brand__mark" id="brand-mark"></span>
+        <span class="brand__text"><strong>Weapon Rebalancer</strong><small id="brand-version">FiveM · ox_inventory</small></span>
+      </div>
+      <nav class="nav" id="nav"></nav>
+      <div class="sidebar__foot" id="sidebar-foot"><span class="dot"></span>Conectado al servidor local</div>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <button class="btn btn--ghost btn--icon menu-button" id="menu-button" aria-label="Abrir menú"></button>
+        <div>
+          <h1 id="page-title">Cargando…</h1>
+          <div class="subtitle" id="page-subtitle"></div>
+        </div>
+        <div class="topbar__spacer"></div>
+        <div id="draft-slot"></div>
+        <div id="profile-slot"></div>
+      </header>
+      <main class="content" id="content">
+        <div class="loading"><span class="spinner"></span>Cargando panel…</div>
+      </main>
+    </div>
+  </div>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  <noscript>El panel necesita JavaScript.</noscript>
+</body>
+</html>

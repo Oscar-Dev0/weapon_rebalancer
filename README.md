@@ -1,4 +1,92 @@
-# Weapon Rebalancer META V6.1
+# Weapon Rebalancer 7.1
+
+Herramienta para balancear las armas de un servidor FiveM editando sus `weapons.meta` de forma controlada, con **terminal interactiva**, **panel web**, cuatro perfiles principales con herencia, simulador y generador con respaldo y reversión. Terminal y panel usan el mismo motor, los mismos perfiles y el mismo historial.
+
+Requiere **Python 3.10 o superior**. No necesita instalar paquetes.
+
+## Inicio rápido
+
+```bash
+cd /fivem/pruebas/weapon_rebalancer
+python3 wr.py            # terminal interactiva (flechas, números, / para buscar)
+python3 wr.py serve      # panel web
+```
+
+El panel muestra un enlace con `?token=` que sirve una sola vez; `python3 wr.py token` da el vigente (desde tu PC: túnel SSH o reenvío de puertos de VS Code al `8765`). La documentación completa está en el panel → **Documentación**, en `docs/index.html` o en la terminal (`wr.py docs list`).
+
+## Perfiles
+
+| Perfil | Nivel | Para qué |
+| --- | --- | --- |
+| `balanced` — Balanced RP | Oficial (protegido) | Valores de GTA V; armas personalizadas llevadas a la referencia de su categoría |
+| `realistic` — Realistic Combat | Oficial (protegido) | Daño moderado, recoil alto, cabeza one-tap |
+| `competitive` — Competitive PvP | Oficial (protegido), hereda de `realistic` | TTK corto, recoil bajo, precisión alta |
+| `flow_custom` — Flow Caribe Custom | Servidor (editable) | Balance actual de Flow Caribe; hereda de `competitive` y guarda solo sus diferencias |
+
+Para modificar un oficial se crea un **perfil derivado** (`wr.py profile derive competitive mi_perfil`), que va a `profiles/user/`. Los 18 perfiles anteriores están intactos en `profiles/legacy/`; el informe de la migración está en `profiles/migrations/2026-10-12_v8/REPORT.md`.
+
+## Qué incluye
+
+| Módulo | Para qué |
+| --- | --- |
+| **Dashboard / estado** | Resumen del armamento, perfil activo frente al pack y problemas principales |
+| **Armamento** | Todas las armas de ox_inventory cruzadas con los `weapons.meta`: original (`.bak`), actual, efectivo y de dónde sale cada valor |
+| **Editor** | Ajustes por arma, categoría o global, con ayuda contextual y valores calculados por el motor real |
+| **Perfiles** | Oficiales, servidor y usuario; derivar, importar, exportar, comparar, historial y restauración |
+| **Constructor** | Perfil completo paso a paso sin editar JSON (panel) |
+| **Simulador** | Daño por disparo, disparos para matar, TTK y DPS por distancia (teórico) |
+| **Generador** | Vista previa, diff, aplicación como transacción reversible |
+| **Diagnóstico / validación** | Bloqueantes, advertencias y recomendaciones; armas sin META, duplicadas, scripts que alteran el daño |
+
+Todo lo que se muestra tiene un efecto real: un tag del META, una entrada de `qbx_recoils` o un native de un recurso generado. Lo que no se puede controlar se muestra como **No compatible**, y los datos que faltan como **N/D**.
+
+## Terminal
+
+```bash
+python3 wr.py status                                # estado del servidor
+python3 wr.py weapons -q glock -p competitive       # tabla de armas con un perfil
+python3 wr.py weapon WEAPON_PISTOL                  # ficha con la procedencia de cada valor
+python3 wr.py profiles                              # perfiles (--all incluye archivados)
+python3 wr.py set mi_perfil GROUP_PISTOL damage=55  # cambia un valor (diff + confirmación)
+python3 wr.py compare balanced competitive -w WEAPON_PISTOL
+python3 wr.py validate flow_custom --preview
+python3 wr.py generate -p flow_custom               # vista previa (--apply para escribir)
+python3 -m unittest discover -s tests
+```
+
+`--json` en casi todos los comandos, `--no-color`/`NO_COLOR=1` y `--ascii` para consolas limitadas. Guía completa: `docs/pages/12-terminal.md`.
+
+`python3 wr.py rebalance …` (o `run_rebalance.py`) mantiene todas sus opciones (`--profile` acepta un id o una ruta, `--write`, `--audit-runtime`, …).
+
+## Seguridad
+
+- El panel escucha en `127.0.0.1`. Sin sesión no entrega nada; se entra con un enlace de un solo uso que cambia cada 30 min (`python3 wr.py token`), la sesión caduca y los intentos fallidos bloquean.
+- Solo escribe en los packs configurados, `qbx_recoils`, `profiles/` y `data/`. Los perfiles oficiales no se modifican.
+- Guardar un perfil valida antes, respalda la versión anterior y rechaza ediciones simultáneas en lugar de pisarlas.
+- Antes de escribir en el servidor copia cada archivo a `data/backups/`; escritura atómica y verificación.
+- Nada se aplica sin escribir `APLICAR`.
+
+## Estructura
+
+```text
+weapon_rebalancer/   engine/ meta/ runtime/ (motor) + core/ adapters/ catalog/ profile_store/ services/ api/ cli/
+web/                 panel web (ES modules, sin compilación)
+docs/                documentación (pages/*.md → js/docs-data.js); legacy/ = guías V4–V6
+extras/              os_headshot_guard y descargador de META de referencia
+profiles/            official/ server/ user/ legacy/ schemas/ migrations/
+data/                workspace, historial, respaldos y logs (no se versiona)
+tests/               pruebas automáticas
+```
+
+Arquitectura, API y cómo extenderla: `docs/pages/14-desarrollo.md`. Diagnóstico y migraciones: `docs/pages/15-auditoria.md`.
+
+---
+
+# Documentación histórica
+
+Las secciones siguientes describen las versiones 6.x y anteriores. Los archivos `.bat` que mencionan no forman parte de este repositorio.
+
+## Weapon Rebalancer META V6.1
 
 Requiere **Python 3.10 o superior**.
 

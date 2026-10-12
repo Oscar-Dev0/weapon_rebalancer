@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from weapon_rebalancer.runtime_audit import scan_runtime_conflicts
+from weapon_rebalancer.runtime.audit import scan_runtime_conflicts
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -77,7 +77,7 @@ class RuntimeAuditV4Tests(unittest.TestCase):
         self.assertIn('SetPedSuffersCriticalHits(ped, true)', client)
 
     def test_recommended_v4_profile_does_not_use_extreme_armour_multiplier(self) -> None:
-        profile = json.loads((PROJECT_ROOT / 'profiles' / 'rebelion_real_onetap_v4.json').read_text(encoding='utf-8'))
+        profile = json.loads((PROJECT_ROOT / 'profiles' / 'legacy' / 'rebelion_real_onetap_v4.json').read_text(encoding='utf-8'))
         self.assertEqual(profile['modules']['armour'], 'configured')
         self.assertEqual(profile['headshot']['helmet_multiplier'], 1.0)
         self.assertGreaterEqual(profile['headshot']['target_effective_health'], 1000.0)

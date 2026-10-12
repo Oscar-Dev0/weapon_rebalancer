@@ -5,11 +5,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from weapon_rebalancer.config import Settings
-from weapon_rebalancer.fields import FIELDS
-from weapon_rebalancer.inventory import export_full_profile, export_meta_inventory
-from weapon_rebalancer.profile_loader import apply_external_profile
-from weapon_rebalancer.rebalance import RebalanceEngine
+from weapon_rebalancer.engine.config import Settings
+from weapon_rebalancer.meta.fields import FIELDS
+from weapon_rebalancer.meta.inventory import export_full_profile, export_meta_inventory
+from weapon_rebalancer.engine.profile_loader import apply_external_profile
+from weapon_rebalancer.engine.rebalance import RebalanceEngine
 
 
 META = '''<?xml version="1.0" encoding="UTF-8"?>

@@ -4,13 +4,13 @@ import re
 import tempfile
 from pathlib import Path
 
-from weapon_rebalancer.config import Settings
-from weapon_rebalancer.profile_loader import apply_external_profile, load_profile
-from weapon_rebalancer.rebalance import RebalanceEngine
-from weapon_rebalancer.runtime_guard import collect_expected_damage, generate_damage_guard
+from weapon_rebalancer.engine.config import Settings
+from weapon_rebalancer.engine.profile_loader import apply_external_profile, load_profile
+from weapon_rebalancer.engine.rebalance import RebalanceEngine
+from weapon_rebalancer.runtime.guard import collect_expected_damage, generate_damage_guard
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-PROFILE = PROJECT_ROOT / 'profiles' / 'vanilla_repair_custom_plus15_absolute_v6.json'
+PROFILE = PROJECT_ROOT / 'profiles' / 'legacy' / 'vanilla_repair_custom_plus15_absolute_v6.json'
 
 
 def block(name: str, group: str, damage: float | None, weapon_range: float | None = 100.0, *, headshot: float = 3.0) -> str:

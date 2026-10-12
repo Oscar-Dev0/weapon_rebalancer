@@ -5,13 +5,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from weapon_rebalancer.config import Settings
-from weapon_rebalancer.profile_loader import apply_external_profile, load_profile
-from weapon_rebalancer.rebalance import RebalanceEngine
+from weapon_rebalancer.engine.config import Settings
+from weapon_rebalancer.engine.profile_loader import apply_external_profile, load_profile
+from weapon_rebalancer.engine.rebalance import RebalanceEngine
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-PROFILE_PATH = PROJECT_ROOT / 'profiles' / 'flow_caribe.json'
+PROFILE_PATH = PROJECT_ROOT / 'profiles' / 'legacy' / 'flow_caribe.json'
 
 
 def block(
@@ -252,8 +252,8 @@ class FlowCaribeProfileTests(unittest.TestCase):
     </Item>'''
         temp, output, report = self._run(realistic)
         try:
-            from weapon_rebalancer.meta_utils import read_field_value, read_weapon_flags
-            from weapon_rebalancer.scanner import ScanConfig, extract_weapon_blocks
+            from weapon_rebalancer.meta.meta_utils import read_field_value, read_weapon_flags
+            from weapon_rebalancer.meta.scanner import ScanConfig, extract_weapon_blocks
 
             blocks = extract_weapon_blocks(Path('weapons.meta'), output, ScanConfig(), [])
             self.assertEqual(len(blocks), 1)

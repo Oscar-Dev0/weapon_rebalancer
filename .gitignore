@@ -9,3 +9,7 @@ meta_inventory.json
 perfil_pack_completo.json
 
 runtime_headshot_audit.json
+
+# Datos locales del panel (workspace, historial, respaldos, logs, papelera)
+data/*
+!data/README.md

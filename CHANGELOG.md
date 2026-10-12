@@ -1,3 +1,78 @@
+# 7.1.1 — Acceso al panel endurecido
+
+- **Sin sesión no se entrega nada**: página, JS, CSS, documentación y API responden *Acceso denegado* (antes los archivos estáticos se servían sin token).
+- **Enlace de un solo uso** (`/?token=`): se canjea por una sesión, queda gastado y redirige a `/` para no dejar el token en el historial. **Cambia solo** cada 30 min; `python3 wr.py token` muestra el vigente (guardado en `data/panel_access_<puerto>.json`, permisos 600).
+- **Sesión con caducidad**: cookie HttpOnly atada a la IP; caduca tras 30 min sin uso o 8 h. Cookie y clave de la API rotan cada 10 min (`X-WR-Token-Next`, 2 min de gracia). **Cerrar sesión** en Configuración. Al caducar, la página se vacía.
+- **Bloqueo**: 8 credenciales incorrectas en 10 min bloquean nuevas entradas desde esa IP durante 10 min y cambian el enlace.
+- Tiempos configurables en `data/workspace.json` (`server.*`) o con `wr.py serve --rotate/--idle`.
+- Pruebas nuevas en `tests/test_v8_auth.py` (105 en total).
+
+# 7.1.0 — Cuatro perfiles principales y terminal profesional
+
+## Perfiles
+- **18 → 4 perfiles principales**: `balanced` (Balanced RP), `realistic` (Realistic Combat), `competitive` (Competitive PvP, hereda de `realistic`) y `flow_custom` (Flow Caribe Custom, hereda de `competitive` y guarda solo sus diferencias).
+- **Niveles**: `profiles/official/` (protegidos), `server/` (editable, se puede bloquear con `server_profiles_editable`), `user/` (derivados e importados), `legacy/` (los 18 originales, solo lectura). `schemas/profile.schema.json` (JSON Schema 2020-12) y `$schema` en cada perfil.
+- **Herencia con JSON Merge Patch (RFC 7386)**: `null` quita lo heredado; resolución determinista con detección de ciclos y bases inexistentes; caché invalidada por cambios en cualquier archivo de la cadena.
+- **Procedencia** de cada valor efectivo: del perfil, heredado (de qué perfil y ámbito), sobrescrito, regla del motor, original o sin efecto.
+- **Contradicciones** detectadas: listas y excepciones en conflicto, armas ignoradas con valores, flags que se agregan y quitan, reglas de cadencia inalcanzables o repetidas, políticas de cabeza sin efecto, `null` sin perfil base. Niveles Bloqueante / Advertencia / Recomendación.
+- Metadatos nuevos: nombre corto, objetivo, público, características y advertencias.
+- `qbx_recoils`: `false` quita la entrada del arma.
+- Edición segura: bloqueo entre procesos, detección de conflictos (`sha`), validación antes de guardar e historial.
+
+## Migración (`profiles/migrations/2026-10-12_v8/`)
+- `flow_caribe` → `flow_custom`: configuración del motor idéntica (verificado).
+- `pvp_competitive_onetap` → `competitive`: resultado idéntico sobre el pack real.
+- `rp_serious_onetap` → `realistic`: recoil `normal` → `high`.
+- `vanilla_repair_custom_plus15_absolute_v6` → `balanced`: sin el +15 % para armas personalizadas ni la regla de revólver a 350.
+- 6 configuraciones únicas quedan como pendientes importables (deltas exactos); 8 archivados (copias exactas y plantillas). Respaldo en `data/backups/profiles_pre_v8_*`.
+
+## Terminal
+- `python3 wr.py` abre un estudio interactivo: banner, estado del servidor, menú 0–9, navegación con flechas, números, búsqueda con `/` y Esc.
+- Comandos directos: `status`, `weapons`, `weapon`, `profiles`, `profile …` (show, activate, validate, affected, create, derive, duplicate, rename, delete, export, import, history, restore), `set`, `headshot`, `compare`, `simulate`, `validate`, `generate`, `transactions`, `rollback`, `params`, `docs`, `settings`.
+- Colores ANSI 256 con la paleta del panel, `--no-color`/`NO_COLOR`, `--ascii`, Windows (VT/msvcrt) y SSH; `--json`; códigos de salida 0/1/2/130.
+- Terminal y panel comparten el motor de edición (`profile_store/edit.py`, `POST /api/profiles/ops`).
+
+## Panel
+- Perfiles por nivel con insignias, *Mostrar archivados*, *Crear perfil derivado*, *Armas afectadas*; comparador contra original/actual con flechas y procedencia.
+- Armamento: columna de estado del perfil y procedencia en el detalle del arma.
+- Editor: aviso de solo lectura en oficiales, valores heredados y botón **No heredar**.
+- Configuración: *Permitir editar perfiles del servidor*.
+
+## Documentación
+- Páginas nuevas: **Perfiles oficiales** (con TTK medidos y desequilibrios detectados) y **Terminal** (con salidas reales). Actualizadas: Perfiles, Primeros pasos, Instalación, Editor, Desarrollo, Auditoría y Solución de problemas.
+
+## Pruebas
+- `test_v8_profiles.py` y `test_v8_cli.py` (95 pruebas en total): equivalencias de la migración, pendientes exactos, terminal ↔ panel, protección, modo sin color/ASCII y bloqueo entre procesos.
+
+# 7.0.0 — Panel web, perfiles v8 y generador transaccional
+
+Modernización completa sobre el motor 6.12 (que se conserva). Diagnóstico y plan de migración en `docs/pages/13-auditoria.md`.
+
+## Nuevo
+- **Panel web local** (`python3 wr.py serve`): Dashboard, Armamento, Editor, Perfiles, Constructor, Simulador, Generador, Diagnóstico, Documentación y Configuración. Solo librería estándar; JS sin compilación.
+- **Integración con ox_inventory** (solo lectura): armas, etiquetas, hash, munición, componentes y claves repetidas; cruce con los `weapons.meta` (sin META, sin ítem, municiones inexistentes).
+- **qbx_recoils**: recoil vertical de cámara por arma, leído y editable vía `resources.qbx_recoils` del perfil.
+- **Registro de parámetros** con método real (META / Native / Recurso / Solo lectura / No compatible), límites del motor y textos; la referencia de la documentación se genera desde él.
+- **Perfiles v8**: bloque `profile` (id, nombre, herencia `extends`, etiquetas, revisión), historial de versiones con restauración byte a byte, papelera, importar/exportar (normal, resuelto, legacy), comparación por efecto real, migración reversible.
+- **Vista previa con el motor real** en memoria: valores propuestos por arma, valores sin efecto (módulo en original, preset que los pisa, recortes) y comprobación de repetibilidad.
+- **Simulador**: daño por zona y distancia, disparos para matar, TTK con recargas, DPS y DPS sostenido, comparación de hasta 8 series.
+- **Generador transaccional**: plan atado al hash de cada archivo, respaldo previo, escritura atómica, verificación, bloqueo de archivos no UTF-8 o XML roto, registro de cambios y reversión.
+- **Diagnóstico** unificado (rutas, inventario, packs, perfiles, perfil activo frente al pack y auditoría de scripts con la condición `if` detectada).
+- **Documentación web** (`docs/index.html`) con buscador, tabla de contenidos y validación de enlaces en el build.
+- 36 pruebas nuevas (74 en total).
+
+## Cambios en el motor
+- Rendimiento: caché de la tokenización XML y de los regex (4,1 s → 0,47 s por pasada, salida idéntica).
+- `RebalanceEngine(capture=…, overlay=…)` para vista previa sin escribir.
+- `FileChange.content_changed`: el resumen ya no cuenta anotaciones como cambios (antes `flow_caribe` mostraba 130 archivos “cambiados” cuando cambiaba 0).
+- `engine_defaults: false` y `base_preset: none`: perfiles neutros que no heredan de `config.py`.
+- La ruta del pack sale de `data/workspace.json` (antes fija).
+- Paquete ordenado: `engine/`, `meta/`, `runtime/`, CLI en `weapon_rebalancer/cli.py` (`run_rebalance.py` queda como lanzador). `profiles.py` → `engine/presets.py`; `runtime_audit/guard` → `runtime/audit|guard`. `references/` → `extras/references/`, guías antiguas → `docs/legacy/`.
+- Guard de daño generado: reaplica cada 250 ms por defecto (antes cada frame).
+
+## Compatibilidad
+- Los perfiles v3–v7 siguen funcionando con la CLI y el panel; se migran a v8 al guardarlos o con `wr.py migrate --write`. Una prueba garantiza que los 18 perfiles incluidos producen la misma configuración del motor antes y después.
+
 # 6.12.0
 
 - `WEAPON_REVOLVER_MK2` now receives the same exact damage multiplier as `WEAPON_REVOLVER`: base pistol damage 10 × 6 = **60**.
