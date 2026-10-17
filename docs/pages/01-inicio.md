@@ -41,7 +41,7 @@ Más detalle en [FiveM: qué controla cada cosa](10-fivem.md).
 | `weapon_rebalancer/` | `engine/` y `meta/` (motor y edición de META), `runtime/`, `core/`, `adapters/`, `catalog/`, `profile_store/`, `services/`, `api/` y `cli/` (terminal) |
 | `web/` | Panel web (HTML, CSS y módulos JS sin compilación) |
 | `docs/` | Esta documentación |
-| `profiles/` | Perfiles JSON por nivel: `official/`, `server/`, `user/`, `legacy/` (archivados), `schemas/` y `migrations/` |
+| `profiles/` | Perfiles JSON por nivel: `official/`, `server/` (`flow_caribe`), `user/` y `schemas/` |
 | `data/` | Configuración del workspace, historial, respaldos y logs (no se versiona) |
 | `tests/` | Pruebas automáticas |
 

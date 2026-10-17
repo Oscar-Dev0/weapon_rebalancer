@@ -1,8 +1,8 @@
 {
   "name": "weapon_rebalancer_v7",
-  "version": "7.2.0",
+  "version": "7.3.0",
   "python_min": "3.10",
-  "recommended_profile": "profiles/server/flow_custom.json",
+  "recommended_profile": "profiles/server/flow_caribe.json",
   "reference_downloader": "extras/references/download_original_gtav_metas.ps1",
   "runtime_audit": "weapon_rebalancer/runtime/audit.py",
   "runtime_damage_guard_generator": "weapon_rebalancer/runtime/guard.py",
@@ -11,34 +11,14 @@
     "profiles/official/balanced.json",
     "profiles/official/realistic.json",
     "profiles/official/competitive.json",
-    "profiles/server/flow_custom.json",
-    "profiles/schemas/profile.schema.json",
-    "profiles/legacy/",
-    "profiles/migrations/2026-10-12_v8/"
-  ],
-  "tests": [
-    "tests/test_flow_caribe_profile.py",
-    "tests/test_full_meta.py",
-    "tests/test_helmet_onetap.py",
-    "tests/test_v3_onetap_audit.py",
-    "tests/test_v4_runtime_audit.py",
-    "tests/test_v5_custom_classifier.py",
-    "tests/test_v6_absolute_repair.py",
-    "tests/test_v7_adapters.py",
-    "tests/test_v7_api.py",
-    "tests/test_v7_profiles.py",
-    "tests/test_v7_services.py",
-    "tests/test_v8_auth.py",
-    "tests/test_v8_cli.py",
-    "tests/test_v8_profiles.py"
+    "profiles/server/flow_caribe.json",
+    "profiles/schemas/profile.schema.json"
   ],
   "documentation": [
     "docs/index.html",
     "docs/pages/",
-    "docs/legacy/",
     "extras/references/README.md"
   ],
-  "test_count": 105,
   "entrypoints": {
     "terminal": "wr.py (menú) / wr.py <comando>",
     "panel": "wr.py serve",

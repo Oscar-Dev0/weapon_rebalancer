@@ -2,7 +2,7 @@
 
     profiles/
     ├── official/   Balanced RP, Realistic Combat, Competitive PvP (solo lectura)
-    ├── server/     perfiles del servidor (flow_custom); editables si el workspace lo permite
+    ├── server/     perfiles del servidor (flow_caribe); editables si el workspace lo permite
     ├── user/       perfiles creados desde la web o la terminal
     ├── legacy/     perfiles anteriores archivados (solo lectura)
     ├── schemas/    profile.schema.json

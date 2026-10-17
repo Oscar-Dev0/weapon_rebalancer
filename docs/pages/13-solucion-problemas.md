@@ -79,21 +79,21 @@ Si un archivo cambió después de aplicar, revertir lo pisaría, así que no se 
 
 ## Los perfiles archivados muestran avisos
 
-Es normal: algunos perfiles antiguos (`profiles/legacy/`) traen claves sin efecto (`validation.require_runtime_critical_hits`) o valores por categoría que pisa un preset de módulo. Son de solo lectura y se conservan como estaban; los avisos indican qué parte del perfil no hace nada.
+Es normal: algunos perfiles antiguos (los legacy, borrados en la 7.3.0) traían claves sin efecto (`validation.require_runtime_critical_hits`) o valores por categoría que pisa un preset de módulo. Son de solo lectura y se conservan como estaban; los avisos indican qué parte del perfil no hace nada.
 
 ## No me deja guardar un perfil
 
 - **“Es un perfil oficial protegido”**: `balanced`, `realistic` y `competitive` no se modifican. Crea un derivado (**Crear perfil derivado** o `wr.py profile derive competitive mi_perfil`).
-- **`flow_custom` no se puede editar**: revisa **Configuración → Permitir editar perfiles del servidor** (`wr.py settings set server_profiles_editable=true`).
+- **`flow_caribe` no se puede editar**: revisa **Configuración → Permitir editar perfiles del servidor** (`wr.py settings set server_profiles_editable=true`).
 - **Conflicto (409)**: otra pestaña o la terminal guardó el mismo perfil mientras lo editabas. Recarga el perfil y repite el cambio; nada se pisó.
 - **Error bloqueante**: corrige lo que indica la validación (por ejemplo un ciclo de herencia o un perfil base que no existe).
 
 ## Me falta un perfil antiguo
 
-Están todos. Los originales están en `profiles/legacy/` (**Perfiles → Mostrar archivados** o `wr.py profiles --all`). Las configuraciones únicas están listas para importar en `profiles/migrations/2026-10-12_v8/pending/`:
+Se borraron del repo en la 7.3.0 porque ya no se usaban. Están en `/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/` (`legacy/` y `migrations/…/pending/`). Para recuperar uno:
 
 ```bash
-python3 wr.py profile import profiles/migrations/2026-10-12_v8/pending/head_only.json --id head_only
+python3 wr.py profile import /fivem/backups/weapon_rebalancer_limpieza_2026-10-17/migrations/2026-10-12_v8/pending/head_only.json --id head_only
 ```
 
 ## La terminal se ve mal

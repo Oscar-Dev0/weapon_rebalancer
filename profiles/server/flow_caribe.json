@@ -1,24 +1,39 @@
 {
-  "name": "Flow Caribe PvP v6.11 - Exact Weapon Damage Multipliers",
-  "description": "Flow Caribe: daño normal como techo (pistolas 10->6, SMG 14->10, rifles 15->11, MG 14->10, snipers 40->25). Las pistolas fijadas, WEAPON_REVOLVER y GROUP_SNIPER conservan one-tap dinámico. Las armas one-tap de tiro-a-tiro reciben recoil visible; las automáticas/burst mantienen recoil casi nulo. WEAPON_PISTOL50 conserva 30 de daño. WEAPON_REVOLVER y WEAPON_REVOLVER_MK2 usan multiplicador exacto x6 sobre base 10 (=60), y WEAPON_GADGETPISTOL conserva la base pesada de PISTOL50 (30) y usa multiplicador exacto x7 (=210). El resto usa headshot 1.5x.",
-  "schema_version": 3,
-  "base_preset": "rp_balanced",
+  "$schema": "../schemas/profile.schema.json",
+  "schema_version": 8,
+  "profile": {
+    "id": "flow_caribe",
+    "name": "Flow Caribe",
+    "short_name": "Flow Caribe",
+    "description": "Balance de Flow Caribe: pistolas one-tap a la cabeza hasta 100 m (pesadas 140 m; AP Pistol y G26 Switch 15 m), rifles/SMG/MG sin bonus de cabeza, escopetas fuertes de cerca y flojas de lejos, francotirador one-tap hasta 50 m y ninguna arma con ArmourPenetrating (el chaleco para todo).",
+    "objective": "Mantener exactamente el balance actual del servidor, editable por categoría y por arma.",
+    "audience": "Administradores de Flow Caribe.",
+    "features": [
+      "Hereda de un perfil oficial y guarda solo sus diferencias.",
+      "Reglas por arma: 26 armas configuradas, multiplicadores exactos (revólver ×6, Gadget ×7).",
+      "Las armas personalizadas de ox_inventory quedan cubiertas por las reglas de su categoría.",
+      "2026-10-17: integrado el balance de flow_onetap (one-tap pistolas 100/140 m, largas solo cuerpo, escopetas, francos 50 m).",
+      "2026-10-17: ArmourPenetrating quitado de todas las armas (pistolas, SMG, rifles, MG, escopetas, francos, blancas, arrojadizas, pesadas, táser)."
+    ],
+    "warnings": [
+      "Cambiar el perfil base cambia el resultado: revisa la vista previa antes de aplicar.",
+      "Se respalda en el historial antes de cada guardado."
+    ],
+    "tags": [
+      "servidor",
+      "flow-caribe"
+    ],
+    "extends": "competitive",
+    "revision": 2,
+    "created_at": "2026-10-12T23:09:39+0000",
+    "updated_at": "2026-10-17T18:53:37+0000"
+  },
   "modules": {
-    "damage": "configured",
     "armour": "configured",
     "recoil": "configured",
     "accuracy": "configured",
-    "range": "configured",
     "fire_rate": "original",
-    "reload": "original",
     "headshot": "normal"
-  },
-  "validation": {
-    "strict_unknown_fields": true,
-    "fail_on_onetap_audit": false,
-    "warn_duplicates": true,
-    "warn_unregistered_meta": true,
-    "require_runtime_critical_hits": true
   },
   "headshot": {
     "mode": "normal",
@@ -26,29 +41,14 @@
     "distance": 400.0,
     "no_falloff": false,
     "sync_weapon_range": false,
-    "sync_lock_on_range": false,
-    "create_missing_tags": true,
     "bypass_helmets": false,
-    "helmet_multiplier": 1.0,
     "force_penetration": false,
-    "penetration": 1.0,
-    "create_missing_armour_tag": true,
-    "create_missing_penetration_tag": true,
     "add_ignore_helmets_flag": false,
     "add_armour_penetrating_flag": false,
-    "create_missing_weapon_flags_tag": true,
     "auto_minimum_base_damage": false,
     "target_effective_health": 100.0,
     "safety_margin": 1.0,
-    "minimum_base_damage": 0.35,
-    "repair_zero_network_modifier": true,
-    "network_player_modifier_fallback": 1.0,
-    "create_missing_network_player_modifier_tag": true,
-    "remove_nonlethal_flags": false,
-    "blocking_flags": [
-      "NonLethal",
-      "NonViolent"
-    ]
+    "remove_nonlethal_flags": false
   },
   "fire_rate_damage_rules": [
     {
@@ -215,6 +215,7 @@
   "groups": {
     "GROUP_PISTOL": {
       "fields": {
+        "time_between_shots": null,
         "damage": 10.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
@@ -240,13 +241,19 @@
         "ik_recoil_scale_vertical": 0.001
       },
       "headshot": {
-        "mode": "normal",
+        "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0
+        "distance": 100
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_SMG": {
       "fields": {
+        "time_between_shots": null,
         "damage": 14.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
@@ -273,12 +280,18 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 1.5,
+        "multiplier": 1.0,
         "distance": 190.0
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_RIFLE": {
       "fields": {
+        "time_between_shots": null,
         "damage": 15.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
@@ -305,12 +318,18 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 1.5,
+        "multiplier": 1.0,
         "distance": 380.0
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_MG": {
       "fields": {
+        "time_between_shots": null,
         "damage": 14.0,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
@@ -337,19 +356,25 @@
       },
       "headshot": {
         "mode": "normal",
-        "multiplier": 1.5,
+        "multiplier": 1.0,
         "distance": 340.0
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_SHOTGUN": {
       "fields": {
-        "damage": 15.0,
+        "time_between_shots": null,
+        "damage": 24,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
-        "weapon_range": 55.0,
-        "falloff_min": 12.0,
-        "falloff_max": 32.0,
-        "falloff_modifier": 0.24,
+        "weapon_range": 40,
+        "falloff_min": 6,
+        "falloff_max": 20,
+        "falloff_modifier": 0.15,
         "hit_limbs": 0.74,
         "network_hit_limbs": 0.74,
         "lightly_armoured": 1.0,
@@ -371,11 +396,17 @@
         "mode": "normal",
         "multiplier": 1.5,
         "distance": 55.0
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_SNIPER": {
       "fields": {
-        "damage": 40.0,
+        "time_between_shots": null,
+        "damage": 51,
         "network_player_damage_modifier": 1.0,
         "network_ped_damage_modifier": 1.0,
         "weapon_range": 1200.0,
@@ -400,9 +431,8 @@
         "ik_recoil_scale_vertical": 0.001
       },
       "headshot": {
-        "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 1200.0,
+        "distance": 50,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -411,6 +441,46 @@
         "no_falloff": false,
         "sync_weapon_range": false,
         "sync_lock_on_range": false
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_MELEE": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_THROWN": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_HEAVY": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_STUNGUN": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_TRANQILIZER": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     }
   },
@@ -420,7 +490,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -436,7 +506,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -452,7 +522,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -468,7 +538,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -484,7 +554,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -520,7 +590,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 220.0,
+        "distance": 140,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -536,7 +606,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -552,7 +622,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -568,7 +638,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -584,7 +654,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -600,7 +670,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -616,7 +686,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -632,7 +702,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -648,7 +718,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -664,7 +734,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -680,7 +750,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -696,7 +766,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -712,7 +782,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -748,7 +818,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 220.0,
+        "distance": 140,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -764,7 +834,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -780,7 +850,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -796,7 +866,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -812,7 +882,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -828,7 +898,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -844,7 +914,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 100,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -857,12 +927,16 @@
     },
     "WEAPON_REVOLVER": {
       "fields": {
-        "damage": 10.0
+        "damage": 10.0,
+        "weapon_range": 200,
+        "falloff_min": 150,
+        "falloff_max": 200,
+        "falloff_modifier": 0.8
       },
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 150.0,
+        "distance": 140,
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -872,17 +946,102 @@
         "sync_weapon_range": false,
         "sync_lock_on_range": false
       }
+    },
+    "WEAPON_REVOLVER_MK2": {
+      "headshot": {
+        "mode": "onetap",
+        "distance": 140
+      },
+      "fields": {
+        "weapon_range": 200,
+        "falloff_min": 150,
+        "falloff_max": 200,
+        "falloff_modifier": 0.8
+      }
+    },
+    "WEAPON_DOUBLEACTION": {
+      "headshot": {
+        "mode": "onetap",
+        "distance": 140
+      },
+      "fields": {
+        "weapon_range": 200,
+        "falloff_min": 150,
+        "falloff_max": 200,
+        "falloff_modifier": 0.8
+      }
+    },
+    "WEAPON_NAVYREVOLVER": {
+      "headshot": {
+        "mode": "onetap",
+        "distance": 140
+      },
+      "fields": {
+        "weapon_range": 200,
+        "falloff_min": 150,
+        "falloff_max": 200,
+        "falloff_modifier": 0.8
+      }
+    },
+    "WEAPON_HEAVYPISTOL": {
+      "headshot": {
+        "mode": "onetap",
+        "distance": 140
+      },
+      "fields": {
+        "weapon_range": 200,
+        "falloff_min": 150,
+        "falloff_max": 200,
+        "falloff_modifier": 0.8
+      }
+    },
+    "WEAPON_MARKSMANPISTOL": {
+      "headshot": {
+        "mode": "onetap",
+        "distance": 140
+      },
+      "fields": {
+        "weapon_range": 200,
+        "falloff_min": 150,
+        "falloff_max": 200,
+        "falloff_modifier": 0.8
+      }
+    },
+    "WEAPON_APPISTOL": {
+      "headshot": {
+        "mode": "onetap",
+        "distance": 15
+      }
+    },
+    "WEAPON_GLIZZYG26SWITCH": {
+      "headshot": {
+        "mode": "onetap",
+        "distance": 15
+      }
+    },
+    "WEAPON_HEAVYSHOTGUN": {
+      "fields": {
+        "damage": 80
+      }
+    },
+    "WEAPON_ASSAULTSHOTGUN": {
+      "fields": {
+        "damage": 15
+      }
+    },
+    "WEAPON_AUTOSHOTGUN": {
+      "fields": {
+        "damage": 15
+      }
+    },
+    "WEAPON_KNUCKLE": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
     }
   },
-  "ignore_weapons": [
-    "WEAPON_STUNGUN",
-    "WEAPON_FIREEXTINGUISHER"
-  ],
-  "harmless_weapons": [
-    "WEAPON_SNOWBALL",
-    "WEAPON_BALL"
-  ],
-  "allow_damage_weapons": [],
   "fire_rate_classifier": {
     "enabled": true,
     "groups": [
@@ -913,7 +1072,7 @@
       "GROUP_SMG": 13.0,
       "GROUP_RIFLE": 14.0,
       "GROUP_MG": 13.0,
-      "GROUP_SHOTGUN": 14.0,
+      "GROUP_SHOTGUN": 24.0,
       "GROUP_SNIPER": 37.0
     },
     "unknown_cadence_forces_non_normal": true,
@@ -949,7 +1108,8 @@
       "WEAPON_VINTAGEPISTOL"
     ],
     "onetap_allowed_groups": [
-      "GROUP_SNIPER"
+      "GROUP_SNIPER",
+      "GROUP_PISTOL"
     ],
     "onetap_allowed_weapon_groups": [
       "GROUP_PISTOL"

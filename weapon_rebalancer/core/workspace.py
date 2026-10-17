@@ -45,8 +45,8 @@ class Workspace:
     ox_inventory_dir: str = ''
     runtime_audit_root: str = ''
     reference_roots: list[str] = field(default_factory=list)
-    active_profile: str = 'flow_custom'
-    # Permite editar perfiles del nivel “server” (flow_custom). Siempre con respaldo en el historial.
+    active_profile: str = 'flow_caribe'
+    # Permite editar perfiles del nivel “server” (flow_caribe). Siempre con respaldo en el historial.
     server_profiles_editable: bool = True
     guard_destination: str = ''
     qbx_recoils_file: str = ''

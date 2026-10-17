@@ -6,7 +6,7 @@ description: Los cuatro perfiles principales (Balanced, Realistic, Competitive y
 ---
 # Perfiles oficiales
 
-Desde la versión 7.1 la herramienta trae **cuatro perfiles principales**. Reemplazan a los 18 perfiles anteriores, que se conservan intactos en `profiles/legacy/` (ver [Migración](06-perfiles-oficiales.md#migracion)).
+Desde la versión 7.1 la herramienta trae **cuatro perfiles principales**. Reemplazaron a los 18 perfiles anteriores (ver [Migración](06-perfiles-oficiales.md#migracion)). Desde la 7.3.0 (2026-10-17) los perfiles legacy y la migración se borraron del repo; hay respaldo en `/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/`.
 
 ```text
 Catálogo original (.bak + META)
@@ -14,7 +14,7 @@ Catálogo original (.bak + META)
         ├── balanced      Balanced RP          (oficial, protegido)
         ├── realistic     Realistic Combat     (oficial, protegido)
         │     └── competitive  Competitive PvP (oficial, protegido, hereda de realistic)
-        │           └── flow_custom  Flow Caribe Custom (servidor, editable)
+        │           └── flow_caribe  Flow Caribe (servidor, editable)
         └── tus perfiles  profiles/user/       (usuario, editables)
 ```
 
@@ -23,7 +23,7 @@ Catálogo original (.bak + META)
 | `balanced` | Balanced RP | Oficial | — | No (protegido) |
 | `realistic` | Realistic Combat | Oficial | — | No (protegido) |
 | `competitive` | Competitive PvP | Oficial | `realistic` | No (protegido) |
-| `flow_custom` | Flow Caribe Custom | Servidor | `competitive` | Sí, con historial |
+| `flow_caribe` | Flow Caribe | Servidor | `competitive` | Sí, con historial |
 
 > [!NOTE]
 > Los perfiles **oficiales** no se modifican. Si quieres cambiar uno, crea un **perfil derivado**: hereda todo del oficial y guarda solo tus cambios. El panel y la terminal lo ofrecen automáticamente cuando intentas editar un oficial.
@@ -67,7 +67,7 @@ Catálogo original (.bak + META)
 > [!WARNING]
 > Los daños se diseñaron para **200 de vida**. Con la muerte en 100 (este servidor) el TTK real es la mitad: ver la tabla de abajo.
 
-## Flow Caribe Custom {#flow-custom}
+## Flow Caribe {#flow-custom}
 
 **Objetivo:** mantener exactamente el balance actual del servidor, editable por categoría y por arma.
 **Para:** administradores de Flow Caribe.
@@ -77,9 +77,9 @@ Catálogo original (.bak + META)
 - Reglas por arma: 26 armas configuradas, multiplicadores exactos (revólver ×6, Gadget ×7).
 - Es el único perfil de nivel **servidor**: se puede editar directamente y cada guardado deja la versión anterior en el historial.
 
-### Cómo funciona la herencia de flow_custom
+### Cómo funciona la herencia de flow_caribe
 
-`flow_custom` declara `"extends": "competitive"` y guarda **solo lo que difiere** de Competitive. El motor primero resuelve `realistic → competitive` y después aplica las diferencias de `flow_custom`. Lo que Flow Custom no declara se toma de Competitive, y donde Flow Custom quiere *quitar* un valor heredado escribe `null` (ver [Perfiles → Herencia](07-perfiles.md#herencia)).
+`flow_caribe` declara `"extends": "competitive"` y guarda **solo lo que difiere** de Competitive. El motor primero resuelve `realistic → competitive` y después aplica las diferencias de `flow_caribe`. Lo que Flow Custom no declara se toma de Competitive, y donde Flow Custom quiere *quitar* un valor heredado escribe `null` (ver [Perfiles → Herencia](07-perfiles.md#herencia)).
 
 Se eligió Competitive porque es la base con la que el delta queda más pequeño. Aun así el ahorro es modesto (20 454 frente a 21 139 bytes) porque la configuración de Flow es realmente propia: reglas por arma, clasificador de cadencia y multiplicadores exactos que ningún oficial tiene.
 
@@ -88,7 +88,7 @@ Se eligió Competitive porque es la base con la que el delta queda más pequeño
 En **Constructor → General → Hereda de** elige otro perfil, revisa y guarda.
 
 > [!DANGER]
-> El delta se calculó contra Competitive. Si cambias la base, todo lo que Flow Custom **no** declara pasará a salir del nuevo perfil y el resultado cambiará. Revisa **Comparar** (`wr.py compare flow_custom competitive`) y la vista previa del Generador antes de aplicar. Siempre puedes volver atrás con **Historial → Restaurar**.
+> El delta se calculó contra Competitive. Si cambias la base, todo lo que Flow Custom **no** declara pasará a salir del nuevo perfil y el resultado cambiará. Revisa **Comparar** (`wr.py compare flow_caribe competitive`) y la vista previa del Generador antes de aplicar. Siempre puedes volver atrás con **Historial → Restaurar**.
 
 ## Números medidos {#ttk}
 
@@ -110,7 +110,7 @@ Puedes repetir cualquier fila:
 
 ```bash
 python3 wr.py simulate WEAPON_PISTOL:original WEAPON_PISTOL:proposed -p competitive
-python3 wr.py simulate WEAPON_CARBINERIFLE:proposed -p flow_custom --zone head
+python3 wr.py simulate WEAPON_CARBINERIFLE:proposed -p flow_caribe --zone head
 ```
 
 > [!WARNING]
@@ -144,15 +144,9 @@ O en el panel: **Perfiles → (clic en el perfil) → Crear perfil derivado**. E
 | `vanilla_repair_custom_plus15_absolute_v6` | **balanced** (sin el +15 % a armas personalizadas ni la regla de revólver a 350) |
 | `rp_serious_onetap` | **realistic** (recoil `normal` → `high`) |
 | `pvp_competitive_onetap` | **competitive** (resultado idéntico) |
-| `flow_caribe` | **flow_custom** (configuración idéntica) |
-| `head_only`, `no_body_or_head_damage`, `original_body_real_onetap`, `pvp_hardcore_onetap`, `rebelion_balanced_v3`, `vanilla_normal_custom_plus15_revolver_onetap` | **Pendientes**: deltas listos para importar en `profiles/migrations/2026-10-12_v8/pending/` |
+| `flow_caribe` | **flow_caribe** (configuración idéntica; se llamó `flow_custom` hasta la 7.3.0) |
+| `head_only`, `no_body_or_head_damage`, `original_body_real_onetap`, `pvp_hardcore_onetap`, `rebelion_balanced_v3`, `vanilla_normal_custom_plus15_revolver_onetap` | Pendientes de la migración (borrados en la 7.3.0; están en el respaldo) |
 | `pvp_no_tank`, `headshot_focus_*`, `original_body_real_onetap_v4`, `rebelion_real_onetap_v4`, `rebelion_server` | Archivados: equivalentes exactos de otro perfil |
 | `profile_template`, `full_meta_template` | Archivados: plantillas de ejemplo |
 
-Para recuperar un pendiente como perfil de usuario:
-
-```bash
-python3 wr.py profile import profiles/migrations/2026-10-12_v8/pending/pvp_hardcore_onetap.json --id hardcore
-```
-
-El informe completo, con las verificaciones del motor, está en `profiles/migrations/2026-10-12_v8/REPORT.md`. Ver también [Auditoría](15-auditoria.md#migracion-perfiles).
+El informe de la migración y los pendientes están en el respaldo (`/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/migrations/`). Ver también [Auditoría](15-auditoria.md#migracion-perfiles).

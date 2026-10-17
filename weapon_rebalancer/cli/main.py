@@ -24,8 +24,8 @@ EPILOG = """ejemplos:
   wr.py set mi_pvp GROUP_PISTOL damage=55   cambia un valor (pide confirmación)
   wr.py compare balanced competitive -w WEAPON_PISTOL
   wr.py simulate WEAPON_PISTOL:current WEAPON_PISTOL:proposed -p competitive
-  wr.py validate flow_custom --preview
-  wr.py generate -p flow_custom             vista previa (añade --apply para escribir)
+  wr.py validate flow_caribe --preview
+  wr.py generate -p flow_caribe             vista previa (añade --apply para escribir)
   wr.py integrity                           ¿alguien cambió armas a mano?
   wr.py sync principal                      qué se pasaría a principal (añade --apply)
   wr.py registro                            quién/cuándo: aplicaciones, pasos y cambios a mano

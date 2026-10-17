@@ -1,15 +1,56 @@
+# --- Python ---
 __pycache__/
 *.py[cod]
-*.bak
-*.meta.bak
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+venv/
+
+# --- Pruebas: solo locales, no van al repo ---
+tests/
+pytest.ini
+.coverage
+htmlcov/
+
+# --- Datos locales del panel y la terminal (workspace, historial, respaldos, logs, sellos, papelera) ---
+data/*
+!data/README.md
+
+# --- Perfiles: en el repo solo los oficiales, flow_caribe y el esquema ---
+profiles/user/*
+!profiles/user/README.md
+profiles/legacy/
+profiles/migrations/
+
+# --- Documentación vieja (guías V4–V6) ---
+docs/legacy/
+
+# --- Salidas de la CLI antigua y exportaciones ---
 reports/
 exports/
 weapon_rebalance_report.json
 meta_inventory.json
 perfil_pack_completo.json
-
 runtime_headshot_audit.json
 
-# Datos locales del panel (workspace, historial, respaldos, logs, papelera)
-data/*
-!data/README.md
+# --- Respaldos y temporales ---
+*.bak
+*.meta.bak
+*.wrtmp
+*.tmp
+*.swp
+*~
+*.log
+
+# --- Editores y sistema ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Secretos ---
+.env
+*.pem
+*.key

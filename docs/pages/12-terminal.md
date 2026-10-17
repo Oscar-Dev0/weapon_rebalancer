@@ -32,7 +32,7 @@ python3 wr.py
   ────────────────────────────────────────────────────────────────
   Inventario         ox_inventory (422 ítems de arma)
   Armas              430 detectadas · 317 personalizadas · 199 META
-  Perfil activo      Flow Caribe Custom (flow_custom)
+  Perfil activo      Flow Caribe (flow_caribe)
   Validación         ✔ Correcta
   Cambios pendientes ✔ Ninguno: el pack coincide
 
@@ -92,7 +92,7 @@ python3 wr.py status
   ────────────────────────────────────────────────────────────────
   Inventario         ox_inventory (422 ítems de arma)
   Armas              430 detectadas · 317 personalizadas · 199 META
-  Perfil activo      Flow Caribe Custom (flow_custom)
+  Perfil activo      Flow Caribe (flow_caribe)
   Validación         ✔ Correcta
   Cambios pendientes ✔ Ninguno: el pack coincide
 ```
@@ -102,7 +102,7 @@ python3 wr.py weapons -c pistol --limit 6
 ```
 
 ```text
-  ARMAMENTO  perfil flow_custom · 64 armas
+  ARMAMENTO  perfil flow_caribe · 64 armas
   ────────────────────────────────────────────────────────────────
   Identificador              Nombre                 Categoría  Daño orig.  Daño perfil    RPM  Perfil  Estado
   ────────────────────────────────────────────────────────────────────────────────────────────────
@@ -164,7 +164,7 @@ python3 wr.py profiles          # --all incluye los archivados (legacy)
   Oficial   balanced       Balanced RP         N/D          protegido     1
   Oficial   competitive    Competitive PvP     realistic    protegido     1
   Oficial   realistic      Realistic Combat    N/D          protegido     1
-  Servidor  flow_custom ★  Flow Caribe Custom  competitive  sí            1
+  Servidor  flow_caribe ★  Flow Caribe  competitive  sí            1
 ```
 
 | Comando | Qué hace |
@@ -245,7 +245,7 @@ python3 wr.py compare balanced competitive -w WEAPON_CARBINERIFLE \
     Alcance máximo                        [R]       120  [H]        320  ↑ sube
 ```
 
-`original` y `current` se pueden usar en lugar de un perfil: `wr.py compare original flow_custom -w WEAPON_PISTOL`. En color, ↑ sale en verde, ↓ en rojo y sin cambio en gris.
+`original` y `current` se pueden usar en lugar de un perfil: `wr.py compare original flow_caribe -w WEAPON_PISTOL`. En color, ↑ sale en verde, ↓ en rojo y sin cambio en gris.
 
 ### Simular
 
@@ -269,11 +269,11 @@ Opciones: `--zone torso|head|limbs`, `--distance`, `--armour`, `--health`, `--ta
 
 ```bash
 python3 wr.py validate                   # todos
-python3 wr.py validate flow_custom --preview
+python3 wr.py validate flow_caribe --preview
 ```
 
 ```text
-  ✔ flow_custom   ✖ 0 bloqueantes  ▲ 0 advertencias  ● 18 recomendaciones
+  ✔ flow_caribe   ✖ 0 bloqueantes  ▲ 0 advertencias  ● 18 recomendaciones
      Aplicarlo cambiaría 0 archivos / 0 armas · repetible: sí · generador: compatible
   ● Recomendación  WEAPON_GADGETPISTOL.damage: declaraste 30.0 y el resultado es 210.0 (multiplicador exacto ×7 en weapon_field_multipliers).
      › Es correcto si esa regla es intencional; si no, ajusta o quita la regla indicada.
@@ -285,7 +285,7 @@ Tres niveles: **Bloqueante** (impide guardar o aplicar), **Advertencia** (se pue
 ### Generar y revertir
 
 ```bash
-python3 wr.py generate -p flow_custom
+python3 wr.py generate -p flow_caribe
 ```
 
 ```text

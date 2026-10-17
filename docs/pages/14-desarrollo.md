@@ -30,9 +30,9 @@ weapon_rebalancer/                  (proyecto)
 │   ├── services/                   catálogo, vista previa, procedencia, simulador, diagnóstico, generador, fachada App
 │   └── api/server.py               servidor HTTP local (librería estándar)
 ├── web/                            panel (ES modules sin compilación): js/{core,components,pages}
-├── docs/                           esta documentación (pages/*.md → js/docs-data.js); legacy/ = guías V4–V6
+├── docs/                           esta documentación (pages/*.md → js/docs-data.js)
 ├── extras/                         os_headshot_guard y descargador de META de referencia
-├── profiles/                       official/, server/, user/, legacy/, schemas/, migrations/
+├── profiles/                       official/, server/, user/, schemas/
 ├── data/                           workspace, historial, backups, logs (no se versiona)
 └── tests/
 ```
@@ -145,7 +145,7 @@ python3 -m unittest discover -s tests
 
 - Las pruebas del motor (V3–V6, Flow Caribe) siguen intactas.
 - `test_v7_*` montan un servidor completo en una carpeta temporal (pack con `.bak`, ox_inventory y qbx_recoils) y cubren adaptadores, catálogo, vista previa, repetibilidad, simulador, generador (aplicar, conflicto, UTF-8, revertir), perfiles (niveles, protección, herencia, historial, papelera, contradicciones) y la seguridad de la API.
-- `test_v8_profiles.py`: JSON Merge Patch, los cuatro perfiles válidos y con metadatos, `flow_custom` ≡ `flow_caribe`, pendientes exactos, ningún perfil antiguo perdido, equivalencia sobre el pack real y migración reproducible.
+- `test_v8_profiles.py`: JSON Merge Patch, los cuatro perfiles válidos y con metadatos, `flow_caribe` ≡ `flow_caribe`, pendientes exactos, ningún perfil antiguo perdido, equivalencia sobre el pack real y migración reproducible.
 - `test_v8_cli.py`: operaciones de edición, equivalencia terminal ↔ panel, protección de oficiales desde la terminal, modo sin color/ASCII, ayuda sin terminal y bloqueo entre procesos.
 
 ## Documentación

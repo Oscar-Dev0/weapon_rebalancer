@@ -1,3 +1,10 @@
+# 7.3.0 — Repo limpio y un solo perfil del servidor
+
+- **`flow_custom` → `flow_caribe`**: único perfil del servidor y el activo (mismo resultado en el pack; historial movido). Integra el balance de 2026-10-17 (one-tap pistolas 100/140 m, largas solo cuerpo, escopetas, francos 50 m, ninguna arma con ArmourPenetrating).
+- **Borrado lo legacy**: `profiles/legacy/` (18 perfiles), `profiles/migrations/`, `docs/legacy/` y `profile_store/legacy_migration.py`. Respaldo en `/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/`.
+- **`tests/` y `pytest.ini` fuera del repo** (quedan locales).
+- `.gitignore` ampliado: pruebas, perfiles de usuario, datos locales, legacy, temporales, editores y secretos.
+
 # 7.2.0 — Registro, cambios a mano y paso a principal
 
 - **Sello de integridad** (`services/integrity.py`): SHA-256 de los `.meta`, `fxmanifest.lua` y qbx_recoils; se actualiza solo tras aplicar, revertir o pasar. `wr.py integrity [--server principal]` lista lo cambiado **fuera de la herramienta** y lo deja en el registro (una vez por cambio). `wr.py integrity seal --reason …` acepta el estado actual (motivo obligatorio).

@@ -102,7 +102,7 @@ python3 wr.py status                         # estado del servidor y del perfil 
 python3 wr.py profiles                       # perfiles oficiales, servidor y usuario
 python3 wr.py weapon WEAPON_PISTOL           # ficha de un arma con la procedencia de cada valor
 python3 wr.py validate --preview             # valida todos los perfiles contra el pack real
-python3 wr.py generate -p flow_custom        # vista previa del generador
+python3 wr.py generate -p flow_caribe        # vista previa del generador
 python3 wr.py docs build                     # regenera esta documentación
 ```
 
@@ -111,8 +111,8 @@ La guía completa, con capturas reales, está en [Terminal](12-terminal.md).
 La herramienta original sigue disponible con todas sus opciones (acepta un id de perfil o una ruta):
 
 ```bash
-python3 run_rebalance.py --profile flow_custom            # vista previa
-python3 run_rebalance.py --profile flow_custom --write    # escribe (crea .bak)
+python3 run_rebalance.py --profile flow_caribe            # vista previa
+python3 run_rebalance.py --profile flow_caribe --write    # escribe (crea .bak)
 ```
 
 ## Seguridad del panel

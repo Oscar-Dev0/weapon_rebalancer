@@ -79,15 +79,15 @@ Había 18 perfiles en `profiles/`. Muchos eran copias exactas con otro nombre (p
 
 | Antes | Después |
 | --- | --- |
-| 18 perfiles sueltos en una carpeta | 4 principales: 3 oficiales protegidos + `flow_custom` del servidor |
-| Copias con pequeñas variaciones | Herencia: `competitive` hereda de `realistic`; `flow_custom` de `competitive` y guarda solo sus diferencias |
+| 18 perfiles sueltos en una carpeta | 4 principales: 3 oficiales protegidos + `flow_caribe` del servidor |
+| Copias con pequeñas variaciones | Herencia: `competitive` hereda de `realistic`; `flow_caribe` de `competitive` y guarda solo sus diferencias |
 | Cualquier perfil se podía sobrescribir | Oficiales de solo lectura; cambios mediante perfiles derivados en `profiles/user/` |
 | Lógica de perfiles en el panel | Un solo motor de perfiles para panel y terminal (`profile_store/edit.py`) |
 
 ### Garantías
 
-- **Nada se perdió.** Los 18 originales están intactos en `profiles/legacy/` y respaldados en `data/backups/profiles_pre_v8_*`. Las 6 configuraciones únicas que no corresponden a un principal están en `profiles/migrations/2026-10-12_v8/pending/` como deltas que reproducen exactamente el perfil original.
-- **Verificado con el motor sobre el pack real**: `flow_custom` produce la misma configuración que `flow_caribe` y `competitive` el mismo resultado que `pvp_competitive_onetap`. `realistic` y `balanced` solo difieren en los cambios de diseño documentados.
+- **Nada se perdió.** Los 18 originales y las 6 configuraciones únicas (como deltas) se conservaron en la 7.1. Desde la 7.3.0 (2026-10-17) los perfiles legacy y la migración se borraron del repo; hay respaldo en `/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/`.
+- **Verificado con el motor sobre el pack real**: `flow_custom` (hoy `flow_caribe`) produce la misma configuración que el `flow_caribe` antiguo y `competitive` el mismo resultado que `pvp_competitive_onetap`. `realistic` y `balanced` solo difieren en los cambios de diseño documentados.
 - **Sin valores inventados.** Los datos que faltan se muestran como N/D. Las cifras de los perfiles oficiales vienen de los perfiles anteriores.
 
 ### Cambios de diseño (decisiones a revisar por el servidor)
@@ -96,4 +96,4 @@ Había 18 perfiles en `profiles/`. Muchos eran copias exactas con otro nombre (p
 - **realistic**: recoil `normal` → `high`.
 - Desequilibrios detectados y no corregidos: ver [Perfiles oficiales → Desequilibrios](06-perfiles-oficiales.md#desequilibrios).
 
-El informe con el destino de cada perfil y todas las verificaciones está en `profiles/migrations/2026-10-12_v8/REPORT.md`.
+El informe con el destino de cada perfil y todas las verificaciones está en el respaldo: `/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/migrations/2026-10-12_v8/REPORT.md`.

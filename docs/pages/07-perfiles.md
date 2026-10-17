@@ -13,9 +13,9 @@ Un perfil es un archivo JSON que describe qué cambiar. Lo leen el panel, la [te
 | Nivel | Carpeta | Quién lo edita |
 | --- | --- | --- |
 | **Oficial** | `profiles/official/` | Nadie: protegido. Para cambiarlo, crea un derivado |
-| **Servidor** | `profiles/server/` | Editable (`flow_custom`) si `server_profiles_editable` está activo en Configuración. No se renombra ni se borra |
+| **Servidor** | `profiles/server/` | Editable (`flow_caribe`) si `server_profiles_editable` está activo en Configuración. No se renombra ni se borra |
 | **Usuario** | `profiles/user/` | Totalmente editable: crear, renombrar, borrar (va a la papelera) |
-| **Archivado** | `profiles/legacy/` | Solo lectura: los perfiles anteriores a la v7.1, conservados intactos |
+| **Archivado** | `profiles/legacy/` | Solo lectura. Vacío desde la 7.3.0: los perfiles anteriores a la v7.1 se borraron (respaldo en `/fivem/backups/`) |
 
 Al intentar editar un perfil protegido, el panel y la terminal ofrecen **crear un perfil derivado**: un perfil de usuario con `"extends": "<oficial>"` que hereda todo y solo guarda tus cambios. Los perfiles importados también van siempre a `profiles/user/`.
 
@@ -111,7 +111,7 @@ Si el perfil no declara un módulo, se usa el valor por defecto de `config.py` (
 - La resolución es determinista: mismo archivo, mismo resultado. Se detectan ciclos, bases inexistentes y cadenas de más de 6 niveles (error **Bloqueante**).
 - No se puede borrar un perfil del que heredan otros. Si renombras un perfil de usuario, los derivados editables se actualizan solos.
 
-Ejemplo: `flow_custom` hereda de `competitive`, que hereda de `realistic`. La cadena se ve en **Perfiles → detalle** o con `wr.py profile show flow_custom`.
+Ejemplo: `flow_caribe` hereda de `competitive`, que hereda de `realistic`. La cadena se ve en **Perfiles → detalle** o con `wr.py profile show flow_caribe`.
 
 ### Procedencia de cada valor {#procedencia}
 
@@ -252,8 +252,7 @@ Para migrar los perfiles de usuario que sigan en formato antiguo: **Perfiles →
 
 Los 18 perfiles anteriores se consolidaron en los cuatro principales. Ninguno se perdió:
 
-- Los originales están intactos en `profiles/legacy/` (visibles con *Mostrar archivados* o `wr.py profiles --all`) y en el respaldo `data/backups/profiles_pre_v8_*`.
-- Las configuraciones únicas que no encajan en los cuatro principales están como **pendientes** en `profiles/migrations/2026-10-12_v8/pending/`: deltas sobre un oficial que reproducen exactamente el perfil antiguo. Se recuperan con `wr.py profile import <archivo> --id <nuevo_id>`.
-- Cada resultado se verificó ejecutando el motor sobre el pack real; las pruebas lo repiten.
+- Cada resultado se verificó ejecutando el motor sobre el pack real.
+- Desde la 7.3.0 (2026-10-17) los perfiles legacy y la migración se borraron del repo; hay respaldo en `/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/`. Un pendiente se recupera con `wr.py profile import <archivo> --id <nuevo_id>`.
 
 Detalle y tabla de destinos en [Perfiles oficiales → Migración](06-perfiles-oficiales.md#migracion).

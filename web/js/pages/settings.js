@@ -73,7 +73,7 @@ export async function render({ root, setTitle, isCurrent }) {
         list('reference_roots', 'Packs de referencia (opcional)', 'META originales de GTA V usados por baseline_repair. Nunca se escriben.'),
         h('div', { class: 'field' }, h('label', {}, 'Perfil activo'), active, h('span', { class: 'hint' }, 'Es el que se compara con el pack en el Dashboard y el Diagnóstico.')),
         h('div', { class: 'field' }, h('label', { class: 'row', style: { gap: '8px' } }, serverEditable, 'Permitir editar perfiles del servidor', ' ',
-          help({ title: 'Perfiles del servidor', text: 'Si está desactivado, flow_custom (profiles/server/) queda en solo lectura, igual que los oficiales. Cada guardado deja la versión anterior en el historial.', doc: 'perfiles/niveles' })))) }),
+          help({ title: 'Perfiles del servidor', text: 'Si está desactivado, flow_caribe (profiles/server/) queda en solo lectura, igual que los oficiales. Cada guardado deja la versión anterior en el historial.', doc: 'perfiles/niveles' })))) }),
       h('div', { class: 'stack' },
         card({ title: 'Servidor del panel', iconName: 'shield', actions: logoutBtn, body: h('dl', { class: 'kv' },
           h('dt', {}, 'Escucha'), h('dd', { class: 'mono' }, `${workspace.server.host}:${workspace.server.port}`),

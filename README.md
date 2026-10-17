@@ -21,9 +21,9 @@ El panel muestra un enlace con `?token=` que sirve una sola vez; `python3 wr.py 
 | `balanced` — Balanced RP | Oficial (protegido) | Valores de GTA V; armas personalizadas llevadas a la referencia de su categoría |
 | `realistic` — Realistic Combat | Oficial (protegido) | Daño moderado, recoil alto, cabeza one-tap |
 | `competitive` — Competitive PvP | Oficial (protegido), hereda de `realistic` | TTK corto, recoil bajo, precisión alta |
-| `flow_custom` — Flow Caribe Custom | Servidor (editable) | Balance actual de Flow Caribe; hereda de `competitive` y guarda solo sus diferencias |
+| `flow_caribe` — Flow Caribe | Servidor (editable) | Balance actual de Flow Caribe; hereda de `competitive` y guarda solo sus diferencias |
 
-Para modificar un oficial se crea un **perfil derivado** (`wr.py profile derive competitive mi_perfil`), que va a `profiles/user/`. Los 18 perfiles anteriores están intactos en `profiles/legacy/`; el informe de la migración está en `profiles/migrations/2026-10-12_v8/REPORT.md`.
+Para modificar un oficial se crea un **perfil derivado** (`wr.py profile derive competitive mi_perfil`), que va a `profiles/user/`. Los perfiles anteriores (legacy) se borraron en la 7.3.0; el respaldo está en `/fivem/backups/weapon_rebalancer_limpieza_2026-10-17/`.
 
 ## Qué incluye
 
@@ -49,8 +49,8 @@ python3 wr.py weapon WEAPON_PISTOL                  # ficha con la procedencia d
 python3 wr.py profiles                              # perfiles (--all incluye archivados)
 python3 wr.py set mi_perfil GROUP_PISTOL damage=55  # cambia un valor (diff + confirmación)
 python3 wr.py compare balanced competitive -w WEAPON_PISTOL
-python3 wr.py validate flow_custom --preview
-python3 wr.py generate -p flow_custom               # vista previa (--apply para escribir)
+python3 wr.py validate flow_caribe --preview
+python3 wr.py generate -p flow_caribe               # vista previa (--apply para escribir)
 python3 -m unittest discover -s tests
 ```
 
@@ -83,9 +83,9 @@ Detalle en `docs/pages/16-registro.md`.
 ```text
 weapon_rebalancer/   engine/ meta/ runtime/ (motor) + core/ adapters/ catalog/ profile_store/ services/ api/ cli/
 web/                 panel web (ES modules, sin compilación)
-docs/                documentación (pages/*.md → js/docs-data.js); legacy/ = guías V4–V6
+docs/                documentación (pages/*.md → js/docs-data.js)
 extras/              os_headshot_guard y descargador de META de referencia
-profiles/            official/ server/ user/ legacy/ schemas/ migrations/
+profiles/            official/ server/ user/ schemas/
 data/                workspace, historial, respaldos y logs (no se versiona)
 tests/               pruebas automáticas
 ```
