@@ -31,16 +31,31 @@
     "GROUP_RIFLE": {
       "headshot": {
         "multiplier": 1.0
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_SMG": {
       "headshot": {
         "multiplier": 1.0
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_MG": {
       "headshot": {
         "multiplier": 1.0
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_SNIPER": {
@@ -49,6 +64,11 @@
       },
       "fields": {
         "damage": 51
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_SHOTGUN": {
@@ -58,6 +78,46 @@
         "falloff_min": 6,
         "falloff_max": 20,
         "falloff_modifier": 0.15
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_MELEE": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_THROWN": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_HEAVY": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_STUNGUN": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
+      }
+    },
+    "GROUP_TRANQILIZER": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     }
   },
@@ -286,6 +346,13 @@
     "WEAPON_AUTOSHOTGUN": {
       "fields": {
         "damage": 15
+      }
+    },
+    "WEAPON_KNUCKLE": {
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     }
   },
