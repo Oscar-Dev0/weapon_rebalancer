@@ -47,7 +47,7 @@ Configurado una vez: `wr.py settings set sync_targets.principal=/fivem/principal
 
 ```bash
 python3 wr.py sync principal                          # vista previa: qué archivos cambian
-python3 wr.py sync principal --apply --reason "balance flow_onetap"   # pide escribir APLICAR
+python3 wr.py sync principal --apply --reason "balance one-tap pistolas"   # pide escribir APLICAR
 python3 wr.py rollback <id>                           # deshace el paso
 ```
 
