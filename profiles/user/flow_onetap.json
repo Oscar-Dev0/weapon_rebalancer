@@ -21,6 +21,11 @@
       "headshot": {
         "mode": "onetap",
         "distance": 100
+      },
+      "weapon_flags": {
+        "remove": [
+          "ArmourPenetrating"
+        ]
       }
     },
     "GROUP_RIFLE": {
