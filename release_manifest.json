@@ -1,6 +1,6 @@
 {
   "name": "weapon_rebalancer_v7",
-  "version": "7.1.1",
+  "version": "7.2.0",
   "python_min": "3.10",
   "recommended_profile": "profiles/server/flow_custom.json",
   "reference_downloader": "extras/references/download_original_gtav_metas.ps1",

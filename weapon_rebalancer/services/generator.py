@@ -218,8 +218,19 @@ def apply_plan(plan: Plan, ws: Workspace, confirm: str) -> dict[str, Any]:
                            for name, entry in plan.preview.get('weapons', {}).items() if entry.get('changes')}
         log('generator.apply', stream='changes', tx=tx_id, profile=plan.profile_id, files=len(manifest['files']),
             weapons=weapons_changed, qbx=plan.notes)
+        _reseal(ws, 'local', [entry['path'] for entry in manifest['files']], f'aplicación {tx_id}', 'apply')
         return {'applied': True, 'transaction': tx_id, 'files': len(manifest['files']),
                 'weapons': len(weapons_changed), 'backup_dir': str(tx_root)}
+
+
+def _reseal(ws: Workspace, label: str, paths: list[str], reason: str, source: str) -> None:
+    """Actualiza el sello de integridad con lo que escribió la herramienta. Nunca tumba la operación."""
+    from . import integrity
+
+    try:
+        integrity.seal(ws, label, reason=reason, source=source, paths=paths)
+    except Exception as exc:  # noqa: BLE001
+        log('integrity.seal_failed', level='error', stream='changes', server=label, reason=reason, error=str(exc))
 
 
 def list_transactions() -> list[dict[str, Any]]:
@@ -230,6 +241,7 @@ def list_transactions() -> list[dict[str, Any]]:
             'id': data.get('id', manifest_path.parent.name), 'created_at': data.get('created_at'),
             'profile': data.get('profile'), 'status': data.get('status'), 'files': len(data.get('files', [])),
             'summary': data.get('summary'), 'rolled_back_at': data.get('rolled_back_at'), 'kind': data.get('kind', 'apply'),
+            'target': data.get('target', 'local'),
         })
     return result
 
@@ -246,7 +258,13 @@ def rollback(tx_id: str, ws: Workspace, confirm: str) -> dict[str, Any]:
         raise NotFound('No existe esa transacción.')
     if manifest.get('status') != 'applied':
         raise Conflict(f'La transacción está en estado “{manifest.get("status")}”: no se puede revertir.')
-    guard = _write_guard(ws)
+    label = manifest.get('target', 'local') if manifest.get('kind') == 'sync' else 'local'
+    if label == 'local':
+        guard = _write_guard(ws)
+    else:
+        from .sync import target_guard
+
+        guard = target_guard(ws, label)
     with _LOCK:
         modified_after = []
         for entry in manifest['files']:
@@ -259,6 +277,9 @@ def rollback(tx_id: str, ws: Workspace, confirm: str) -> dict[str, Any]:
                            hint='Revisa los archivos o aplica un perfil nuevo en lugar de revertir.',
                            details=modified_after[:20])
         for entry in manifest['files']:
+            if entry.get('backup') is None:          # sync: el archivo no existía en el destino
+                Path(entry['path']).unlink(missing_ok=True)
+                continue
             atomic_write_bytes(Path(entry['path']), (tx_root / 'files' / entry['backup']).read_bytes())
             sibling = Path(entry['path'] + '.bak')
             if entry.get('bak_created') and sibling.is_file() and sha256_file(sibling) == entry['sha_before']:
@@ -266,7 +287,8 @@ def rollback(tx_id: str, ws: Workspace, confirm: str) -> dict[str, Any]:
         manifest['status'] = 'rolled_back'
         manifest['rolled_back_at'] = time.strftime('%Y-%m-%dT%H:%M:%S%z')
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
-        log('generator.rollback', stream='changes', tx=tx_id, files=len(manifest['files']))
+        log('generator.rollback', stream='changes', tx=tx_id, server=label, files=len(manifest['files']))
+        _reseal(ws, label, [entry['path'] for entry in manifest['files']], f'reversión {tx_id}', 'rollback')
         return {'rolled_back': True, 'transaction': tx_id, 'files': len(manifest['files'])}
 
 

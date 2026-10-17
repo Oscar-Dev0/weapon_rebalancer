@@ -1,3 +1,12 @@
+# 7.2.0 — Registro, cambios a mano y paso a principal
+
+- **Sello de integridad** (`services/integrity.py`): SHA-256 de los `.meta`, `fxmanifest.lua` y qbx_recoils; se actualiza solo tras aplicar, revertir o pasar. `wr.py integrity [--server principal]` lista lo cambiado **fuera de la herramienta** y lo deja en el registro (una vez por cambio). `wr.py integrity seal --reason …` acepta el estado actual (motivo obligatorio).
+- **`wr.py sync principal`** (`services/sync.py`): pasa las armas a otro servidor como transacción reversible (`wr.py rollback`), con respaldo, verificación, sin borrar nada del destino y sin pisar cambios hechos a mano allí salvo `--force`. Destinos en `sync_targets` (`wr.py settings set sync_targets.principal=/fivem/principal`).
+- **`wr.py registro`**: aplicaciones, reversiones, pasos, sellos, cambios a mano y escrituras de la CLI antigua.
+- `wr.py status` muestra **Cambios a mano**; `wr.py generate` avisa antes de aplicar encima de cambios a mano.
+- La CLI antigua (`wr.py rebalance --write`, `run_rebalance.py --write`) ahora registra y sella los archivos que cambia.
+- Documentación: página «Registro, cambios a mano y paso a principal». Pruebas nuevas en `tests/test_v9_integrity.py` (111 en total).
+
 # 7.1.1 — Acceso al panel endurecido
 
 - **Sin sesión no se entrega nada**: página, JS, CSS, documentación y API responden *Acceso denegado* (antes los archivos estáticos se servían sin token).

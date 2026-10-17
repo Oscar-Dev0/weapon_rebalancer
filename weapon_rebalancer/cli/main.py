@@ -26,6 +26,9 @@ EPILOG = """ejemplos:
   wr.py simulate WEAPON_PISTOL:current WEAPON_PISTOL:proposed -p competitive
   wr.py validate flow_custom --preview
   wr.py generate -p flow_custom             vista previa (añade --apply para escribir)
+  wr.py integrity                           ¿alguien cambió armas a mano?
+  wr.py sync principal                      qué se pasaría a principal (añade --apply)
+  wr.py registro                            quién/cuándo: aplicaciones, pasos y cambios a mano
 """
 
 
@@ -147,6 +150,23 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument('id')
     p.add_argument('--confirm', required=True, help='APLICAR')
 
+    p = add('integrity', commands.cmd_integrity, 'Sello de integridad: check (cambios hechos a mano) | seal --reason …', True)
+    p.add_argument('action', nargs='?', default='check', choices=['check', 'seal'])
+    p.add_argument('--server', default='local', help='local (este servidor) o un destino de sync_targets (p. ej. principal).')
+    p.add_argument('--reason', help='Motivo del sello (obligatorio con seal).')
+    p.add_argument('--limit', type=int, default=30)
+
+    p = add('sync', commands.cmd_sync, 'Pasa las armas a otro servidor (vista previa; --apply copia, pide APLICAR).', True)
+    p.add_argument('target', help='Nombre del destino en sync_targets (p. ej. principal).')
+    p.add_argument('--apply', action='store_true')
+    p.add_argument('--confirm', help='APLICAR (necesario sin terminal interactiva).')
+    p.add_argument('--force', action='store_true', help='Pisar archivos del destino cambiados a mano.')
+    p.add_argument('--reason', default='', help='Motivo (queda en el registro).')
+    p.add_argument('--limit', type=int, default=20)
+
+    p = add('registro', commands.cmd_registro, 'Registro de cambios en las armas: aplicaciones, pasos, sellos y cambios a mano.', True)
+    p.add_argument('--limit', type=int, default=30)
+
     p = add('params', commands.cmd_params, 'Documentación de parámetros.', True)
     p.add_argument('section', nargs='?')
     p.add_argument('--all', action='store_true', help='Incluir avanzados.')
@@ -241,13 +261,33 @@ def _migrate(app, term: Term, args) -> int:
     return 0
 
 
+def run_legacy(argv: list[str], prog: str) -> None:
+    """CLI antigua. Con --write escribe sin transacción, así que se registra y se sella lo que cambió."""
+    from .legacy import main as legacy_main
+
+    sys.argv = [prog, *argv]
+    if '--write' not in argv:
+        legacy_main()
+        return
+    from ..core.workspace import load_workspace
+    from ..services import integrity
+
+    ws = load_workspace()
+    before = integrity.scan(ws)
+    try:
+        legacy_main()
+    finally:
+        changed = integrity.record_tool_write(ws, before, event='legacy.rebalance_write',
+                                              reason=f'CLI antigua: {prog} {" ".join(argv)}', argv=argv)
+        print(f'[REGISTRO] {len(changed)} archivo(s) cambiados quedaron en el registro (wr.py registro) y sellados.')
+        print('[AVISO] La CLI antigua no crea transacción: no se puede revertir con wr.py rollback. '
+              'Usa perfiles + wr.py generate --apply.')
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if argv[:1] == ['rebalance']:
-        from .legacy import main as legacy_main
-
-        sys.argv = ['wr.py rebalance', *argv[1:]]
-        legacy_main()
+        run_legacy(argv[1:], 'wr.py rebalance')
         return 0
     parser = build_parser()
     args = parser.parse_args(argv)

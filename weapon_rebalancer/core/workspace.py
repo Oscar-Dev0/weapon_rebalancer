@@ -50,6 +50,8 @@ class Workspace:
     server_profiles_editable: bool = True
     guard_destination: str = ''
     qbx_recoils_file: str = ''
+    # Servidores a los que se pasan las armas con `wr.py sync <nombre>` (nombre -> carpeta del servidor).
+    sync_targets: dict[str, str] = field(default_factory=dict)
     server: ServerOptions = field(default_factory=ServerOptions)
 
     # ---- rutas resueltas -------------------------------------------------
@@ -138,6 +140,9 @@ def _from_dict(data: dict[str, Any]) -> Workspace:
     for key in ('pack_roots', 'reference_roots'):
         if isinstance(data.get(key), list):
             setattr(ws, key, [str(v) for v in data[key] if str(v).strip()])
+    if isinstance(data.get('sync_targets'), dict):
+        ws.sync_targets = {str(k): str(v) for k, v in data['sync_targets'].items()
+                           if str(k).strip() and str(v).strip()}
     if isinstance(data.get('server_profiles_editable'), bool):
         ws.server_profiles_editable = data['server_profiles_editable']
     server = data.get('server')
@@ -196,6 +201,11 @@ def validate_workspace(ws: Workspace) -> list[str]:
     for root in ws.reference_roots:
         if not Path(root).is_dir():
             errors.append(f'La carpeta de referencia no existe: {root}')
+    for name, target in ws.sync_targets.items():
+        if not (Path(target) / 'resources').is_dir():
+            errors.append(f'El servidor destino “{name}” no tiene carpeta resources/: {target}')
+        elif Path(target).resolve() == server.resolve():
+            errors.append(f'El servidor destino “{name}” es el mismo servidor de la herramienta.')
     if ws.guard_destination and not is_within(Path(ws.guard_destination), ws.resources_path):
         errors.append('El destino del guard debe estar dentro de resources/.')
     if not (1024 <= ws.server.port <= 65535):

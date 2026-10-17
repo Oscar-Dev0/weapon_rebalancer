@@ -385,6 +385,34 @@ class App:
     def transactions(self) -> list[dict[str, Any]]:
         return list_transactions()
 
+    # ---- integridad, paso a otro servidor y registro ------------------------------
+    def integrity_check(self, body: dict[str, Any]) -> dict[str, Any]:
+        from . import integrity
+
+        return integrity.check(self.workspace(), str(body.get('server') or integrity.LOCAL))
+
+    def integrity_seal(self, body: dict[str, Any]) -> dict[str, Any]:
+        from . import integrity
+
+        return integrity.seal(self.workspace(), str(body.get('server') or integrity.LOCAL),
+                              reason=str(body.get('reason') or ''), source='manual')
+
+    def sync_plan(self, body: dict[str, Any]) -> dict[str, Any]:
+        from . import sync
+
+        return sync.plan(self.workspace(), str(body.get('target') or ''))
+
+    def sync_apply(self, body: dict[str, Any]) -> dict[str, Any]:
+        from . import sync
+
+        return sync.apply(self.workspace(), str(body.get('target') or ''), str(body.get('confirm', '')),
+                          force=bool(body.get('force')), reason=str(body.get('reason') or ''))
+
+    def changes_log(self, limit: int = 50) -> list[dict[str, Any]]:
+        from ..core.jsonlog import tail
+
+        return tail('changes', limit)
+
     def guard(self, body: dict[str, Any]) -> dict[str, Any]:
         ws = self.workspace()
         destination = Path(str(body.get('destination') or ws.guard_destination or ''))

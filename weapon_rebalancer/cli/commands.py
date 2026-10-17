@@ -55,7 +55,22 @@ def status_data(app) -> dict[str, Any]:
             pending = app.preview_profile(profile, active)['summary']['files_changed']
         except AppError:
             pending = None
-    return {'status': status, 'active_name': name, 'validation': validation, 'pending_files': pending}
+    try:
+        integrity_data = app.integrity_check({'server': 'local'})
+    except AppError:
+        integrity_data = None
+    return {'status': status, 'active_name': name, 'validation': validation, 'pending_files': pending,
+            'integrity': integrity_data}
+
+
+def integrity_text(term: Term, data: dict[str, Any] | None) -> str:
+    if not data:
+        return 'N/D'
+    if not data['sealed']:
+        return ui.badge(term, 'warning', 'sin sello (wr.py integrity seal --reason …)')
+    if data['clean']:
+        return ui.badge(term, 'ok', 'ninguno desde el último sello')
+    return ui.badge(term, 'warning', f'{data["total"]} archivo(s) cambiados fuera de la herramienta (wr.py integrity)')
 
 
 def render_status(app, term: Term, data: dict[str, Any] | None = None) -> None:
@@ -81,6 +96,7 @@ def render_status(app, term: Term, data: dict[str, Any] | None = None) -> None:
         ('Perfil activo', f'{term.style(data["active_name"], "accent")} {term.style(f"({status["active_profile"]})", "muted")}'),
         ('Validación', valid),
         ('Cambios pendientes', pending_text),
+        ('Cambios a mano', integrity_text(term, data.get('integrity'))),
     ])
 
 
@@ -565,6 +581,10 @@ def cmd_generate(app, term: Term, args) -> int:
         ui.table(term, [ui.Column('Archivo', lambda r: r['path'].split('/resources/')[-1], max_width=90),
                         ui.Column('Tipo', 'kind', max_width=12)], plan['files_detail'][: args.limit or None])
     ui.issues(term, [i for i in plan['issues'] if i['severity'] != 'info'], empty='Sin avisos de efecto.')
+    drift = app.integrity_check({'server': 'local'})
+    if drift['sealed'] and not drift['clean']:
+        term.write('  ' + ui.badge(term, 'warning', f'{drift["total"]} archivo(s) de armas se cambiaron a mano desde el último sello '
+                                   '(wr.py integrity). El perfil se aplica encima de esos cambios.'))
     if not args.apply:
         term.write('  ' + term.style('Vista previa: no se escribió nada. Usa --apply para aplicar (pide escribir APLICAR).', 'muted'))
         return 0
@@ -599,6 +619,135 @@ def cmd_transactions(app, term: Term, args) -> int:
 def cmd_rollback(app, term: Term, args) -> int:
     result = app.rollback({'id': args.id, 'confirm': args.confirm or ''})
     term.write('  ' + ui.badge(term, 'ok', f'Revertida {result["transaction"]}: {result["files"]} archivos.'))
+    return 0
+
+
+# ---- integridad, paso a otro servidor y registro ------------------------------------
+def render_integrity(term: Term, data: dict[str, Any], limit: int = 30) -> None:
+    label = 'este servidor' if data['label'] == 'local' else data['label']
+    if not data['sealed']:
+        term.write('  ' + ui.badge(term, 'warning', f'{label}: sin sello todavía. Crea uno con: wr.py integrity seal --reason "…"'
+                                   + ('' if data['label'] == 'local' else f' --server {data["label"]}')))
+        return
+    if data['clean']:
+        term.write('  ' + ui.badge(term, 'ok', f'{label}: sin cambios hechos a mano desde el sello del {data["sealed_at"]}.'))
+        return
+    term.write('  ' + ui.badge(term, 'warning', f'{label}: {data["total"]} archivo(s) de armas cambiados FUERA de la herramienta '
+                               f'desde el sello del {data["sealed_at"]}.'))
+    rows = ([{**m, 'estado': 'modificado'} for m in data['modified']] + [{**a, 'estado': 'nuevo'} for a in data['added']]
+            + [{**r, 'estado': 'borrado', 'modified_at': ''} for r in data['removed']])
+    ui.table(term, [ui.Column('Archivo', lambda r: r['path'].split('resources/')[-1], max_width=80),
+                    ui.Column('Estado', 'estado', max_width=11), ui.Column('Modificado', 'modified_at', max_width=25)],
+             rows[: limit or None])
+    term.write('  ' + term.style('Quedó en el registro (wr.py registro). Si el cambio es correcto, pásalo a un perfil y '
+                                 'aplícalo; o séllalo con: wr.py integrity seal --reason "…"', 'muted'))
+
+
+def cmd_integrity(app, term: Term, args) -> int:
+    body = {'server': args.server}
+    if args.action == 'seal':
+        if not args.reason:
+            raise ValidationFailed('Indica el motivo con --reason: queda en el registro.')
+        result = app.integrity_seal({**body, 'reason': args.reason})
+        if args.json:
+            emit_json(result)
+            return 0
+        term.write('  ' + ui.badge(term, 'ok', f'Sello {result["scope"]} de {result["label"]}: {result["files"]} archivos.'))
+        return 0
+    data = app.integrity_check(body)
+    if args.json:
+        emit_json(data)
+        return 0
+    ui.section(term, 'Integridad de las armas', 'cambios hechos fuera de weapon_rebalancer')
+    render_integrity(term, data, args.limit)
+    return 0 if data['sealed'] and data['clean'] else 1
+
+
+def cmd_sync(app, term: Term, args) -> int:
+    from .interactive import typed_confirm
+
+    plan = app.sync_plan({'target': args.target})
+    if args.json and not args.apply:
+        emit_json(plan)
+        return 0
+    ui.section(term, f'Paso a {args.target}', plan['target_root'])
+    ui.kv(term, [('Archivos a copiar', str(len(plan['changes']))),
+                 ('Solo en el destino', f'{len(plan["only_target"])} (no se tocan)'),
+                 ('Sello del destino', 'sí' if plan['target_sealed'] else 'no (se crea al pasar)')], label_width=20)
+    if plan['source_drift']:
+        term.write('  ' + ui.badge(term, 'warning', f'Este servidor tiene {plan["source_drift"]} archivo(s) cambiados a mano: '
+                                   'también se pasarían. Revisa wr.py integrity.'))
+    for path in plan['conflicts'][:15]:
+        term.write('  ' + ui.badge(term, 'error', f'Cambiado a mano en {args.target}: {path}'))
+    if plan['changes']:
+        ui.table(term, [ui.Column('Archivo', lambda r: r['path'].split('resources/')[-1], max_width=90),
+                        ui.Column('Estado', 'status', max_width=8)], plan['changes'][: args.limit or None])
+    if not args.apply:
+        term.write('  ' + term.style('Vista previa: no se copió nada. Usa --apply para pasar (pide escribir APLICAR).', 'muted'))
+        return 0
+    if not plan['changes']:
+        term.write('  ' + ui.badge(term, 'ok', f'{args.target} ya coincide con este servidor.'))
+        return 0
+    word = args.confirm or (typed_confirm(term, f'Escribe APLICAR para copiar a {args.target}') if term.interactive else None)
+    if word != 'APLICAR':
+        term.write('  ' + term.style('Cancelado. En modo no interactivo usa --confirm APLICAR.', 'muted'))
+        return 1
+    result = app.sync_apply({'target': args.target, 'confirm': word, 'force': args.force, 'reason': args.reason})
+    if args.json:
+        emit_json(result)
+        return 0
+    term.write('  ' + ui.badge(term, 'ok', f'Pasado a {args.target}: {result["files"]} archivos. Transacción {result["transaction"]} '
+                               '(se revierte con wr.py rollback).'))
+    term.write('  ' + term.style(f'Reinicia el servidor {args.target} para que cargue las armas.', 'muted'))
+    return 0
+
+
+REGISTRO_LABELS = {'generator.apply': 'Aplicación de perfil', 'generator.rollback': 'Reversión', 'generator.guard': 'Guard generado',
+                   'sync.apply': 'Paso a otro servidor', 'sync.apply_failed': 'Paso fallido (revertido)',
+                   'integrity.seal': 'Sello', 'integrity.manual_change': 'CAMBIO A MANO detectado',
+                   'integrity.seal_failed': 'Sello fallido', 'generator.apply_failed': 'Aplicación fallida (revertida)',
+                   'legacy.rebalance_write': 'CLI ANTIGUA escribió (sin transacción)'}
+
+
+def registro_detail(entry: dict[str, Any]) -> str:
+    event = entry.get('event')
+    if event == 'generator.apply':
+        weapons = entry.get('weapons')
+        count = len(weapons) if isinstance(weapons, dict) else weapons
+        return f'{entry.get("profile")} · {entry.get("files")} archivos · {count} armas · {entry.get("tx")}'
+    if event == 'sync.apply':
+        files = entry.get('files')
+        return f'→ {entry.get("target")} · {len(files) if isinstance(files, list) else files} archivos · {entry.get("tx")}' + \
+            (' · FORZADO' if entry.get('forced') else '') + (f' · {entry["reason"]}' if entry.get('reason') else '')
+    if event == 'integrity.manual_change':
+        files = (entry.get('modified') or []) + (entry.get('added') or []) + (entry.get('removed') or [])
+        sample = ', '.join(Path(f).parent.name or f for f in files[:3])
+        return f'{entry.get("server")} · {len(files)} archivo(s): {sample}{"…" if len(files) > 3 else ""} · último {entry.get("newest")}'
+    if event == 'integrity.seal':
+        return f'{entry.get("server")} · {entry.get("scope")} · {entry.get("files")} archivos · {entry.get("reason")}'
+    if event == 'legacy.rebalance_write':
+        return f'{entry.get("total")} archivo(s) · {" ".join(entry.get("argv") or [])}'[:160]
+    if event == 'generator.rollback':
+        return f'{entry.get("server", "local")} · {entry.get("files")} archivos · {entry.get("tx")}'
+    return ' · '.join(f'{k}={v}' for k, v in entry.items() if k not in {'ts', 'level', 'event'})[:160]
+
+
+def cmd_registro(app, term: Term, args) -> int:
+    rows = list(reversed(app.changes_log(args.limit)))
+    if args.json:
+        emit_json(rows)
+        return 0
+    ui.section(term, 'Registro de cambios en las armas', 'data/logs/changes.jsonl · lo más nuevo primero')
+    if not rows:
+        term.write('  ' + term.style('Sin registros todavía.', 'muted'))
+        return 0
+
+    def event_style(row, cell):
+        return term.style(cell, 'warn' if row.get('level') == 'warning' else 'err' if row.get('level') == 'error' else 'accent')
+
+    ui.table(term, [ui.Column('Fecha', 'ts', max_width=25),
+                    ui.Column('Qué', lambda r: REGISTRO_LABELS.get(r.get('event'), r.get('event')), max_width=26, style=event_style),
+                    ui.Column('Detalle', registro_detail, max_width=110)], rows)
     return 0
 
 
@@ -654,6 +803,15 @@ def cmd_settings(app, term: Term, args) -> int:
     if args.action == 'set':
         changes = {}
         for key, value in parse_assignments(args.assignments):
+            if key.startswith('sync_targets.'):
+                targets = dict(changes.get('sync_targets') or app.workspace().sync_targets)
+                name = key.split('.', 1)[1].strip()
+                if value in (None, ''):
+                    targets.pop(name, None)
+                else:
+                    targets[name] = str(value)
+                changes['sync_targets'] = targets
+                continue
             if key not in SETTINGS_KEYS:
                 raise ValidationFailed(f'Ajuste desconocido: {key}.', hint=f'Ajustes: {", ".join(sorted(SETTINGS_KEYS))}.')
             if key in {'pack_roots', 'reference_roots'}:
@@ -668,7 +826,13 @@ def cmd_settings(app, term: Term, args) -> int:
         return 0
     ui.section(term, 'Configuración', 'data/workspace.json · compartida con el panel web')
     data = ws.to_dict()
-    ui.kv(term, [(k, ', '.join(v) if isinstance(v, list) else str(v)) for k, v in data.items() if k not in {'schema', 'server'}], label_width=26)
+    def shown(v):
+        if isinstance(v, list):
+            return ', '.join(v)
+        if isinstance(v, dict):
+            return ', '.join(f'{k}={x}' for k, x in v.items()) or '(ninguno)'
+        return str(v)
+    ui.kv(term, [(k, shown(v)) for k, v in data.items() if k not in {'schema', 'server'}], label_width=26)
     errors = validate_workspace(ws)
     ui.issues(term, [{'severity': 'error', 'message': e} for e in errors], empty='Todas las rutas son válidas.')
     return 0

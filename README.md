@@ -1,4 +1,4 @@
-# Weapon Rebalancer 7.1
+# Weapon Rebalancer 7.2
 
 Herramienta para balancear las armas de un servidor FiveM editando sus `weapons.meta` de forma controlada, con **terminal interactiva**, **panel web**, cuatro perfiles principales con herencia, simulador y generador con respaldo y reversión. Terminal y panel usan el mismo motor, los mismos perfiles y el mismo historial.
 
@@ -57,6 +57,18 @@ python3 -m unittest discover -s tests
 `--json` en casi todos los comandos, `--no-color`/`NO_COLOR=1` y `--ascii` para consolas limitadas. Guía completa: `docs/pages/12-terminal.md`.
 
 `python3 wr.py rebalance …` (o `run_rebalance.py`) mantiene todas sus opciones (`--profile` acepta un id o una ruta, `--write`, `--audit-runtime`, …).
+
+## Registro y paso a principal
+
+Las armas se cambian **solo** con esta herramienta; nada de editar META a mano ni copiarlos con `cp`.
+
+```bash
+python3 wr.py registro                 # quién/cuándo: aplicaciones, pasos, sellos y cambios a mano
+python3 wr.py integrity                # archivos de armas cambiados fuera de la herramienta
+python3 wr.py sync principal           # vista previa del paso a principal (--apply para copiar)
+```
+
+Detalle en `docs/pages/16-registro.md`.
 
 ## Seguridad
 
