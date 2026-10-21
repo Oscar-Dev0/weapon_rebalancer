@@ -1,3 +1,11 @@
+# 7.5.0 — One-tap con chaleco y casco
+
+- **`wr.py headshot PERFIL onetap target_effective_health=200 [safety_margin=1]`**: vida objetivo de la lista one-tap (`fire_rate_classifier.allowlisted_onetap_*`), que manda sobre la de cada arma. 200 = 100 de vida + 100 de chaleco: en el juego el chaleco absorbe primero también los tiros a la cabeza.
+- `wr.py headshot` acepta `add_ignore_helmets_flag`, `add_armour_penetrating_flag`, `remove_nonlethal_flags` y `sync_lock_on_range` (el motor ya los leía; la terminal los rechazaba).
+- **Simulador**: el chaleco protege también la cabeza por defecto (`armour_protects_head = true`), como en el juego. Antes decía «1 tiro» a la cabeza con chaleco cuando en el servidor hacían falta 2.
+- `flow_caribe`: one-tap (pistolas y francotiradores) mata con chaleco lleno y casco hasta el alcance del arma (cabeza ×2: pistola 278 de cerca, 200 al final del alcance) e `IgnoreHelmets` en las armas one-tap. Cuerpo y chaleco sin cambios (sin `ArmourPenetrating`).
+- Pruebas nuevas en `tests/test_v11_onetap_armour.py` (117 en total).
+
 # 7.4.0 — One-tap a la misma distancia que el alcance
 
 - **`headshot.distance = "weapon_range"`** (también `alcance` en la terminal y en el editor interactivo): la distancia de cabeza/one-tap es el `WeaponRange` final del arma, ni más ni menos, aunque después se cambie el alcance. `wr.py headshot PERFIL OBJETIVO distance=weapon_range`.

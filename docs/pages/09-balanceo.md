@@ -33,6 +33,8 @@ La cabeza solo multiplica si la distancia está entre `MinHeadShotDistancePlayer
 
 **One-tap a la misma distancia que el alcance.** En el perfil, `headshot.distance` puede ser un número (metros) o `"weapon_range"`. Con `"weapon_range"`, `MaxHeadShotDistancePlayer` se escribe igual al `WeaponRange` final del arma: el one-tap llega hasta donde llega el daño, ni más ni menos, y sigue igual si después se cambia el alcance. Con `dynamic_consider_falloff` el multiplicador se calcula con la caída máxima, así que también mata de un tiro en el último metro. La auditoría marca `headshot_distance_differs_from_weapon_range` si un arma con `"weapon_range"` quedó con otra distancia.
 
+**One-tap con chaleco y casco.** En el juego el chaleco absorbe el daño primero **también en la cabeza**: un tiro de 139 contra 100 de chaleco + 100 de vida no mata, aunque salga el indicador de cabeza. Para que la cabeza mate siempre, la vida objetivo del one-tap tiene que ser 200. Las armas de la lista one-tap (`fire_rate_classifier.onetap_allowed_groups` / `onetap_allowed_weapons`, con `force_onetap_for_allowlist`) usan `fire_rate_classifier.allowlisted_onetap_target_effective_health`, que **manda sobre** el `target_effective_health` de cada arma o categoría: se cambia con `wr.py headshot PERFIL onetap target_effective_health=200`. Para el casco: `bypass_helmets=true add_ignore_helmets_flag=true` (añade `IgnoreHelmets`); deja `add_armour_penetrating_flag=false` para que el chaleco siga sirviendo en el cuerpo. El simulador cuenta el chaleco también en la cabeza (`armour_protects_head`, activado por defecto).
+
 ### Caída por distancia
 
 ```text

@@ -21,7 +21,7 @@ export async function render({ root, params, setTitle, isCurrent }) {
     series: params.get('w')
       ? [{ name: first, source: 'original' }, { name: first, source: 'current' }, { name: first, source: 'proposed' }]
       : [{ name: 'WEAPON_PISTOL', source: 'current' }, { name: 'WEAPON_CARBINERIFLE', source: 'current' }],
-    assumptions: { target: 'player', zone: 'torso', distance: 15, health: 100, armour: 0, armour_absorption: 1, armour_protects_head: false, critical_hits: true, pellet_hit_ratio: 1, include_reload: true },
+    assumptions: { target: 'player', zone: 'torso', distance: 15, health: 100, armour: 0, armour_absorption: 1, armour_protects_head: true, critical_hits: true, pellet_hit_ratio: 1, include_reload: true },
     chart: 'damage',
     result: null,
   };
@@ -139,7 +139,7 @@ export async function render({ root, params, setTitle, isCurrent }) {
           assumptionField('armour_absorption', 'Absorción del blindaje', 'Fracción del daño que absorbe el chaleco mientras dura (supuesto: 1 = todo).', { min: 0, max: 1, step: 0.05 }),
           assumptionField('pellet_hit_ratio', 'Perdigones que impactan', 'Fracción de perdigones que aciertan (escopetas).', { min: 0, max: 1, step: 0.05 })),
         assumptionCheck('critical_hits', 'Critical hits activos (cabeza)', 'Si un script los apaga, la cabeza cuenta como torso.'),
-        assumptionCheck('armour_protects_head', 'El blindaje protege la cabeza', 'Supuesto conservador desactivado por defecto.'),
+        assumptionCheck('armour_protects_head', 'El blindaje protege la cabeza', 'Así funciona en el juego: el chaleco absorbe primero también en la cabeza (salvo ArmourPenetrating).'),
         assumptionCheck('include_reload', 'Incluir recargas en el TTK', 'Suma el tiempo de recarga si hacen falta más balas que el cargador.'),
         callout('info', 'Los supuestos solo afectan al cálculo. No cambian nada del perfil ni del servidor.')) })));
   drawSeries();

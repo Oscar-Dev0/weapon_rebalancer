@@ -20,7 +20,7 @@ class Assumptions:
     health: float = 100.0            # vida efectiva (200 de vida - 100 del umbral de muerte)
     armour: float = 0.0              # puntos de blindaje
     armour_absorption: float = 1.0   # fracción del daño que absorbe el blindaje mientras dure
-    armour_protects_head: bool = False
+    armour_protects_head: bool = True  # en GTA/FiveM el chaleco absorbe también los tiros a la cabeza
     critical_hits: bool = True       # SetPedSuffersCriticalHits activo en el objetivo
     pellet_hit_ratio: float = 1.0    # fracción de perdigones que impactan (escopetas)
     include_reload: bool = True

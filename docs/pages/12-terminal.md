@@ -197,6 +197,8 @@ python3 wr.py profile derive competitive mi_pvp --name "Mi PvP"
 python3 wr.py set PERFIL OBJETIVO campo=valor [campo=valor …] [--yes]
 python3 wr.py headshot PERFIL OBJETIVO mode=onetap multiplier=1.5 distance=150 [--yes]
 python3 wr.py headshot PERFIL OBJETIVO distance=weapon_range [--yes]   # cabeza = alcance del arma
+python3 wr.py headshot PERFIL onetap target_effective_health=200 [--yes]   # lista one-tap: mata con chaleco lleno
+python3 wr.py headshot PERFIL global bypass_helmets=true add_ignore_helmets_flag=true [--yes]   # atraviesa el casco
 ```
 
 - `OBJETIVO`: `WEAPON_X`, `GROUP_X` o `global`.

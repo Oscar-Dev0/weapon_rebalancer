@@ -21,7 +21,16 @@ LISTS = {'ignore_weapons', 'harmless_weapons', 'allow_ignored_weapons', 'allow_d
 HEADSHOT_NUMBERS = {'multiplier', 'player_multiplier', 'network_multiplier', 'ai_multiplier', 'distance',
                     'target_effective_health', 'safety_margin', 'minimum_base_damage', 'helmet_multiplier', 'penetration'}
 HEADSHOT_BOOLS = {'dynamic_multiplier_from_damage', 'dynamic_consider_falloff', 'no_falloff', 'bypass_helmets',
-                  'sync_weapon_range', 'force_penetration', 'auto_minimum_base_damage'}
+                  'sync_weapon_range', 'force_penetration', 'auto_minimum_base_damage',
+                  'add_ignore_helmets_flag', 'add_armour_penetrating_flag', 'remove_nonlethal_flags',
+                  'sync_lock_on_range'}
+# `wr.py headshot PERFIL onetap target_effective_health=200`: vida que debe vencer un tiro a la
+# cabeza de las armas de la lista one-tap (200 = 100 de vida + 100 de chaleco).
+ONETAP_LIST_SCOPES = {'onetap', 'lista_onetap', 'allowlist'}
+ONETAP_LIST_KEYS = {
+    'target_effective_health': 'allowlisted_onetap_target_effective_health',
+    'safety_margin': 'allowlisted_onetap_safety_margin',
+}
 META_TEXT = {'name', 'short_name', 'description', 'objective', 'audience'}
 META_LISTS = {'features', 'warnings', 'tags'}
 
@@ -157,6 +166,19 @@ def apply_ops(profile: dict[str, Any], ops: list[dict[str, Any]], *, resolver=No
             else:  # inherit_field: en un derivado, quitar también lo heredado (null)
                 fields[key] = None
             _cleanup(result, scope)
+        elif kind == 'set_headshot' and str(op.get('scope', '')).strip().lower() in ONETAP_LIST_SCOPES:
+            # Lista one-tap (fire_rate_classifier): manda sobre lo que diga cada arma o categoría.
+            patch = op.get('values') or {}
+            classifier = result.setdefault('fire_rate_classifier', {})
+            for key, value in patch.items():
+                if key not in ONETAP_LIST_KEYS:
+                    raise ValidationFailed(f'Opción desconocida para la lista one-tap: {key}.',
+                                           hint=', '.join(sorted(ONETAP_LIST_KEYS)))
+                if isinstance(value, bool) or not isinstance(value, (int, float)) or float(value) <= 0.0:
+                    raise ValidationFailed(f'onetap.{key} debe ser un número mayor que 0.')
+                if key == 'safety_margin' and float(value) < 1.0:
+                    raise ValidationFailed('onetap.safety_margin no puede ser menor que 1.')
+                classifier[ONETAP_LIST_KEYS[key]] = float(value)
         elif kind == 'set_headshot':
             scope = parse_scope(op.get('scope'))
             patch = op.get('values') or {}
