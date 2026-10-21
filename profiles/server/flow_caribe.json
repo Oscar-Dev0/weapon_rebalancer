@@ -5,7 +5,7 @@
     "id": "flow_caribe",
     "name": "Flow Caribe",
     "short_name": "Flow Caribe",
-    "description": "Balance de Flow Caribe: pistolas one-tap a la cabeza hasta 100 m (pesadas 140 m; AP Pistol y G26 Switch 15 m), rifles/SMG/MG sin bonus de cabeza, escopetas fuertes de cerca y flojas de lejos, francotirador one-tap hasta 50 m y ninguna arma con ArmourPenetrating (el chaleco para todo).",
+    "description": "Balance de Flow Caribe: pistolas y francotiradores one-tap a la cabeza hasta el alcance del arma, ni más ni menos (pistolas 150 m; pesadas 200/220/300 m; AP Pistol 95 m y G26 Switch 85 m; francos 1200 m), rifles/SMG/MG sin bonus de cabeza, escopetas fuertes de cerca y flojas de lejos y ninguna arma con ArmourPenetrating (el chaleco para todo).",
     "objective": "Mantener exactamente el balance actual del servidor, editable por categoría y por arma.",
     "audience": "Administradores de Flow Caribe.",
     "features": [
@@ -13,7 +13,8 @@
       "Reglas por arma: 26 armas configuradas, multiplicadores exactos (revólver ×6, Gadget ×7).",
       "Las armas personalizadas de ox_inventory quedan cubiertas por las reglas de su categoría.",
       "2026-10-17: integrado el balance de flow_onetap (one-tap pistolas 100/140 m, largas solo cuerpo, escopetas, francos 50 m).",
-      "2026-10-17: ArmourPenetrating quitado de todas las armas (pistolas, SMG, rifles, MG, escopetas, francos, blancas, arrojadizas, pesadas, táser)."
+      "2026-10-17: ArmourPenetrating quitado de todas las armas (pistolas, SMG, rifles, MG, escopetas, francos, blancas, arrojadizas, pesadas, táser).",
+      "2026-10-21: one-tap = alcance del arma (headshot.distance = weapon_range) en pistolas y francotiradores, a pedido del dueño."
     ],
     "warnings": [
       "Cambiar el perfil base cambia el resultado: revisa la vista previa antes de aplicar.",
@@ -24,9 +25,9 @@
       "flow-caribe"
     ],
     "extends": "competitive",
-    "revision": 10,
+    "revision": 46,
     "created_at": "2026-10-12T23:09:39+0000",
-    "updated_at": "2026-10-17T20:37:27+0000"
+    "updated_at": "2026-10-21T00:49:37+0000"
   },
   "modules": {
     "armour": "configured",
@@ -243,7 +244,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100
+        "distance": "weapon_range"
       },
       "weapon_flags": {
         "remove": [
@@ -432,7 +433,7 @@
       },
       "headshot": {
         "multiplier": 1.5,
-        "distance": 50,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -486,11 +487,10 @@
   },
   "weapons": {
     "WEAPON_CERAMICPISTOL": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -502,11 +502,10 @@
       }
     },
     "WEAPON_COMBATPISTOL": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -518,11 +517,10 @@
       }
     },
     "WEAPON_COMBATPISTOLNAVIDAD": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -534,11 +532,10 @@
       }
     },
     "WEAPON_DARKSIDEGLOCK": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -550,11 +547,10 @@
       }
     },
     "WEAPON_FN57": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -590,7 +586,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 140,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -602,11 +598,10 @@
       }
     },
     "WEAPON_GLIZZYG17": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -618,11 +613,10 @@
       }
     },
     "WEAPON_GLIZZYG17L": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -634,11 +628,10 @@
       }
     },
     "WEAPON_GLIZZYG19": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -650,11 +643,10 @@
       }
     },
     "WEAPON_GLIZZYG21B": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -666,11 +658,10 @@
       }
     },
     "WEAPON_GLIZZYG30": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -682,11 +673,10 @@
       }
     },
     "WEAPON_GLIZZYG40": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -698,11 +688,10 @@
       }
     },
     "WEAPON_ILLGLOCK17": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -714,11 +703,10 @@
       }
     },
     "WEAPON_MGGLOCK": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -730,11 +718,10 @@
       }
     },
     "WEAPON_ODGLOCK": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -746,11 +733,10 @@
       }
     },
     "WEAPON_P210": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -762,11 +748,10 @@
       }
     },
     "WEAPON_P30L": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -778,11 +763,10 @@
       }
     },
     "WEAPON_PISTOL": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -818,7 +802,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 140,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -830,11 +814,10 @@
       }
     },
     "WEAPON_PISTOLGIRL": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -846,11 +829,10 @@
       }
     },
     "WEAPON_PISTOLXM3": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -862,11 +844,10 @@
       }
     },
     "WEAPON_PISTOL_MK2": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -878,11 +859,10 @@
       }
     },
     "WEAPON_SKYGLOCK": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -894,11 +874,10 @@
       }
     },
     "WEAPON_SR40": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -910,11 +889,10 @@
       }
     },
     "WEAPON_VINTAGEPISTOL": {
-      "fields": {},
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 100,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -936,7 +914,7 @@
       "headshot": {
         "mode": "onetap",
         "multiplier": 1.5,
-        "distance": 140,
+        "distance": "weapon_range",
         "dynamic_multiplier_from_damage": true,
         "dynamic_consider_falloff": true,
         "target_effective_health": 100.0,
@@ -950,7 +928,7 @@
     "WEAPON_REVOLVER_MK2": {
       "headshot": {
         "mode": "onetap",
-        "distance": 140
+        "distance": "weapon_range"
       },
       "fields": {
         "weapon_range": 200,
@@ -962,7 +940,7 @@
     "WEAPON_DOUBLEACTION": {
       "headshot": {
         "mode": "onetap",
-        "distance": 140
+        "distance": "weapon_range"
       },
       "fields": {
         "weapon_range": 200,
@@ -974,7 +952,7 @@
     "WEAPON_NAVYREVOLVER": {
       "headshot": {
         "mode": "onetap",
-        "distance": 140
+        "distance": "weapon_range"
       },
       "fields": {
         "weapon_range": 200,
@@ -986,7 +964,7 @@
     "WEAPON_HEAVYPISTOL": {
       "headshot": {
         "mode": "onetap",
-        "distance": 140
+        "distance": "weapon_range"
       },
       "fields": {
         "weapon_range": 200,
@@ -998,7 +976,7 @@
     "WEAPON_MARKSMANPISTOL": {
       "headshot": {
         "mode": "onetap",
-        "distance": 140
+        "distance": "weapon_range"
       },
       "fields": {
         "weapon_range": 200,
@@ -1010,13 +988,13 @@
     "WEAPON_APPISTOL": {
       "headshot": {
         "mode": "onetap",
-        "distance": 15
+        "distance": "weapon_range"
       }
     },
     "WEAPON_GLIZZYG26SWITCH": {
       "headshot": {
         "mode": "onetap",
-        "distance": 15
+        "distance": "weapon_range"
       }
     },
     "WEAPON_HEAVYSHOTGUN": {

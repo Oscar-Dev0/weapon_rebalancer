@@ -176,6 +176,11 @@ def apply_ops(profile: dict[str, Any], ops: list[dict[str, Any]], *, resolver=No
                     if value in {None, 'inherit', 'original'}:
                         target.pop('mode', None)
                         continue
+                elif key == 'distance' and isinstance(value, str):
+                    if value.strip().lower() not in {'weapon_range', 'alcance'}:
+                        raise ValidationFailed('headshot.distance debe ser numérico o weapon_range.',
+                                               hint='weapon_range = la misma distancia que el alcance del arma.')
+                    value = 'weapon_range'
                 elif key in HEADSHOT_NUMBERS:
                     if value is not None and (isinstance(value, bool) or not isinstance(value, (int, float))):
                         raise ValidationFailed(f'headshot.{key} debe ser numérico.')

@@ -541,9 +541,12 @@ class Studio:
             return draft
         values: dict[str, Any] = {'mode': mode}
         if mode in {'normal', 'onetap'}:
-            for key, label in (('multiplier', 'Multiplicador (vacío = heredar)'), ('distance', 'Distancia máxima en m (vacío = heredar)')):
+            for key, label in (('multiplier', 'Multiplicador (vacío = heredar)'),
+                               ('distance', 'Distancia máxima en m (vacío = heredar, «alcance» = la del arma)')):
                 answer = prompt(self.term, label)
-                if answer:
+                if answer and key == 'distance' and answer.strip().lower() in {'alcance', 'weapon_range'}:
+                    values[key] = 'weapon_range'
+                elif answer:
                     try:
                         values[key] = float(answer.replace(',', '.'))
                     except ValueError:

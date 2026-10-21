@@ -31,6 +31,8 @@ daño = Damage
 
 La cabeza solo multiplica si la distancia está entre `MinHeadShotDistancePlayer` y `MaxHeadShotDistancePlayer` **y** el objetivo tiene *critical hits* activos. Si no, cuenta como torso.
 
+**One-tap a la misma distancia que el alcance.** En el perfil, `headshot.distance` puede ser un número (metros) o `"weapon_range"`. Con `"weapon_range"`, `MaxHeadShotDistancePlayer` se escribe igual al `WeaponRange` final del arma: el one-tap llega hasta donde llega el daño, ni más ni menos, y sigue igual si después se cambia el alcance. Con `dynamic_consider_falloff` el multiplicador se calcula con la caída máxima, así que también mata de un tiro en el último metro. La auditoría marca `headshot_distance_differs_from_weapon_range` si un arma con `"weapon_range"` quedó con otra distancia.
+
 ### Caída por distancia
 
 ```text

@@ -1,3 +1,10 @@
+# 7.4.0 — One-tap a la misma distancia que el alcance
+
+- **`headshot.distance = "weapon_range"`** (también `alcance` en la terminal y en el editor interactivo): la distancia de cabeza/one-tap es el `WeaponRange` final del arma, ni más ni menos, aunque después se cambie el alcance. `wr.py headshot PERFIL OBJETIVO distance=weapon_range`.
+- Auditoría: `headshot_distance_differs_from_weapon_range` si un arma con `weapon_range` quedó con otra distancia.
+- `flow_caribe`: pistolas y francotiradores con one-tap = alcance (pistolas 150 m, pesadas 200/220/300 m, francos 1200 m, AP Pistol 95 m, G26 Switch 85 m). Antes: 100/140/50/15 m, y el one-tap se cortaba antes de donde la bala todavía hacía daño.
+- Pruebas nuevas en `tests/test_v10_onetap_range.py` (112 en total).
+
 # 7.3.0 — Repo limpio y un solo perfil del servidor
 
 - **`flow_custom` → `flow_caribe`**: único perfil del servidor y el activo (mismo resultado en el pack; historial movido). Integra el balance de 2026-10-17 (one-tap pistolas 100/140 m, largas solo cuerpo, escopetas, francos 50 m, ninguna arma con ArmourPenetrating).

@@ -6,6 +6,10 @@ from typing import Any
 
 from ..meta.meta_utils import read_field_value, read_weapon_flags
 
+# Valor especial de `headshot.distance`: la distancia de cabeza/one-tap es el alcance
+# final del arma (`weapon_range`), ni más ni menos, aunque después cambie el alcance.
+WEAPON_RANGE = 'weapon_range'
+
 
 def _as_float(value: Any, default: float) -> float:
     try:
@@ -51,6 +55,8 @@ def _apply_overlay(policy: dict[str, Any], overlay: Any) -> None:
         if isinstance(value, (int, float)):
             for destination in destinations:
                 policy[destination] = float(value)
+    if overlay.get('distance') == WEAPON_RANGE:
+        policy['distance'] = WEAPON_RANGE
 
     boolean_keys = (
         'no_falloff', 'sync_weapon_range', 'sync_lock_on_range',
@@ -152,7 +158,11 @@ def resolve_headshot_policy(settings: Any, weapon: str, group: str, block: Any |
 
 
 def resolve_distance(profile: dict[str, Any], block_text: str, configured: Any) -> float:
-    if isinstance(configured, (int, float)) and float(configured) > 0.0:
+    if configured == WEAPON_RANGE:
+        number = _as_float(profile.get('weapon_range', read_field_value(block_text, 'weapon_range', 0.0)), 0.0)
+        if number > 0.0:
+            return number
+    if isinstance(configured, (int, float)) and not isinstance(configured, bool) and float(configured) > 0.0:
         return float(configured)
     for key in ('weapon_range', 'falloff_max', 'max_headshot_player'):
         value = profile.get(key)
@@ -313,7 +323,11 @@ def audit_block(content: str, policy: dict[str, Any], *, expected: bool) -> dict
     falloff_modifier = number('falloff_modifier')
     armour_modifier = number('lightly_armoured')
     penetration = number('penetration')
-    target_distance = _as_float(policy.get('distance'), max_distance)
+    weapon_range = number('weapon_range')
+    if policy.get('distance') == WEAPON_RANGE:
+        target_distance = weapon_range if weapon_range > 0.0 else max_distance
+    else:
+        target_distance = _as_float(policy.get('distance'), max_distance)
     target_health = _as_float(policy.get('target_effective_health'), 1000.0)
     margin = _as_float(policy.get('safety_margin'), 1.25)
     estimated = base_damage * max(network_damage, 0.0) * max(network_headshot, 0.0)
@@ -328,6 +342,7 @@ def audit_block(content: str, policy: dict[str, Any], *, expected: bool) -> dict
         'estimated_network_headshot_damage': estimated,
         'required_damage_with_margin': target_health * margin,
         'max_headshot_distance': max_distance,
+        'weapon_range': weapon_range,
         'falloff_max': falloff_max,
         'falloff_modifier': falloff_modifier,
         'lightly_armoured_modifier': armour_modifier,
@@ -350,6 +365,8 @@ def audit_block(content: str, policy: dict[str, Any], *, expected: bool) -> dict
         issues.append('estimated_damage_below_target')
     if target_distance > 0.0 and max_distance + 0.001 < target_distance:
         issues.append('headshot_distance_too_short')
+    if policy.get('distance') == WEAPON_RANGE and weapon_range > 0.0 and abs(max_distance - weapon_range) > 0.001:
+        issues.append('headshot_distance_differs_from_weapon_range')
     if _as_bool(policy.get('no_falloff'), True):
         if falloff_max + 0.001 < target_distance:
             issues.append('falloff_range_too_short')
