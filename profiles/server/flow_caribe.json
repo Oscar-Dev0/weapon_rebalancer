@@ -735,7 +735,13 @@
         "add": {
           "gun_root": [
             "COMPONENT_ODGLOCK_ODB_OD_BLUE",
-            "COMPONENT_ODGLOCK_ODB_OD_BLUE_ICE"
+            "COMPONENT_ODGLOCK_ODB_OD_BLUE_ICE",
+            "COMPONENT_ODGLOCK_FST_01",
+            "COMPONENT_ODGLOCK_FST_02",
+            "COMPONENT_ODGLOCK_FST_03",
+            "COMPONENT_ODGLOCK_FST_04",
+            "COMPONENT_ODGLOCK_FST_05",
+            "COMPONENT_ODGLOCK_FST_06"
           ]
         }
       }
@@ -1036,7 +1042,13 @@
             "COMPONENT_CARBINERIFLE_FWP_SAKURA_DREAM",
             "COMPONENT_CARBINERIFLE_FWP_ROYAL_GOLD",
             "COMPONENT_CARBINERIFLE_ODB_OD_BLUE",
-            "COMPONENT_CARBINERIFLE_ODB_OD_BLUE_ICE"
+            "COMPONENT_CARBINERIFLE_ODB_OD_BLUE_ICE",
+            "COMPONENT_CARBINERIFLE_FST_01",
+            "COMPONENT_CARBINERIFLE_FST_02",
+            "COMPONENT_CARBINERIFLE_FST_03",
+            "COMPONENT_CARBINERIFLE_FST_04",
+            "COMPONENT_CARBINERIFLE_FST_05",
+            "COMPONENT_CARBINERIFLE_FST_06"
           ]
         }
       }
@@ -1046,7 +1058,13 @@
         "add": {
           "gun_root": [
             "COMPONENT_PATTERN_ODB_OD_BLUE",
-            "COMPONENT_PATTERN_ODB_OD_BLUE_ICE"
+            "COMPONENT_PATTERN_ODB_OD_BLUE_ICE",
+            "COMPONENT_PATTERN_FST_01",
+            "COMPONENT_PATTERN_FST_02",
+            "COMPONENT_PATTERN_FST_03",
+            "COMPONENT_PATTERN_FST_04",
+            "COMPONENT_PATTERN_FST_05",
+            "COMPONENT_PATTERN_FST_06"
           ]
         }
       }
@@ -1056,7 +1074,13 @@
         "add": {
           "gun_root": [
             "COMPONENT_DARKSHOT_ODB_OD_BLUE",
-            "COMPONENT_DARKSHOT_ODB_OD_BLUE_ICE"
+            "COMPONENT_DARKSHOT_ODB_OD_BLUE_ICE",
+            "COMPONENT_DARKSHOT_FST_01",
+            "COMPONENT_DARKSHOT_FST_02",
+            "COMPONENT_DARKSHOT_FST_03",
+            "COMPONENT_DARKSHOT_FST_04",
+            "COMPONENT_DARKSHOT_FST_05",
+            "COMPONENT_DARKSHOT_FST_06"
           ]
         }
       }
