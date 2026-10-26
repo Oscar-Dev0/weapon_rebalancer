@@ -185,6 +185,28 @@ Repara valores rotos (daño o modificador de red en 0, alcance ausente) antes de
 
 `{"Tag": valor}` o `{"Tag": {"value": 1, "kind": "value_attr", "create_if_missing": false}}`: reemplaza hojas XML exactas que no están en el catálogo de campos. Úsalo con cuidado; no tiene validación de rango.
 
+### attach_components {#attach_components}
+
+Componentes que un arma acepta en sus `AttachPoints`. Hace falta para usar un componente nuevo, por ejemplo una skin de
+`flow_weaponpaint` hecha como variante de modelo (como el acabado de lujo). Si el componente no figura aquí, GTA no lo pone en el arma.
+Solo va por arma:
+
+```json
+"weapons": {
+  "WEAPON_CARBINERIFLE": {
+    "attach_components": {
+      "add":    { "gun_root": ["COMPONENT_CARBINERIFLE_FWP_FLOW_NEON"] },
+      "remove": { "gun_root": [] }
+    }
+  }
+}
+```
+
+- Agrega los nombres que falten al `AttachBone` indicado, con la misma sangría del bloque. Si el `AttachBone` no existe, lo crea.
+- Es idempotente: si el componente ya está, no cambia nada. `remove` quita por nombre (sin distinguir mayúsculas).
+- No toca el resto del arma. Los componentes en sí (`weaponcomponents.meta`) los define el recurso que los usa.
+- Nombres y bones: letras, números y `_`. Cualquier otra cosa hace fallar `wr.py profile validate`.
+
 ## Validaciones {#validaciones}
 
 | Código | Qué significa |

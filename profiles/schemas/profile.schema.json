@@ -90,7 +90,15 @@
         "fields": {"type": ["object", "null"], "additionalProperties": {"type": ["number", "null"]}},
         "headshot": {"type": ["object", "null"]},
         "meta": {"type": ["object", "null"]},
-        "weapon_flags": {"$ref": "#/$defs/flags"}
+        "weapon_flags": {"$ref": "#/$defs/flags"},
+        "attach_components": {
+          "type": ["object", "null"],
+          "description": "Componentes que el arma acepta (AttachPoints): {\"add\": {\"bone\": [\"COMPONENT_X\"]}, \"remove\": {...}}",
+          "properties": {
+            "add": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}},
+            "remove": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}}
+          }
+        }
       }
     }
   }

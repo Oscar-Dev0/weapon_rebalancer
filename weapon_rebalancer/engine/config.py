@@ -369,6 +369,7 @@ class Settings:
     global_flag_ops: dict[str, list[str] | bool]
     group_flag_ops: dict[str, dict[str, list[str] | bool]]
     weapon_flag_ops: dict[str, dict[str, list[str] | bool]]
+    weapon_component_ops: dict[str, dict[str, dict[str, list[str]]]]
     group_headshot_overrides: dict[str, dict[str, Any]]
     weapon_headshot_overrides: dict[str, dict[str, Any]]
     validation_options: dict[str, Any]
@@ -425,6 +426,7 @@ class Settings:
             global_flag_ops={'add': [], 'remove': [], 'create_if_missing': False},
             group_flag_ops={},
             weapon_flag_ops={},
+            weapon_component_ops={},
             group_headshot_overrides={},
             weapon_headshot_overrides={},
             validation_options={

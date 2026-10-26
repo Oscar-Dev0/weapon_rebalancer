@@ -7,6 +7,7 @@ from typing import Any
 from .config import Settings
 from .baseline import apply_baseline_repair, build_reference_index
 from ..meta.component_audit import scan_component_damage_modifiers, scan_projectile_weapons
+from ..meta.attach_components import update_attach_components
 from ..meta.fields import FIELDS
 from .headshot import apply_policy as apply_headshot_profile, audit_block as audit_headshot_block, resolve_headshot_policy
 from ..meta.meta_utils import (
@@ -354,6 +355,16 @@ class RebalanceEngine:
                 change.changed_fields.append('weapon_flags')
             elif not found:
                 change.missing_fields.append('weapon_flags')
+
+        component_ops = self.settings.weapon_component_ops.get(weapon)
+        if component_ops:
+            new_content, changed, problems = update_attach_components(
+                updated, add=component_ops.get('add'), remove=component_ops.get('remove'))
+            if changed:
+                updated = new_content
+                change.changed_fields.append('attach_components')
+            for problem in problems:
+                change.missing_fields.append(f'attach_components:{problem}')
 
         if one_tap_active:
             audit = audit_headshot_block(updated, policy, expected=True)

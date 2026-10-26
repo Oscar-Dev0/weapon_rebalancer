@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from ..meta.fields import FIELDS
+from ..meta.attach_components import AttachComponentsError, normalize_component_ops
 from ..meta.vanilla_weapons import get_catalog
 
 
@@ -125,7 +126,7 @@ def _split_scope(
 
     # Retrocompatibilidad: perfiles antiguos colocan los campos directamente.
     for key, item in value.items():
-        if key in {'fields', 'meta', 'weapon_flags', 'headshot', '_comment', '_documentation'}:
+        if key in {'fields', 'meta', 'weapon_flags', 'headshot', 'attach_components', '_comment', '_documentation'}:
             continue
         fields[str(key)] = item
 
@@ -703,6 +704,13 @@ def apply_external_profile(settings: Any, data: dict[str, Any]) -> None:
             settings.weapon_flag_ops[weapon_name] = flags
         if scoped_headshot:
             settings.weapon_headshot_overrides[weapon_name] = scoped_headshot
+        if isinstance(values, dict) and values.get('attach_components') is not None:
+            try:
+                component_ops = normalize_component_ops(values.get('attach_components'), f'weapons.{weapon_name}')
+            except AttachComponentsError as exc:
+                raise ProfileError(str(exc)) from exc
+            if component_ops:
+                settings.weapon_component_ops[weapon_name] = component_ops
 
     harmless = data.get('harmless_weapons', [])
     if not isinstance(harmless, list):

@@ -1,3 +1,9 @@
+# 7.6.0 — Componentes por arma (attach_components)
+
+- **`attach_components`** por arma en el perfil (`{"add": {"gun_root": ["COMPONENT_X"]}, "remove": {...}}`): agrega o quita componentes en los `AttachPoints` del arma, respetando la sangría del bloque, creando el `AttachBone` si falta. Idempotente. Lo usa `flow_weaponpaint` para que la carabina acepte sus skins (variantes de modelo).
+- Módulo nuevo `weapon_rebalancer/meta/attach_components.py`; esquema del perfil y `SCOPE_KEYS` lo aceptan; errores de formato salen como `ProfileError`.
+- Documentación: «Perfiles › attach_components». Pruebas nuevas en `tests/test_v12_attach_components.py` (125 en total).
+
 # 7.5.0 — One-tap con chaleco y casco
 
 - **`wr.py headshot PERFIL onetap target_effective_health=200 [safety_margin=1]`**: vida objetivo de la lista one-tap (`fire_rate_classifier.allowlisted_onetap_*`), que manda sobre la de cada arma. 200 = 100 de vida + 100 de chaleco: en el juego el chaleco absorbe primero también los tiros a la cabeza.

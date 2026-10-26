@@ -78,7 +78,7 @@ MODULE_PRESET_KEYS: dict[str, set[str]] = {
 }
 
 VALIDATION_KEYS = {'strict_unknown_fields', 'fail_on_onetap_audit', 'warn_duplicates', 'warn_unregistered_meta'}
-SCOPE_KEYS = {'fields', 'meta', 'weapon_flags', 'headshot', '_comment', '_documentation'}
+SCOPE_KEYS = {'fields', 'meta', 'weapon_flags', 'headshot', 'attach_components', '_comment', '_documentation'}
 
 
 def effective_modules(data: dict[str, Any]) -> dict[str, str]:
