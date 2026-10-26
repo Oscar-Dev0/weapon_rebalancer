@@ -1018,6 +1018,18 @@
           "ArmourPenetrating"
         ]
       }
+    },
+    "WEAPON_CARBINERIFLE": {
+      "attach_components": {
+        "add": {
+          "gun_root": [
+            "COMPONENT_CARBINERIFLE_FWP_FLOW_NEON",
+            "COMPONENT_CARBINERIFLE_FWP_INFERNO_LAVA",
+            "COMPONENT_CARBINERIFLE_FWP_SAKURA_DREAM",
+            "COMPONENT_CARBINERIFLE_FWP_ROYAL_GOLD"
+          ]
+        }
+      }
     }
   },
   "fire_rate_classifier": {
