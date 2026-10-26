@@ -730,6 +730,14 @@
         "no_falloff": false,
         "sync_weapon_range": false,
         "sync_lock_on_range": false
+      },
+      "attach_components": {
+        "add": {
+          "gun_root": [
+            "COMPONENT_ODGLOCK_ODB_OD_BLUE",
+            "COMPONENT_ODGLOCK_ODB_OD_BLUE_ICE"
+          ]
+        }
       }
     },
     "WEAPON_P210": {
@@ -1026,7 +1034,29 @@
             "COMPONENT_CARBINERIFLE_FWP_FLOW_NEON",
             "COMPONENT_CARBINERIFLE_FWP_INFERNO_LAVA",
             "COMPONENT_CARBINERIFLE_FWP_SAKURA_DREAM",
-            "COMPONENT_CARBINERIFLE_FWP_ROYAL_GOLD"
+            "COMPONENT_CARBINERIFLE_FWP_ROYAL_GOLD",
+            "COMPONENT_CARBINERIFLE_ODB_OD_BLUE",
+            "COMPONENT_CARBINERIFLE_ODB_OD_BLUE_ICE"
+          ]
+        }
+      }
+    },
+    "WEAPON_PATTERN": {
+      "attach_components": {
+        "add": {
+          "gun_root": [
+            "COMPONENT_PATTERN_ODB_OD_BLUE",
+            "COMPONENT_PATTERN_ODB_OD_BLUE_ICE"
+          ]
+        }
+      }
+    },
+    "WEAPON_DARKSHOT": {
+      "attach_components": {
+        "add": {
+          "gun_root": [
+            "COMPONENT_DARKSHOT_ODB_OD_BLUE",
+            "COMPONENT_DARKSHOT_ODB_OD_BLUE_ICE"
           ]
         }
       }
