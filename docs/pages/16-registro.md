@@ -48,12 +48,14 @@ Configurado una vez: `wr.py settings set sync_targets.principal=/fivem/principal
 ```bash
 python3 wr.py sync principal                          # vista previa: qué archivos cambian
 python3 wr.py sync principal --apply --reason "balance one-tap pistolas"   # pide escribir APLICAR
+python3 wr.py sync principal --apply --skip "[streaming]/[PackArmas]/pack/fxmanifest.lua"   # todo menos esa ruta
 python3 wr.py rollback <id>                           # deshace el paso
 ```
 
 - Copia solo los archivos de armas que difieren. **Nunca borra** archivos de principal; los que solo existen allí se informan.
 - Respalda cada archivo de principal en `data/backups/<id>_sync_principal/` y verifica cada copia; si una falla, revierte las demás.
 - Si un archivo de principal se cambió a mano desde su último sello, **no lo pisa** salvo con `--force` (queda marcado como FORZADO en el registro).
+- Para conservar un cambio a mano de principal y pasar el resto, `--skip RUTA` (se puede repetir; la ruta como sale en la vista previa). Los saltados no se copian ni se sellan: siguen apareciendo en `wr.py integrity --server principal`. Una ruta de `--skip` que no coincide con nada detiene el paso.
 - Después hay que reiniciar principal para que cargue las armas.
 
 ## Límites

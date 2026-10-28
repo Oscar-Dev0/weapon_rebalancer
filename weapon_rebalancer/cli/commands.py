@@ -666,7 +666,7 @@ def cmd_integrity(app, term: Term, args) -> int:
 def cmd_sync(app, term: Term, args) -> int:
     from .interactive import typed_confirm
 
-    plan = app.sync_plan({'target': args.target})
+    plan = app.sync_plan({'target': args.target, 'skip': args.skip})
     if args.json and not args.apply:
         emit_json(plan)
         return 0
@@ -679,6 +679,10 @@ def cmd_sync(app, term: Term, args) -> int:
                                    'también se pasarían. Revisa wr.py integrity.'))
     for path in plan['conflicts'][:15]:
         term.write('  ' + ui.badge(term, 'error', f'Cambiado a mano en {args.target}: {path}'))
+    for item in plan['skipped'][:15]:
+        term.write('  ' + ui.badge(term, 'info', f'Saltado (--skip): {item["path"].split("resources/")[-1]}'))
+    for raw in plan['skip_unmatched'][:15]:
+        term.write('  ' + ui.badge(term, 'warning', f'--skip sin coincidencia (revisa la ruta): {raw}'))
     if plan['changes']:
         ui.table(term, [ui.Column('Archivo', lambda r: r['path'].split('resources/')[-1], max_width=90),
                         ui.Column('Estado', 'status', max_width=8)], plan['changes'][: args.limit or None])
@@ -692,12 +696,15 @@ def cmd_sync(app, term: Term, args) -> int:
     if word != 'APLICAR':
         term.write('  ' + term.style('Cancelado. En modo no interactivo usa --confirm APLICAR.', 'muted'))
         return 1
-    result = app.sync_apply({'target': args.target, 'confirm': word, 'force': args.force, 'reason': args.reason})
+    result = app.sync_apply({'target': args.target, 'confirm': word, 'force': args.force, 'reason': args.reason,
+                             'skip': args.skip})
     if args.json:
         emit_json(result)
         return 0
     term.write('  ' + ui.badge(term, 'ok', f'Pasado a {args.target}: {result["files"]} archivos. Transacción {result["transaction"]} '
                                '(se revierte con wr.py rollback).'))
+    if result.get('skipped'):
+        term.write('  ' + term.style(f'{result["skipped"]} archivo(s) saltados: siguen sin sellar en {args.target}.', 'muted'))
     term.write('  ' + term.style(f'Reinicia el servidor {args.target} para que cargue las armas.', 'muted'))
     return 0
 

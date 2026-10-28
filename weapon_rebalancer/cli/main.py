@@ -161,6 +161,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument('--apply', action='store_true')
     p.add_argument('--confirm', help='APLICAR (necesario sin terminal interactiva).')
     p.add_argument('--force', action='store_true', help='Pisar archivos del destino cambiados a mano.')
+    p.add_argument('--skip', action='append', default=[], metavar='RUTA',
+                   help='No copiar esta ruta (como sale en la vista previa); se puede repetir. Los saltados no se sellan.')
     p.add_argument('--reason', default='', help='Motivo (queda en el registro).')
     p.add_argument('--limit', type=int, default=20)
 

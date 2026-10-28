@@ -1,3 +1,10 @@
+# 7.7.0 — Paso a principal sin pisar un cambio a mano
+
+- **`wr.py sync principal --skip RUTA`** (se repite): pasa todo menos esas rutas. Sirve para conservar un archivo cambiado a mano en principal (p. ej. el include del anticheat en un `fxmanifest.lua`) sin `--force`.
+- Los saltados no se copian ni se sellan (sello parcial solo con lo copiado): siguen apareciendo en `wr.py integrity --server principal`, así el próximo paso tampoco los pisa en silencio.
+- Una ruta de `--skip` que no coincide con nada que se fuera a copiar detiene el paso (evita errores de tipeo). La vista previa muestra los saltados y las rutas sin coincidencia; el registro y la transacción guardan `skipped`.
+- Documentación: «Registro › Paso a principal». Pruebas nuevas en `tests/test_v13_sync_skip.py`.
+
 # 7.6.0 — Componentes por arma (attach_components)
 
 - **`attach_components`** por arma en el perfil (`{"add": {"gun_root": ["COMPONENT_X"]}, "remove": {...}}`): agrega o quita componentes en los `AttachPoints` del arma, respetando la sangría del bloque, creando el `AttachBone` si falta. Idempotente. Lo usa `flow_weaponpaint` para que la carabina acepte sus skins (variantes de modelo).

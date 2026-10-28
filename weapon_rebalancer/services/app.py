@@ -400,13 +400,14 @@ class App:
     def sync_plan(self, body: dict[str, Any]) -> dict[str, Any]:
         from . import sync
 
-        return sync.plan(self.workspace(), str(body.get('target') or ''))
+        return sync.plan(self.workspace(), str(body.get('target') or ''), list(body.get('skip') or []))
 
     def sync_apply(self, body: dict[str, Any]) -> dict[str, Any]:
         from . import sync
 
         return sync.apply(self.workspace(), str(body.get('target') or ''), str(body.get('confirm', '')),
-                          force=bool(body.get('force')), reason=str(body.get('reason') or ''))
+                          force=bool(body.get('force')), reason=str(body.get('reason') or ''),
+                          skip=list(body.get('skip') or []))
 
     def changes_log(self, limit: int = 50) -> list[dict[str, Any]]:
         from ..core.jsonlog import tail
