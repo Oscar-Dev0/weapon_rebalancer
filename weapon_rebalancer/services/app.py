@@ -409,6 +409,24 @@ class App:
                           force=bool(body.get('force')), reason=str(body.get('reason') or ''),
                           skip=list(body.get('skip') or []))
 
+    # ---- instalar armas nuevas -----------------------------------------------------
+    def install_plan(self, body: dict[str, Any]) -> dict[str, Any]:
+        from . import installer
+
+        return installer.plan(self.workspace(), str(body.get('source') or ''), str(body.get('dest') or ''),
+                              replace=bool(body.get('replace')), catalog=self.catalog.get())
+
+    def install_apply(self, body: dict[str, Any]) -> dict[str, Any]:
+        from . import installer
+
+        result = installer.apply(self.workspace(), str(body.get('source') or ''), str(body.get('dest') or ''),
+                                 str(body.get('confirm', '')), replace=bool(body.get('replace')),
+                                 reason=str(body.get('reason') or ''), plan_hash=body.get('plan_hash') or None)
+        self.catalog.invalidate()
+        with self._preview_lock:
+            self._previews.clear()
+        return result
+
     def changes_log(self, limit: int = 50) -> list[dict[str, Any]]:
         from ..core.jsonlog import tail
 

@@ -28,6 +28,7 @@ EPILOG = """ejemplos:
   wr.py generate -p flow_caribe             vista previa (añade --apply para escribir)
   wr.py integrity                           ¿alguien cambió armas a mano?
   wr.py sync principal                      qué se pasaría a principal (añade --apply)
+  wr.py install CARPETA --dest RUTA         instala un arma nueva (sus .meta) en un pack (añade --apply)
   wr.py registro                            quién/cuándo: aplicaciones, pasos y cambios a mano
 """
 
@@ -165,6 +166,17 @@ def build_parser() -> argparse.ArgumentParser:
                    help='No copiar esta ruta (como sale en la vista previa); se puede repetir. Los saltados no se sellan.')
     p.add_argument('--reason', default='', help='Motivo (queda en el registro).')
     p.add_argument('--limit', type=int, default=20)
+
+    p = add('install', commands.cmd_install, 'Instala un arma nueva: copia los .meta de una carpeta a un pack '
+            '(vista previa; --apply copia, pide APLICAR).', True)
+    p.add_argument('source', help='Carpeta de origen: se copian todos sus *.meta, con subcarpetas; el resto se ignora.')
+    p.add_argument('--dest', required=True, help='Carpeta destino, dentro de un recurso de un pack de armas.')
+    p.add_argument('--replace', action='store_true',
+                   help='Reemplazar los archivos que ya existen (nunca los cambiados a mano según el sello).')
+    p.add_argument('--apply', action='store_true', help='Instala (sin esto, solo vista previa).')
+    p.add_argument('--confirm', help='APLICAR (necesario sin terminal interactiva).')
+    p.add_argument('--reason', default='', help='Motivo (obligatorio con --apply; queda en el registro).')
+    p.add_argument('--limit', type=int, default=40, help='Filas de la tabla (0 = todas).')
 
     p = add('registro', commands.cmd_registro, 'Registro de cambios en las armas: aplicaciones, pasos, sellos y cambios a mano.', True)
     p.add_argument('--limit', type=int, default=30)

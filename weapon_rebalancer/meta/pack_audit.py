@@ -74,6 +74,11 @@ def _entry_matches(relative: str, declared: str) -> bool:
     return False
 
 
+def declared_kinds(manifest: Path, relative: str) -> list[str]:
+    """Tipos de ``data_file`` del manifiesto que cargan ``relative`` (ruta relativa al recurso)."""
+    return sorted({kind for kind, declared in _manifest_entries(manifest) if _entry_matches(relative, declared)})
+
+
 def find_unregistered_weapon_meta(paths: list[Path], root: Path) -> list[str]:
     manifests = _find_manifests(root)
     manifest_data: dict[Path, list[tuple[str, str]]] = {m: _manifest_entries(m) for m in manifests}

@@ -272,24 +272,46 @@ def rollback(tx_id: str, ws: Workspace, confirm: str) -> dict[str, Any]:
             guard.check(path)
             if not path.is_file() or sha256_file(path) != entry['sha_after']:
                 modified_after.append(entry['path'])
+        created_dirs = [str(raw) for raw in manifest.get('created_dirs') or []]
+        for raw in created_dirs:
+            guard.check(Path(raw))
         if modified_after:
             raise Conflict('Estos archivos cambiaron después de aplicar; revertir pisaría esos cambios.',
                            hint='Revisa los archivos o aplica un perfil nuevo en lugar de revertir.',
                            details=modified_after[:20])
         for entry in manifest['files']:
-            if entry.get('backup') is None:          # sync: el archivo no existía en el destino
+            if entry.get('backup') is None:          # sync o instalación: el archivo no existía antes
                 Path(entry['path']).unlink(missing_ok=True)
                 continue
             atomic_write_bytes(Path(entry['path']), (tx_root / 'files' / entry['backup']).read_bytes())
             sibling = Path(entry['path'] + '.bak')
             if entry.get('bak_created') and sibling.is_file() and sha256_file(sibling) == entry['sha_before']:
                 sibling.unlink()
+        removed_dirs = _remove_empty_dirs(created_dirs)
         manifest['status'] = 'rolled_back'
         manifest['rolled_back_at'] = time.strftime('%Y-%m-%dT%H:%M:%S%z')
+        if created_dirs:
+            manifest['removed_dirs'] = removed_dirs
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
-        log('generator.rollback', stream='changes', tx=tx_id, server=label, files=len(manifest['files']))
+        log('generator.rollback', stream='changes', tx=tx_id, server=label, files=len(manifest['files']),
+            kind=manifest.get('kind', 'apply'), removed_dirs=len(removed_dirs))
         _reseal(ws, label, [entry['path'] for entry in manifest['files']], f'reversión {tx_id}', 'rollback')
-        return {'rolled_back': True, 'transaction': tx_id, 'files': len(manifest['files'])}
+        return {'rolled_back': True, 'transaction': tx_id, 'files': len(manifest['files']), 'removed_dirs': len(removed_dirs)}
+
+
+def _remove_empty_dirs(paths: list[str]) -> list[str]:
+    """Quita las carpetas que creó la transacción si quedaron vacías (de la más profunda a la menos)."""
+    removed = []
+    for raw in sorted(paths, key=lambda p: (-len(Path(p).parts), p)):
+        path = Path(raw)
+        if path.is_symlink() or not path.is_dir():
+            continue
+        try:
+            path.rmdir()                             # solo si está vacía: lo que otro puso ahí se queda
+            removed.append(raw)
+        except OSError:
+            continue
+    return removed
 
 
 def guard_status(destination: Path) -> str:

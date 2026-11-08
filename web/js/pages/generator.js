@@ -127,7 +127,7 @@ export async function render({ root, params, setTitle, isCurrent }) {
       mount(txHost, transactions.length ? h('table', { class: 'table table--compact' },
         h('thead', {}, h('tr', {}, h('th', {}, 'Fecha'), h('th', {}, 'Perfil'), h('th', { class: 'num' }, 'Archivos'), h('th', {}, 'Estado'), h('th', {}))),
         h('tbody', {}, transactions.map((t) => h('tr', {},
-          h('td', {}, date(t.created_at)), h('td', {}, t.profile || '—'), h('td', { class: 'num' }, t.files),
+          h('td', {}, date(t.created_at)), h('td', {}, t.profile || (t.kind === 'install' ? 'instalación de arma' : '—')), h('td', { class: 'num' }, t.files),
           h('td', {}, badge({ applied: 'aplicado', rolled_back: 'revertido', failed_rolled_back: 'falló (revertido)' }[t.status] || t.status, t.status === 'applied' ? 'ok' : t.status === 'rolled_back' ? 'outline' : 'err')),
           h('td', { class: 'right' }, t.status === 'applied' ? h('button', { class: 'btn btn--sm btn--danger', onclick: () => rollbackTx(t) }, icon('undo'), 'Revertir') : null))))) : empty('Todavía no se aplicó nada desde el panel.', 'history'));
     } catch (error) { mount(txHost, callout('err', error.message)); }

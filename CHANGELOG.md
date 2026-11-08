@@ -1,3 +1,15 @@
+# 7.8.0 — Instalar armas nuevas como transacción
+
+- **`wr.py install CARPETA --dest RUTA`** (`services/installer.py`): copia los `*.meta` de un arma nueva (p. ej. la salida de `od_weapon_builder`), con sus subcarpetas, a una carpeta dentro de un recurso de un pack. Antes había que copiarlos a mano y `wr.py integrity` los marcaba como cambio a mano.
+- Vista previa sin escribir: por archivo `nuevo` / `reemplaza` / `idéntico`, tamaño antes y después, archivos ignorados (lo que no es `.meta`), bloqueos y avisos.
+- **Bloqueos**: `.meta` no UTF-8 o XML inválido, destino fuera de los packs o de un recurso con `fxmanifest.lua`, archivo existente sin `--replace` y, con `--replace`, archivo cambiado a mano según el sello (o servidor sin sello). Para instalar: `--apply --confirm APLICAR --reason "…"` (motivo obligatorio).
+- **Avisos**: ningún `data_file` del `fxmanifest.lua` carga el archivo, arma ya definida en otro `.meta`, arma que no está en `ox_inventory`, armas que desaparecen al reemplazar, `.bak` hermano viejo.
+- Transacción en `data/backups/<id>_install_<carpeta>/` compatible con `wr.py rollback`: respaldo de lo reemplazado, escritura atómica, verificación, deshace todo si un archivo falla, registro `install.apply` (en `wr.py registro`: «Instalación de arma») y sello parcial de lo instalado. Los archivos nuevos toman los permisos y el grupo de su carpeta.
+- **`wr.py rollback`** borra los archivos que creó la instalación (si siguen intactos), restaura los reemplazados, quita las carpetas vacías que creó (`created_dirs` del manifiesto) y actualiza el sello. `wr.py transactions` muestra el tipo (`apply`, `sync`, `install`).
+- Menú interactivo: **Generar recurso FiveM → Instalar un arma nueva**.
+- `VERSION` vuelve a coincidir con el paquete (decía 7.6.0 en la 7.7.0).
+- Documentación: página «Instalar un arma nueva». Pruebas nuevas en `tests/test_v14_install.py` (141 en total).
+
 # 7.7.0 — Paso a principal sin pisar un cambio a mano
 
 - **`wr.py sync principal --skip RUTA`** (se repite): pasa todo menos esas rutas. Sirve para conservar un archivo cambiado a mano en principal (p. ej. el include del anticheat en un `fxmanifest.lua`) sin `--force`.

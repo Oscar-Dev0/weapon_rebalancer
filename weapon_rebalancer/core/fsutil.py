@@ -21,11 +21,12 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
-def atomic_write_bytes(path: Path, data: bytes) -> None:
+def atomic_write_bytes(path: Path, data: bytes, *, new_mode: int | None = None) -> None:
     """Escribe en un temporal del mismo directorio y lo reemplaza de forma atómica.
 
     Si el proceso se corta a mitad de escritura el archivo original queda intacto.
-    Conserva los permisos del archivo anterior cuando existe.
+    Conserva los permisos del archivo anterior cuando existe. ``new_mode`` fija los
+    permisos de un archivo que no existía (sin él quedaría con los 0600 del temporal).
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -37,6 +38,8 @@ def atomic_write_bytes(path: Path, data: bytes) -> None:
             os.fsync(handle.fileno())
         if path.exists():
             shutil.copymode(path, temp_name)
+        elif new_mode is not None:
+            os.chmod(temp_name, new_mode)
         os.replace(temp_name, path)
     except BaseException:
         try:

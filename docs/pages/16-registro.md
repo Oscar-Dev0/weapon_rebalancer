@@ -20,9 +20,10 @@ python3 wr.py registro --json     # para scripts
 | Evento | Cuándo |
 | --- | --- |
 | Aplicación de perfil | `wr.py generate --apply` (o el botón del panel) |
-| Reversión | `wr.py rollback <id>` |
+| Reversión | `wr.py rollback <id>` (también de una instalación: borra lo que creó) |
+| Instalación de arma | `wr.py install CARPETA --dest RUTA --apply` ([Instalar un arma nueva](17-instalar.md)) |
 | Paso a otro servidor | `wr.py sync principal --apply` |
-| Sello | después de cada aplicación, reversión o paso, y con `wr.py integrity seal` |
+| Sello | después de cada aplicación, instalación, reversión o paso, y con `wr.py integrity seal` |
 | **CAMBIO A MANO detectado** | un archivo de armas cambió sin pasar por la herramienta |
 | **CLI ANTIGUA escribió** | `wr.py rebalance --write` o `run_rebalance.py --write` (sin transacción) |
 

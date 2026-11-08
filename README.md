@@ -66,9 +66,10 @@ Las armas se cambian **solo** con esta herramienta; nada de editar META a mano n
 python3 wr.py registro                 # quién/cuándo: aplicaciones, pasos, sellos y cambios a mano
 python3 wr.py integrity                # archivos de armas cambiados fuera de la herramienta
 python3 wr.py sync principal           # vista previa del paso a principal (--apply para copiar)
+python3 wr.py install CARPETA --dest "RUTA"   # arma nueva: copia sus .meta a un pack (--apply para instalar)
 ```
 
-Detalle en `docs/pages/16-registro.md`.
+Detalle en `docs/pages/16-registro.md` y `docs/pages/17-instalar.md`.
 
 ## Seguridad
 

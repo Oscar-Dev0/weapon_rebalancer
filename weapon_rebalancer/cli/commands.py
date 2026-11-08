@@ -611,14 +611,16 @@ def cmd_transactions(app, term: Term, args) -> int:
         return 0
     ui.section(term, 'Historial de aplicaciones')
     ui.table(term, [ui.Column('Transacción', 'id', max_width=40), ui.Column('Fecha', 'created_at', max_width=25),
-                    ui.Column('Perfil', 'profile', max_width=20), ui.Column('Archivos', 'files', align='right'),
+                    ui.Column('Tipo', 'kind', max_width=8), ui.Column('Perfil', 'profile', max_width=20),
+                    ui.Column('Archivos', 'files', align='right'),
                     ui.Column('Estado', 'status', max_width=20)], rows)
     return 0
 
 
 def cmd_rollback(app, term: Term, args) -> int:
     result = app.rollback({'id': args.id, 'confirm': args.confirm or ''})
-    term.write('  ' + ui.badge(term, 'ok', f'Revertida {result["transaction"]}: {result["files"]} archivos.'))
+    dirs = f' y {result["removed_dirs"]} carpeta(s) vacías' if result.get('removed_dirs') else ''
+    term.write('  ' + ui.badge(term, 'ok', f'Revertida {result["transaction"]}: {result["files"]} archivos{dirs}.'))
     return 0
 
 
@@ -709,7 +711,81 @@ def cmd_sync(app, term: Term, args) -> int:
     return 0
 
 
+def _size(value: int | None) -> str:
+    if value is None:
+        return ''
+    return f'{value} B' if value < 1024 else f'{value / 1024:.1f} KB'
+
+
+def render_install(term: Term, plan: dict[str, Any], limit: int = 40) -> None:
+    s = plan['summary']
+    ui.section(term, 'Instalar arma nueva', Path(plan['dest']).name)
+    ui.kv(term, [('Origen', plan['source']), ('Destino', plan['dest'].split('resources/')[-1]),
+                 ('Recurso', plan['resource'] or 'N/D'), ('Armas', ', '.join(plan['weapons']) or '—'),
+                 ('Archivos', f'{s["nuevo"]} nuevos · {s["reemplaza"]} reemplaza · {s["idéntico"]} idénticos'
+                  + (f' · {s["bloqueado"]} bloqueados' if s['bloqueado'] else '')),
+                 ('A escribir', f'{s["to_write"]} ({_size(s["bytes"])})')], label_width=12)
+    if plan['files']:
+        def state_style(row, cell):
+            role = {'nuevo': 'ok', 'reemplaza': 'warn', 'bloqueado': 'err'}.get(row['status'], 'muted')
+            return term.style(cell, role)
+
+        ui.table(term, [ui.Column('Archivo', 'rel', max_width=70), ui.Column('Estado', 'status', max_width=10, style=state_style),
+                        ui.Column('Tamaño', 'size', align='right', max_width=10, fmt_value=_size),
+                        ui.Column('Antes', 'size_before', align='right', max_width=10, fmt_value=_size),
+                        ui.Column('Nota', 'note', max_width=20, fmt_value=lambda v: v or '')],
+                 plan['files'][: limit or None])
+    for item in plan['blocking'][:20]:
+        term.write('  ' + ui.badge(term, 'error', f'{item["path"]}: {item["message"]}'))
+    for text in plan['warnings'][:20]:
+        term.write('  ' + ui.badge(term, 'warning', text))
+    if plan['ignored']:
+        sample = ', '.join(f'{i["path"]} ({i["why"]})' for i in plan['ignored'][:5])
+        more = f' y {len(plan["ignored"]) - 5} más' if len(plan['ignored']) > 5 else ''
+        term.write('  ' + ui.badge(term, 'info', f'Se ignoran {len(plan["ignored"])} archivo(s) que no son .meta: {sample}{more}.'))
+
+
+def cmd_install(app, term: Term, args) -> int:
+    from .interactive import prompt, typed_confirm
+
+    body = {'source': args.source, 'dest': args.dest, 'replace': args.replace}
+    plan = app.install_plan(body)
+    if args.json and not args.apply:
+        emit_json(plan)
+        return 1 if plan['blocking'] else 0
+    render_install(term, plan, args.limit)
+    if not args.apply:
+        if plan['blocking']:
+            term.write('  ' + term.style('Vista previa con bloqueos: así no se puede instalar.', 'muted'))
+            return 1
+        term.write('  ' + term.style('Vista previa: no se escribió nada. Usa --apply --reason "…" para instalar (pide escribir APLICAR).',
+                                     'muted'))
+        return 0
+    if plan['blocking']:
+        raise ValidationFailed('La instalación tiene bloqueos; corrígelos antes de aplicar.')
+    if not plan['summary']['to_write']:
+        term.write('  ' + ui.badge(term, 'ok', 'Nada que instalar: el destino ya tiene esos archivos idénticos.'))
+        return 0
+    reason = args.reason.strip() or ((prompt(term, 'Motivo (queda en el registro)') or '') if term.interactive else '')
+    if not reason:
+        raise ValidationFailed('Indica el motivo con --reason: queda en el registro.')
+    word = args.confirm or (typed_confirm(term, f'Escribe APLICAR para instalar {plan["summary"]["to_write"]} archivo(s)')
+                            if term.interactive else None)
+    if word != 'APLICAR':
+        term.write('  ' + term.style('Cancelado. En modo no interactivo usa --confirm APLICAR.', 'muted'))
+        return 1
+    result = app.install_apply({**body, 'confirm': word, 'reason': reason, 'plan_hash': plan['plan_hash']})
+    if args.json:
+        emit_json(result)
+        return 0
+    term.write('  ' + ui.badge(term, 'ok', f'Instalado: {result["created"]} nuevos, {result["replaced"]} reemplazados. '
+                               f'Transacción {result["transaction"]} (se revierte con wr.py rollback).'))
+    term.write('  ' + term.style(f'Reinicia el recurso {result["resource"]} para que cargue el arma.', 'muted'))
+    return 0
+
+
 REGISTRO_LABELS = {'generator.apply': 'Aplicación de perfil', 'generator.rollback': 'Reversión', 'generator.guard': 'Guard generado',
+                   'install.apply': 'Instalación de arma', 'install.apply_failed': 'Instalación fallida (revertida)',
                    'sync.apply': 'Paso a otro servidor', 'sync.apply_failed': 'Paso fallido (revertido)',
                    'integrity.seal': 'Sello', 'integrity.manual_change': 'CAMBIO A MANO detectado',
                    'integrity.seal_failed': 'Sello fallido', 'generator.apply_failed': 'Aplicación fallida (revertida)',
@@ -734,8 +810,13 @@ def registro_detail(entry: dict[str, Any]) -> str:
         return f'{entry.get("server")} · {entry.get("scope")} · {entry.get("files")} archivos · {entry.get("reason")}'
     if event == 'legacy.rebalance_write':
         return f'{entry.get("total")} archivo(s) · {" ".join(entry.get("argv") or [])}'[:160]
+    if event == 'install.apply':
+        weapons = ', '.join(entry.get('weapons') or []) or '—'
+        return (f'{entry.get("resource")} · {weapons} · {entry.get("created")} nuevos · {entry.get("replaced")} reemplazados · '
+                f'{entry.get("tx")}' + (f' · {entry["reason"]}' if entry.get('reason') else ''))
     if event == 'generator.rollback':
-        return f'{entry.get("server", "local")} · {entry.get("files")} archivos · {entry.get("tx")}'
+        return f'{entry.get("server", "local")} · {entry.get("files")} archivos · {entry.get("tx")}' + \
+            (' · instalación' if entry.get('kind') == 'install' else '')
     return ' · '.join(f'{k}={v}' for k, v in entry.items() if k not in {'ts', 'level', 'event'})[:160]
 
 

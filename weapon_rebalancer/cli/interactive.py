@@ -746,8 +746,11 @@ class Studio:
 
     def screen_generate(self) -> None:
         choice = select(self.term, 'GENERAR RECURSO FIVEM', [('plan', 'Vista previa y aplicar un perfil', ''),
+                                                             ('install', 'Instalar un arma nueva', 'copia sus .meta a un pack (wr.py install)'),
                                                              ('history', 'Historial de aplicaciones / revertir', '')])
-        if choice == 'plan':
+        if choice == 'install':
+            self._install()
+        elif choice == 'plan':
             profile = self.pick_profile('Perfil a generar')
             if not profile:
                 return
@@ -781,7 +784,8 @@ class Studio:
                             return
         elif choice == 'history':
             rows = self.app.transactions()
-            options = [(r['id'], f'{r["created_at"]}  {pad(str(r["profile"]), 16)} {r["files"]} archivos', r['status']) for r in rows]
+            options = [(r['id'], f'{r["created_at"]}  {pad(str(r["profile"] or r["kind"]), 16)} {r["files"]} archivos', r['status'])
+                       for r in rows]
             picked = select(self.term, 'Transacciones', options, subtitle='Enter = revertir (pide APLICAR)')
             if picked:
                 word = typed_confirm(self.term, 'Se restaurarán los archivos de esa transacción.')
@@ -789,6 +793,41 @@ class Studio:
                     self.term.write('  ' + ui.badge(self.term, 'ok', 'Revertida.'))
                     self._status = None
                     pause(self.term)
+
+    def _install(self) -> None:
+        """Instalar un arma nueva: lo mismo que `wr.py install`, con preguntas."""
+        source = prompt(self.term, 'Carpeta de origen (con los .meta del arma)')
+        dest = prompt(self.term, 'Carpeta destino (dentro de un recurso del pack)') if source else None
+        if not source or not dest:
+            return
+        body = {'source': source, 'dest': dest, 'replace': False}
+        self.term.clear()
+        plan = safe(self.term, lambda: self.app.install_plan(body))
+        if not plan:
+            return
+        commands.render_install(self.term, plan, 30)
+        existing = sum(1 for item in plan['files'] if item['note'] == 'ya existe')
+        # Si lo único que bloquea es que ya existen, se ofrece reemplazarlos (los cambiados a mano siguen bloqueados).
+        if existing and len(plan['blocking']) == existing \
+                and confirm(self.term, f'{existing} archivo(s) ya existen y son distintos. ¿Reemplazarlos (con respaldo)?'):
+            body['replace'] = True
+            self.term.clear()
+            plan = safe(self.term, lambda: self.app.install_plan(body))
+            if not plan:
+                return
+            commands.render_install(self.term, plan, 30)
+        if plan['blocking'] or not plan['summary']['to_write']:
+            pause(self.term)
+            return
+        reason = prompt(self.term, 'Motivo (queda en el registro; vacío cancela)')
+        word = typed_confirm(self.term, f'Se instalarán {plan["summary"]["to_write"]} archivo(s) en el servidor.') if reason else None
+        if word:
+            result = safe(self.term, lambda: self.app.install_apply({**body, 'confirm': word, 'reason': reason,
+                                                                     'plan_hash': plan['plan_hash']}))
+            if result:
+                self.term.write('  ' + ui.badge(self.term, 'ok', f'Instalado. Transacción {result.get("transaction", "")}.'))
+                self._status = None
+        pause(self.term)
 
     def screen_docs(self) -> None:
         from .docs import list_pages, render_page

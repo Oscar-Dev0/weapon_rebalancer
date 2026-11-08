@@ -73,7 +73,7 @@ En las listas de selección múltiple (por ejemplo el simulador) Enter marca o d
 4. **Comparar perfiles**: dos perfiles, o un perfil contra *Valores originales (.bak)* o *META actual*.
 5. **Simulador**: hasta 3 series (original, actual, propuesto), zona, distancia, blindaje y vida.
 6. **Validar**: un perfil o todos, con vista previa sobre el pack.
-7. **Generar**: vista previa, diff por archivo y aplicar (pide escribir `APLICAR`); historial y reversión.
+7. **Generar**: vista previa, diff por archivo y aplicar (pide escribir `APLICAR`); instalar un arma nueva ([`wr.py install`](17-instalar.md)); historial y reversión.
 8. **Documentación**: estas mismas páginas en la terminal.
 9. **Configuración**: rutas, perfil activo y permiso de edición de los perfiles de servidor.
 
@@ -309,6 +309,8 @@ python3 wr.py generate -p flow_caribe
 | `generate -p ID --apply --confirm APLICAR` | Aplica sin preguntar (scripts) |
 | `transactions` | Historial de aplicaciones |
 | `rollback ID --confirm APLICAR` | Revierte una aplicación byte a byte |
+| `install CARPETA --dest RUTA` | Vista previa de un arma nueva: qué `.meta` se copiarían al pack ([detalle](17-instalar.md)) |
+| `install CARPETA --dest RUTA --apply --confirm APLICAR --reason "…"` | Instala como transacción (`--replace` para reemplazar existentes) |
 
 Cada archivo se respalda en `data/backups/` antes de escribirse.
 
