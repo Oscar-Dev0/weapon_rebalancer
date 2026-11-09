@@ -544,6 +544,44 @@
         "no_falloff": false,
         "sync_weapon_range": false,
         "sync_lock_on_range": false
+      },
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
       }
     },
     "WEAPON_FN57": {
@@ -700,6 +738,44 @@
         "no_falloff": false,
         "sync_weapon_range": false,
         "sync_lock_on_range": false
+      },
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
       }
     },
     "WEAPON_MGGLOCK": {
@@ -715,6 +791,44 @@
         "no_falloff": false,
         "sync_weapon_range": false,
         "sync_lock_on_range": false
+      },
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
       }
     },
     "WEAPON_ODGLOCK": {
@@ -742,8 +856,42 @@
             "COMPONENT_ODGLOCK_FST_04",
             "COMPONENT_ODGLOCK_FST_05",
             "COMPONENT_ODGLOCK_FST_06"
+          ],
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
           ]
-        }
+        },
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09"
       }
     },
     "WEAPON_P210": {
@@ -885,6 +1033,44 @@
         "no_falloff": false,
         "sync_weapon_range": false,
         "sync_lock_on_range": false
+      },
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
       }
     },
     "WEAPON_SR40": {
@@ -1081,6 +1267,526 @@
             "COMPONENT_DARKSHOT_FST_04",
             "COMPONENT_DARKSHOT_FST_05",
             "COMPONENT_DARKSHOT_FST_06"
+          ]
+        }
+      }
+    },
+    "WEAPON_GLOCKBF": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_HALLOWEENGLOCK": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_POISONGLOCK": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_RUSOGLOCK": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_TAYLORGLOCK": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_YOMARGLOCK": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_BLUEGLOCKS": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_GLOCK21": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_GLOCK41": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_GLOCKBEAMS": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_MIDASGLOCK": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_TGLOCK19": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
+          ]
+        }
+      }
+    },
+    "WEAPON_GLOCKNAVIDAD": {
+      "attach_components": {
+        "_comment": "Accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) como la GLIZZYG17; sin grips: este modelo no tiene WAPGrip_2. 2026-11-09",
+        "add": {
+          "WAPSupp": [
+            "COMPONENT_GLIZZYOILFILTER_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP",
+            "COMPONENT_GLIZZYPISTOL_SUPP2",
+            "COMPONENT_GLIZZYPISTOL_SUPP3"
+          ],
+          "WAPFlshLasr": [
+            "COMPONENT_GLIZZY300_FLSH_01",
+            "COMPONENT_GLIZZY400_FLSH_02",
+            "COMPONENT_AT_FLSHBLUE",
+            "COMPONENT_AT_FLSHCYAN",
+            "COMPONENT_AT_FLSHGREEN",
+            "COMPONENT_AT_FLSHPINK",
+            "COMPONENT_AT_FLSHPURPLE",
+            "COMPONENT_AT_FLSHRED",
+            "COMPONENT_AT_FLSHYELLOW",
+            "COMPONENT_GLIZZYLASER_RED",
+            "COMPONENT_GLIZZYLASER_BLUE",
+            "COMPONENT_GLIZZYLASER_GREEN",
+            "COMPONENT_GLIZZYLASER_PINK",
+            "COMPONENT_GLIZZYLASER_PURPLE",
+            "COMPONENT_GLIZZYLASER_YELLOW"
+          ],
+          "WAPClip": [
+            "COMPONENT_GLIZZYCLEAREXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYBEAMEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYMICKEYEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYSNAILEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL2_CLIP",
+            "COMPONENT_GLIZZYKRISSDEMONEXTENDEDPISTOL_CLIP",
+            "COMPONENT_GLIZZYKRISSEXTENDEDPISTOL_CLIP"
           ]
         }
       }
