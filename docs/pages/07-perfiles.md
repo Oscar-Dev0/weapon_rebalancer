@@ -204,6 +204,13 @@ Solo va por arma:
 
 - Agrega los nombres que falten al `AttachBone` indicado, con la misma sangría del bloque. Si el `AttachBone` no existe, lo crea.
 - Es idempotente: si el componente ya está, no cambia nada. `remove` quita por nombre (sin distinguir mayúsculas).
+- **Varios puntos con el mismo hueso** (7.9.0): muchos packs (Glizzy, kyros) repiten el `AttachBone` en varios puntos de
+  montaje. Lo que ya está en **cualquiera** de ellos no se vuelve a agregar y `remove` lo quita de todos.
+- **Tope de 12 componentes por punto** (7.9.0), como reparten los packs: se llenan primero los puntos que ya existen
+  del hueso (en orden) y lo que no entra va a puntos nuevos del mismo hueso, al final de `AttachPoints`. Si un punto
+  del arma ya trae más de 12, la vista previa lo avisa (`attach_components:… ya trae N componentes`) y no se le agrega nada.
+- El hueso tiene que existir en el **modelo** del arma (`.ydr`): si no está, GTA no puede montar la pieza en su lugar.
+  La herramienta no lee modelos (muchos vienen cifrados); revisa los huesos antes o pruébalo en el juego.
 - No toca el resto del arma. Los componentes en sí (`weaponcomponents.meta`) los define el recurso que los usa.
 - Nombres y bones: letras, números y `_`. Cualquier otra cosa hace fallar `wr.py profile validate`.
 

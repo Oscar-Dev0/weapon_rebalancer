@@ -1,3 +1,15 @@
+# 7.9.0 — attach_components con varios puntos por hueso y tope de 12
+
+- **Tope de 12 componentes por punto de montaje** en `attach_components` (`MAX_PER_POINT`, como reparten Glizzy y kyros):
+  se llenan los puntos que ya existen del hueso y lo que no entra va a puntos nuevos del mismo hueso. Antes todo iba
+  al primer punto, sin tope (15 linternas en un solo punto).
+- Lo que ya está en **cualquier** punto del mismo hueso no se repite; `remove` quita de todos los puntos (antes solo
+  del primero). Entiende componentes con `<Default/>` antes de `<Name>` (estilo Glizzy).
+- La vista previa avisa si un punto del arma ya trae más del tope.
+- Uso: pasar los accesorios Glizzy (silenciadores, linternas/láseres, cargadores extendidos) a las Glock de otros packs
+  desde el perfil `flow_caribe`.
+- Documentación: «Perfiles › attach_components». Pruebas nuevas en `tests/test_v15_attach_cap.py` (150 en total).
+
 # 7.8.0 — Instalar armas nuevas como transacción
 
 - **`wr.py install CARPETA --dest RUTA`** (`services/installer.py`): copia los `*.meta` de un arma nueva (p. ej. la salida de `od_weapon_builder`), con sus subcarpetas, a una carpeta dentro de un recurso de un pack. Antes había que copiarlos a mano y `wr.py integrity` los marcaba como cambio a mano.
